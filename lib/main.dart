@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:myapp/config/theme.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -45,13 +43,39 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final StopWatchTimer stopWatchTimer = StopWatchTimer(
     mode: StopWatchMode.countDown,
-    presetMillisecond: StopWatchTimer.getMilliSecFromSecond(30),
+    presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
   );
+  final StopWatchTimer stopWatchTimer2 = StopWatchTimer(
+    mode: StopWatchMode.countDown,
+    presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    stopWatchTimer.fetchEnded.listen((data) {
+      if (data) {
+        stopWatchTimer.onStopTimer();
+        stopWatchTimer.onResetTimer();
+        stopWatchTimer2.onResetTimer();
+        stopWatchTimer2.onStartTimer();
+      }
+    });
+    stopWatchTimer2.fetchEnded.listen((data) {
+      if (data) {
+        stopWatchTimer.onStopTimer();
+        stopWatchTimer.onStartTimer();
+        stopWatchTimer2.onStopTimer();
+        stopWatchTimer2.onResetTimer();
+      }
+    });
+  }
 
   @override
   void dispose() {
     super.dispose();
     stopWatchTimer.dispose();
+    stopWatchTimer2.dispose();
   }
 
   @override
@@ -67,6 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             StreamBuilder(
               stream: stopWatchTimer.rawTime,
+              builder: (context, snap) {
+                if (!snap.hasData) return Container();
+                final value = snap.data;
+                final displayTime = StopWatchTimer.getDisplayTime(value!);
+                return Text(
+                  displayTime,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                );
+              },
+            ),
+            StreamBuilder(
+              stream: stopWatchTimer2.rawTime,
               builder: (context, snap) {
                 if (!snap.hasData) return Container();
                 final value = snap.data;
