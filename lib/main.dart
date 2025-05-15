@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/config/theme.dart';
+import 'package:myapp/timer.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 void main() {
@@ -42,11 +43,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final timers = [
-    StopWatchTimer(
+    Timer(
       mode: StopWatchMode.countDown,
       presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
     ),
-    StopWatchTimer(
+    Timer(
       mode: StopWatchMode.countDown,
       presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
     ),
@@ -68,11 +69,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // int get timerIndex => _timerIndex;
 
-  StopWatchTimer currentTimer = StopWatchTimer();
+  Timer currentTimer = Timer();
 
   get fetchEnded => currentTimer.fetchEnded.listen(null);
 
-  onTimerEnded(StopWatchTimer timer) {
+  onTimerEnded(Timer timer) {
     timer.onStopTimer();
     timer.onResetTimer();
     setState(() {
@@ -85,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    for (StopWatchTimer timer in timers) {
+    for (Timer timer in timers) {
       timer.fetchEnded.listen((data) {
         onTimerEnded(timer);
       });
