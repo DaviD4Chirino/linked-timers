@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:myapp/config/theme.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -53,59 +51,57 @@ class _MyHomePageState extends State<MyHomePage> {
       presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
     ),
   ];
-  final StopWatchTimer stopWatchTimer = StopWatchTimer(
-    mode: StopWatchMode.countDown,
-    presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
-  );
-  final StopWatchTimer stopWatchTimer2 = StopWatchTimer(
-    mode: StopWatchMode.countDown,
-    presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
-  );
 
-  int loops = 0;
+  int timerIndex = 0;
 
-  var _currentTimer = StopWatchTimer();
+  // set timerIndex(int count) {
+  //   if (count > timers.length - 1) {
+  //     setState(() {
+  //       _timerIndex = 0;
+  //     });
+  //     return;
+  //   }
+  //   setState(() {
+  //     _timerIndex = count;
+  //   });
+  // }
 
-  StreamSubscription<bool> get endedStream =>
-      timers.first.fetchEnded.listen(null);
+  // int get timerIndex => _timerIndex;
 
-  set currentTimer(StopWatchTimer timer) {
-    _currentTimer = timer;
-    
-    endedStream.onData((data) {
-      
+  StopWatchTimer currentTimer = StopWatchTimer();
+
+  get fetchEnded => currentTimer.fetchEnded.listen(null);
+
+  onTimerEnded(StopWatchTimer timer) {
+    timer.onStopTimer();
+    timer.onResetTimer();
+    setState(() {
+      timerIndex = (timerIndex + 1) % timers.length;
+      currentTimer = timers[timerIndex];
+      currentTimer.onStartTimer();
     });
   }
 
   @override
   void initState() {
     super.initState();
-    stopWatchTimer.fetchEnded.listen((data) {
-      if (data) {
-        stopWatchTimer.onStopTimer();
-        stopWatchTimer.onResetTimer();
-        stopWatchTimer2.onResetTimer();
-        stopWatchTimer2.onStartTimer();
-      }
-    });
-    stopWatchTimer2.fetchEnded.listen((data) {
-      if (data) {
-        stopWatchTimer.onStopTimer();
-        stopWatchTimer.onStartTimer();
-        stopWatchTimer2.onStopTimer();
-        stopWatchTimer2.onResetTimer();
-        setState(() {
-          loops++;
-        });
-      }
+    for (StopWatchTimer timer in timers) {
+      timer.fetchEnded.listen((data) {
+        onTimerEnded(timer);
+      });
+    }
+
+    setState(() {
+      currentTimer = timers[0];
     });
   }
 
   @override
   void dispose() {
     super.dispose();
-    stopWatchTimer.dispose();
-    stopWatchTimer2.dispose();
+    for (var timer in timers) {
+      timer.dispose();
+    }
   }
 
   @override
@@ -116,48 +112,38 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            StreamBuilder(
-              stream: stopWatchTimer.rawTime,
-              builder: (context, snap) {
-                if (!snap.hasData) return Container();
-                final value = snap.data;
-                final displayTime = StopWatchTimer.getDisplayTime(value!);
-                return Text(
-                  displayTime,
-                  style: Theme.of(context).textTheme.headlineMedium,
+        child: ListView.builder(
+          itemCount: timers.length,
+          itemBuilder: (context, idx) {
+            return StreamBuilder(
+              stream: timers[idx].rawTime,
+              builder: (context, data) {
+                if (data.hasData == false) {
+                  return Container();
+                }
+                return Center(
+                  child: Text(
+                    StopWatchTimer.getDisplayTime(data.data!),
+                    style: TextStyle(fontSize: 36),
+                  ),
                 );
               },
-            ),
-            StreamBuilder(
-              stream: stopWatchTimer2.rawTime,
-              builder: (context, snap) {
-                if (!snap.hasData) return Container();
-                final value = snap.data;
-                final displayTime = StopWatchTimer.getDisplayTime(value!);
-                return Text(
-                  displayTime,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                );
-              },
-            ),
-          ],
+            );
+          },
         ),
       ),
       floatingActionButton: StreamBuilder(
-        stream: stopWatchTimer.rawTime,
+        stream: currentTimer.rawTime,
         builder: (context, snap) {
           if (!snap.hasData) return Container();
           return FloatingActionButton(
             onPressed:
-                stopWatchTimer.isRunning
-                    ? stopWatchTimer.onStopTimer
-                    : stopWatchTimer.onStartTimer,
+                currentTimer.isRunning
+                    ? currentTimer.onStopTimer
+                    : currentTimer.onStartTimer,
             tooltip: 'Increment',
             child: Icon(
-              stopWatchTimer.isRunning ? Icons.pause : Icons.play_arrow,
+              currentTimer.isRunning ? Icons.pause : Icons.play_arrow,
             ),
           );
         },
