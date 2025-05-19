@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/config/theme.dart';
 import 'package:myapp/timer.dart';
+import 'package:myapp/widgets/timer_display.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 void main() {
@@ -42,16 +43,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final timers = [
-    Timer(
+  final timers = List.generate(
+    2,
+    (i) => Timer(
       mode: StopWatchMode.countDown,
       presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
     ),
-    Timer(
-      mode: StopWatchMode.countDown,
-      presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
-    ),
-  ];
+  );
 
   int timerIndex = 0;
 
@@ -75,10 +73,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   onTimerEnded(Timer timer) {
     timer.onStopTimer();
-    timer.onResetTimer();
+    // timer.onResetTimer();
     setState(() {
       timerIndex = (timerIndex + 1) % timers.length;
+      if (timerIndex == 0) {
+        for (var timer in timers) {
+          timer.onResetTimer();
+        }
+      }
       currentTimer = timers[timerIndex];
+      currentTimer.onResetTimer();
       currentTimer.onStartTimer();
     });
   }
@@ -112,27 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: ListView.builder(
-          itemCount: timers.length,
-          itemBuilder: (context, idx) {
-            return StreamBuilder(
-              stream: timers[idx].rawTime,
-              builder: (context, data) {
-                if (data.hasData == false) {
-                  return Container();
-                }
-                return Center(
-                  child: Text(
-                    StopWatchTimer.getDisplayTime(data.data!),
-                    style: TextStyle(fontSize: 36),
-                  ),
-                );
-              },
-            );
-          },
-        ),
+      body: Wrap(
+        spacing: 12,
+        runSpacing: 16,
+        children:
+            timers.map((timer) {
+              return TimerDisplay(timer);
+            }).toList(),
       ),
+
       floatingActionButton: StreamBuilder(
         stream: currentTimer.rawTime,
         builder: (context, snap) {
