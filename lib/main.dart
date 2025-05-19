@@ -111,18 +111,37 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Wrap(
-        spacing: 12,
-        runSpacing: 16,
-        children:
-            timers.map((timer) {
-              return TimerDisplay(timer);
-            }).toList(),
+      body: ListView(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: theme.colorScheme.primary, width: 4),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
+              children: [
+                Text("Laps: 0", style: theme.textTheme.titleLarge),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 16,
+                  children:
+                      timers.map((timer) {
+                        return TimerDisplay(timer);
+                      }).toList(),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
 
       floatingActionButton: StreamBuilder(
