@@ -47,31 +47,19 @@ class _MyHomePageState extends State<MyHomePage> {
     2,
     (i) => Timer(
       mode: StopWatchMode.countDown,
-      presetMillisecond: StopWatchTimer.getMilliSecFromSecond(5),
+      presetMillisecond: StopWatchTimer.getMilliSecFromSecond(2),
     ),
   );
 
   final maxLaps = 5;
 
+  bool infiniteLoops = false;
+
   int timerIndex = 0;
 
   int laps = 0;
 
-  bool get finished => laps >= maxLaps;
-
-  // set timerIndex(int count) {
-  //   if (count > timers.length - 1) {
-  //     setState(() {
-  //       _timerIndex = 0;
-  //     });
-  //     return;
-  //   }
-  //   setState(() {
-  //     _timerIndex = count;
-  //   });
-  // }
-
-  // int get timerIndex => _timerIndex;
+  bool get finished => laps >= maxLaps && infiniteLoops == false;
 
   Timer currentTimer = Timer();
 
@@ -80,11 +68,16 @@ class _MyHomePageState extends State<MyHomePage> {
   onTimerEnded(Timer timer) {
     timer.onStopTimer();
     // timer.onResetTimer();
+    /// NOTE: When the user activates the loops at the end of the lap
+    /// the current timer is the last instead of the first
     setState(() {
       timerIndex = (timerIndex + 1) % timers.length;
       if (timerIndex == 0) {
-        laps++;
-        if (laps >= maxLaps) {
+        if (infiniteLoops == false) {
+          laps++;
+        }
+        if (laps >= maxLaps && infiniteLoops == false) {
+          currentTimer = timers[timerIndex];
           for (var timer in timers) {
             timer.onResetTimer();
           }
@@ -139,7 +132,26 @@ class _MyHomePageState extends State<MyHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 16,
               children: [
-                Text("Laps: $laps/$maxLaps", style: theme.textTheme.titleLarge),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      infiniteLoops ? "Laps: ∞" : "Laps: $laps/$maxLaps",
+                      style: theme.textTheme.titleLarge,
+                    ),
+                    Switch(
+                      thumbIcon: WidgetStateProperty.resolveWith(
+                        (states) => const Icon(Icons.loop),
+                      ),
+                      value: infiniteLoops,
+                      onChanged: (val) {
+                        setState(() {
+                          infiniteLoops = val;
+                        });
+                      },
+                    ),
+                  ],
+                ),
                 Wrap(
                   spacing: 12,
                   runSpacing: 16,
