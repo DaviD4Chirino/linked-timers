@@ -51,7 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
   );
 
+  final maxLaps = 5;
+
   int timerIndex = 0;
+
+  int laps = 0;
+
+  bool get finished => laps >= maxLaps;
 
   // set timerIndex(int count) {
   //   if (count > timers.length - 1) {
@@ -77,6 +83,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       timerIndex = (timerIndex + 1) % timers.length;
       if (timerIndex == 0) {
+        laps++;
+        if (laps >= maxLaps) {
+          for (var timer in timers) {
+            timer.onResetTimer();
+          }
+          return;
+        }
         for (var timer in timers) {
           timer.onResetTimer();
         }
@@ -119,17 +132,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.primary, width: 4),
-              borderRadius: BorderRadius.circular(16),
-            ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 16,
               children: [
-                Text("Laps: 0", style: theme.textTheme.titleLarge),
+                Text("Laps: $laps/$maxLaps", style: theme.textTheme.titleLarge),
                 Wrap(
                   spacing: 12,
                   runSpacing: 16,
@@ -152,6 +162,14 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed:
                 currentTimer.isRunning
                     ? currentTimer.onStopTimer
+                    : finished
+                    ? () {
+                      setState(() {
+                        laps = 0;
+                        currentTimer = timers[0];
+                      });
+                      currentTimer.onStartTimer();
+                    }
                     : currentTimer.onStartTimer,
             tooltip: 'Increment',
             child: Icon(
