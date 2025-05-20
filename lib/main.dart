@@ -65,11 +65,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   get fetchEnded => currentTimer.fetchEnded.listen(null);
 
+  void reset() {
+    setState(() {
+      laps = 0;
+      currentTimer = timers.first;
+    });
+  }
+
   onTimerEnded(Timer timer) {
     timer.onStopTimer();
-    // timer.onResetTimer();
-    /// NOTE: When the user activates the loops at the end of the lap
-    /// the current timer is the last instead of the first
     setState(() {
       timerIndex = (timerIndex + 1) % timers.length;
       if (timerIndex == 0) {
@@ -103,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     setState(() {
-      currentTimer = timers[0];
+      currentTimer = timers.first;
     });
   }
 
@@ -176,10 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ? currentTimer.onStopTimer
                     : finished
                     ? () {
-                      setState(() {
-                        laps = 0;
-                        currentTimer = timers[0];
-                      });
+                      reset();
                       currentTimer.onStartTimer();
                     }
                     : currentTimer.onStartTimer,
