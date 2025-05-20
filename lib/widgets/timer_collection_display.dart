@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:myapp/models/timer.dart';
 import 'package:myapp/models/timer_collection.dart';
 import 'package:myapp/widgets/timer_display.dart';
 

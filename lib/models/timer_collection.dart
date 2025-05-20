@@ -1,6 +1,7 @@
-import 'dart:async';
 
 // I might as well track the isInfinite bool here
+import 'package:myapp/models/timer.dart';
+
 class TimerCollection {
   TimerCollection({
     required this.timers,

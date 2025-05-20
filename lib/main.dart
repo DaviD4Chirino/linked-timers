@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/config/theme.dart';
-import 'package:myapp/timer.dart';
+import 'package:myapp/models/timer.dart';
 import 'package:myapp/widgets/timer_display.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
