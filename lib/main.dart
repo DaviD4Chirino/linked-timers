@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/config/theme.dart';
 import 'package:myapp/models/timer.dart';
+import 'package:myapp/models/timer_collection.dart';
+import 'package:myapp/widgets/timer_collection_display.dart';
 import 'package:myapp/widgets/timer_display.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -43,154 +45,124 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final timers = List.generate(
-    2,
-    (i) => Timer(
-      mode: StopWatchMode.countDown,
-      presetMillisecond: StopWatchTimer.getMilliSecFromSecond(2),
+  final collection = TimerCollection(
+    timers: List.generate(
+      2,
+      (i) => Timer(
+        mode: StopWatchMode.countDown,
+        presetMillisecond: StopWatchTimer.getMilliSecFromSecond(2),
+      ),
     ),
+    laps: 2,
   );
 
-  final maxLaps = 5;
+  // final timers = List.generate(
+  //   2,
+  //   (i) => Timer(
+  //     mode: StopWatchMode.countDown,
+  //     presetMillisecond: StopWatchTimer.getMilliSecFromSecond(2),
+  //   ),
+  // );
 
-  bool infiniteLoops = false;
+  // final maxLaps = 5;
 
-  int timerIndex = 0;
+  // bool infiniteLoops = false;
 
-  int laps = 0;
+  // int timerIndex = 0;
 
-  bool get finished => laps >= maxLaps && infiniteLoops == false;
+  // int laps = 0;
 
-  Timer currentTimer = Timer();
+  // bool get finished => laps >= maxLaps && infiniteLoops == false;
 
-  get fetchEnded => currentTimer.fetchEnded.listen(null);
+  // Timer currentTimer = Timer();
 
-  void reset() {
-    setState(() {
-      laps = 0;
-      currentTimer = timers.first;
-    });
-  }
+  // get fetchEnded => currentTimer.fetchEnded.listen(null);
 
-  onTimerEnded(Timer timer) {
-    timer.onStopTimer();
-    setState(() {
-      timerIndex = (timerIndex + 1) % timers.length;
-      if (timerIndex == 0) {
-        if (infiniteLoops == false) {
-          laps++;
-        }
-        if (laps >= maxLaps && infiniteLoops == false) {
-          currentTimer = timers[timerIndex];
-          for (var timer in timers) {
-            timer.onResetTimer();
-          }
-          return;
-        }
-        for (var timer in timers) {
-          timer.onResetTimer();
-        }
-      }
-      currentTimer = timers[timerIndex];
-      currentTimer.onResetTimer();
-      currentTimer.onStartTimer();
-    });
-  }
+  // void reset() {
+  //   setState(() {
+  //     laps = 0;
+  //     currentTimer = timers.first;
+  //   });
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    for (Timer timer in timers) {
-      timer.fetchEnded.listen((data) {
-        onTimerEnded(timer);
-      });
-    }
+  // onTimerEnded(Timer timer) {
+  //   timer.onStopTimer();
+  //   setState(() {
+  //     timerIndex = (timerIndex + 1) % timers.length;
+  //     if (timerIndex == 0) {
+  //       if (infiniteLoops == false) {
+  //         laps++;
+  //       }
+  //       if (laps >= maxLaps && infiniteLoops == false) {
+  //         currentTimer = timers[timerIndex];
+  //         for (var timer in timers) {
+  //           timer.onResetTimer();
+  //         }
+  //         return;
+  //       }
+  //       for (var timer in timers) {
+  //         timer.onResetTimer();
+  //       }
+  //     }
+  //     currentTimer = timers[timerIndex];
+  //     currentTimer.onResetTimer();
+  //     currentTimer.onStartTimer();
+  //   });
+  // }
 
-    setState(() {
-      currentTimer = timers.first;
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   for (Timer timer in timers) {
+  //     timer.fetchEnded.listen((data) {
+  //       onTimerEnded(timer);
+  //     });
+  //   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    for (var timer in timers) {
-      timer.dispose();
-    }
-  }
+  //   setState(() {
+  //     currentTimer = timers.first;
+  //   });
+  // }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   for (var timer in timers) {
+  //     timer.dispose();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    // final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      infiniteLoops ? "Laps: ∞" : "Laps: $laps/$maxLaps",
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    Switch(
-                      thumbIcon: WidgetStateProperty.resolveWith(
-                        (states) => const Icon(Icons.loop),
-                      ),
-                      value: infiniteLoops,
-                      onChanged: (val) {
-                        setState(() {
-                          infiniteLoops = val;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 16,
-                  children:
-                      timers.map((timer) {
-                        return TimerDisplay(timer);
-                      }).toList(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: ListView(children: [TimerCollectionDisplay(collection)]),
 
-      floatingActionButton: StreamBuilder(
-        stream: currentTimer.rawTime,
-        builder: (context, snap) {
-          if (!snap.hasData) return Container();
-          return FloatingActionButton(
-            onPressed:
-                currentTimer.isRunning
-                    ? currentTimer.onStopTimer
-                    : finished
-                    ? () {
-                      reset();
-                      currentTimer.onStartTimer();
-                    }
-                    : currentTimer.onStartTimer,
-            tooltip: 'Increment',
-            child: Icon(
-              currentTimer.isRunning ? Icons.pause : Icons.play_arrow,
-            ),
-          );
-        },
-      ),
+      // StreamBuilder(
+      //   stream: currentTimer.rawTime,
+      //   builder: (context, snap) {
+      //     if (!snap.hasData) return Container();
+      //     return FloatingActionButton(
+      //       onPressed:
+      //           currentTimer.isRunning
+      //               ? currentTimer.onStopTimer
+      //               : finished
+      //               ? () {
+      //                 reset();
+      //                 currentTimer.onStartTimer();
+      //               }
+      //               : currentTimer.onStartTimer,
+      //       tooltip: 'Increment',
+      //       child: Icon(
+      //         currentTimer.isRunning ? Icons.pause : Icons.play_arrow,
+      //       ),
+      //     );
+      //   },
+      // ),
     );
   }
 }
