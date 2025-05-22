@@ -37,11 +37,22 @@ dependencies:
   flex_color_scheme: ^8.2.0
   stop_watch_timer: ^3.2.2
   percent_indicator: ^4.2.5
+  riverpod: ^3.0.0-dev.15
+  riverpod_annotation: ^3.0.0-dev.15
+  uid: ^0.0.2
+  uuid: ^4.5.1
+
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
+  custom_lint:
+  riverpod_generator: ^3.0.0-dev.15
+  riverpod_lint: ^3.0.0-dev.15
+
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

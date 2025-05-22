@@ -3,7 +3,6 @@ import 'package:myapp/config/theme.dart';
 import 'package:myapp/models/timer.dart';
 import 'package:myapp/models/timer_collection.dart';
 import 'package:myapp/widgets/timer_collection_display.dart';
-import 'package:myapp/widgets/timer_display.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 void main() {
@@ -46,6 +45,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final collection = TimerCollection(
+    title: "Demo Timer collection",
     timers: List.generate(
       2,
       (i) => Timer(

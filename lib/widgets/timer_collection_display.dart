@@ -86,14 +86,15 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
+        spacing: 0,
         children: [
+          Text(widget.collection.title, style: theme.textTheme.titleLarge),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 isInfinite ? "Laps: ∞" : "Laps: $laps/$maxLaps",
-                style: theme.textTheme.titleLarge,
+                style: theme.textTheme.titleMedium,
               ),
               Switch(
                 thumbIcon: WidgetStateProperty.resolveWith(
@@ -101,7 +102,6 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
                 ),
                 value: isInfinite,
                 onChanged: (val) {
-                  
                   widget.collection.isInfinite = val;
                   // setState(() {
                   //   infiniteLoops = val;

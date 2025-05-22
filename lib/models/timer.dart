@@ -2,6 +2,7 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class Timer extends StopWatchTimer {
   Timer({
+    // required this.title,
     this.nextTimer,
     super.isLapHours,
     super.mode,
@@ -11,9 +12,11 @@ class Timer extends StopWatchTimer {
     super.onChangeRawSecond,
     super.onChangeRawMinute,
     super.onStopped,
-    super.onEnded
+    super.onEnded,
   });
   Timer? nextTimer;
+
+  
 }
 // bool isLapHours = true,
 //   StopWatchMode mode = StopWatchMode.countUp,
