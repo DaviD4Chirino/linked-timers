@@ -8,6 +8,7 @@ class TimerCollection {
     this.laps = 1,
     this.isInfinite = false,
   });
+  
   List<Timer> timers = [];
   int laps = 5;
   bool isInfinite = false;

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/config/theme.dart';
-import 'package:myapp/models/timer.dart';
-import 'package:myapp/models/timer_collection.dart';
-import 'package:myapp/widgets/timer_collection_display.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:myapp/screens/dashboard.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const Dashboard(),
     );
   }
 }
@@ -34,7 +32,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     // final ThemeData theme = Theme.of(context);

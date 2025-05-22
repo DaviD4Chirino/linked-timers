@@ -302,6 +302,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  flutter_riverpod:
+    dependency: "direct main"
+    description:
+      name: flutter_riverpod
+      sha256: "92145487d2dd709fe96fa638ec39eff3708ed4d3f0e0c81ecc8a33030e71e10e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0-dev.15"
   flutter_test:
     dependency: "direct dev"
     description: flutter
