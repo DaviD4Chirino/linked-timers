@@ -1,5 +1,5 @@
-import 'package:myapp/models/timer.dart';
-import 'package:myapp/models/timer_collection.dart';
+import 'package:linked_timers/models/timer.dart';
+import 'package:linked_timers/models/timer_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 

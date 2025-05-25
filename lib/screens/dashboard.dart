@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myapp/models/timer_collection.dart';
-import 'package:myapp/providers/timer_database.dart';
-import 'package:myapp/widgets/timer_collection_display.dart';
+import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/providers/timer_database.dart';
+import 'package:linked_timers/widgets/timer_collection_display.dart';
 
 class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});

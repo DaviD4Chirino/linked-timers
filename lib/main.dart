@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myapp/config/theme.dart';
-import 'package:myapp/screens/dashboard.dart';
+import 'package:linked_timers/config/theme.dart';
+import 'package:linked_timers/screens/dashboard.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));

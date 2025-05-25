@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/models/timer.dart';
-import 'package:myapp/models/timer_collection.dart';
-import 'package:myapp/widgets/timer_display.dart';
+import 'package:linked_timers/models/timer.dart';
+import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/widgets/timer_display.dart';
 
 //TODO: A swipe resets the whole collection
 class TimerCollectionDisplay extends StatefulWidget {

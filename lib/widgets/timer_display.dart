@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/models/abstracts/utils.dart';
-import 'package:myapp/models/timer.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
+import 'package:linked_timers/models/timer.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
