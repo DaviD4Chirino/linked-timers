@@ -21,8 +21,6 @@ class TimerCollectionDisplay
 
 class _TimerCollectionDisplayState
     extends ConsumerState<TimerCollectionDisplay> {
-  int laps = 0;
-
   bool get isInfinite => widget.collection.isInfinite;
   int get maxLaps => widget.collection.laps;
   List<Timer> get timers => widget.collection.timers;
@@ -32,8 +30,9 @@ class _TimerCollectionDisplayState
   TimerDatabase get notifier =>
       ref.read(timerDatabaseProvider.notifier);
 
+  int laps = 0;
   int timerIndex = 0;
-  Timer currentTimer = Timer();
+  Timer currentTimer = Timer(label: "");
 
   void reset() {
     setState(() {
@@ -105,13 +104,19 @@ class _TimerCollectionDisplayState
             children: [
               Expanded(
                 child: Text(
-                  widget.collection.title,
+                  widget.collection.label,
                   style: theme.textTheme.titleLarge,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
               Text(
                 isInfinite ? "∞" : "$laps/$maxLaps",
-                style: theme.textTheme.titleMedium,
+                style: TextStyle(
+                  fontSize:
+                      theme.textTheme.titleMedium!.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Switch(
                 thumbIcon: WidgetStateProperty.resolveWith(
@@ -124,17 +129,13 @@ class _TimerCollectionDisplayState
                       isInfinite: val,
                     ),
                   );
-                  // widget.collection.isInfinite = val;
-                  // setState(() {
-                  //   infiniteLoops = val;
-                  // });
                 },
               ),
             ],
           ),
           // Layout
           SizedBox(
-            height: 65,
+            height: 70,
             child: LayoutGrid(
               columnSizes: [1.fr, 70.px],
               rowSizes: [1.fr],
@@ -149,10 +150,6 @@ class _TimerCollectionDisplayState
                     itemBuilder:
                         (context, index) =>
                             TimerDisplay(timers[index]),
-                    /* children:
-                        timers.map((timer) {
-                          return TimerDisplay(timer);
-                        }).toList(), */
                   ),
                 ),
                 StreamBuilder(
@@ -189,46 +186,6 @@ class _TimerCollectionDisplayState
               ],
             ),
           ),
-          /* Row(
-            children: [
-              Expanded(
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 16,
-                  children:
-                      timers.map((timer) {
-                        return TimerDisplay(timer);
-                      }).toList(),
-                ),
-              ),
-              StreamBuilder(
-                stream: currentTimer.rawTime,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData == false) return Container();
-
-                  return IconButton.filled(
-                    onPressed:
-                        currentTimer.isRunning
-                            ? currentTimer.onStopTimer
-                            : finished
-                            ? () {
-                              reset();
-                              currentTimer.onStartTimer();
-                            }
-                            : currentTimer.onStartTimer,
-                    icon: Icon(
-                      currentTimer.isRunning
-                          ? Icons.pause
-                          : finished
-                          ? Icons.restart_alt
-                          : Icons.play_arrow,
-                    ),
-                    iconSize: 34,
-                  );
-                },
-              ),
-            ],
-          ), */
         ],
       ),
     );

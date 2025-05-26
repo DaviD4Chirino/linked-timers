@@ -4,7 +4,7 @@ import 'package:linked_timers/models/timer.dart';
 class TimerCollection {
   TimerCollection({
     required this.timers,
-    required this.title,
+    required this.label,
     this.laps = 1,
     this.isInfinite = false,
   });
@@ -14,17 +14,17 @@ class TimerCollection {
   bool isInfinite = false;
 
   /// The title works as its id
-  String title;
+  String label;
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! TimerCollection) return false;
-    return title == other.title;
+    return label == other.label;
   }
 
   @override
-  int get hashCode => title.hashCode;
+  int get hashCode => label.hashCode;
 
   TimerCollection copyWith({
     List<Timer>? timers,
@@ -36,7 +36,7 @@ class TimerCollection {
       timers: timers ?? this.timers,
       laps: laps ?? this.laps,
       isInfinite: isInfinite ?? this.isInfinite,
-      title: title ?? this.title,
+      label: title ?? this.label,
     );
   }
 }

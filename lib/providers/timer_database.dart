@@ -22,10 +22,12 @@ class TimerDatabase extends _$TimerDatabase {
   List<TimerCollection> build() {
     return List.generate(15, (i) {
       return TimerCollection(
-        title: "Timer collection Nro $i",
+        label:
+            "Timer collection Nro Timer collection Nro $i",
         timers: List.generate(
           Random().nextInt(10) + 1,
           (i) => Timer(
+            label: "Timer Nro:$i",
             mode: StopWatchMode.countDown,
             presetMillisecond:
                 StopWatchTimer.getMilliSecFromSecond(2),
