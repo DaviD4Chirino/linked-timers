@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/config/theme.dart';
+import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/screens/dashboard.dart';
+import 'package:linked_timers/screens/new_collection_screen.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -18,29 +20,12 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
-      home: const Dashboard(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    // final ThemeData theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: ListView(children: []),
+      routes: {
+        Routes.home: (context) => const Dashboard(),
+        Routes.newCollection:
+            (context) => const NewCollectionScreen(),
+      },
+      initialRoute: Routes.home,
     );
   }
 }
