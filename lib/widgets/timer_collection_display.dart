@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
@@ -21,6 +22,8 @@ class TimerCollectionDisplay
 
 class _TimerCollectionDisplayState
     extends ConsumerState<TimerCollectionDisplay> {
+  ThemeData get theme => Theme.of(context);
+
   bool get isInfinite => widget.collection.isInfinite;
   int get maxLaps => widget.collection.laps;
   List<Timer> get timers => widget.collection.timers;
@@ -60,9 +63,10 @@ class _TimerCollectionDisplayState
           timer.onResetTimer();
         }
       }
-      currentTimer = timers[timerIndex];
-      currentTimer.onResetTimer();
-      currentTimer.onStartTimer();
+      currentTimer =
+          timers[timerIndex]
+            ..onResetTimer()
+            ..onStartTimer();
     });
   }
 
@@ -90,104 +94,132 @@ class _TimerCollectionDisplayState
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 0,
-        children: [
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  widget.collection.label,
-                  style: theme.textTheme.titleLarge,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-              Text(
-                isInfinite ? "∞" : "$laps/$maxLaps",
-                style: TextStyle(
-                  fontSize:
-                      theme.textTheme.titleMedium!.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Switch(
-                thumbIcon: WidgetStateProperty.resolveWith(
-                  (states) => const Icon(Icons.loop),
-                ),
-                value: isInfinite,
-                onChanged: (val) {
-                  notifier.setCollection(
-                    widget.collection.copyWith(
-                      isInfinite: val,
-                    ),
-                  );
-                },
-              ),
-            ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 0,
+      children: [
+        topPart(),
+        // Layout
+        SizedBox(
+          height: 70,
+          child: LayoutGrid(
+            columnSizes: [1.fr, 70.px],
+            rowSizes: [1.fr],
+            children: [timersList(), controlButton()],
           ),
-          // Layout
-          SizedBox(
-            height: 70,
-            child: LayoutGrid(
-              columnSizes: [1.fr, 70.px],
-              rowSizes: [1.fr],
-              children: [
-                Center(
-                  child: ListView.separated(
-                    itemCount: timers.length,
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder:
-                        (context, index) =>
-                            SizedBox(width: 8),
-                    itemBuilder:
-                        (context, index) =>
-                            TimerDisplay(timers[index]),
-                  ),
-                ),
-                StreamBuilder(
-                  stream: currentTimer.rawTime,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData == false) {
-                      return Container();
-                    }
+        ),
+        SizedBox(height: Spacing.sm),
+        Text(
+          currentTimer.label,
+          style: theme.textTheme.bodyLarge,
+        ),
+      ],
+    );
+  }
 
-                    return Center(
-                      child: IconButton.filled(
-                        onPressed:
-                            currentTimer.isRunning
-                                ? currentTimer.onStopTimer
-                                : finished
-                                ? () {
-                                  reset();
-                                  currentTimer
-                                      .onStartTimer();
-                                }
-                                : currentTimer.onStartTimer,
-                        icon: Icon(
-                          currentTimer.isRunning
-                              ? Icons.pause
-                              : finished
-                              ? Icons.restart_alt
-                              : Icons.play_arrow,
-                        ),
-                        iconSize: 34,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+  StreamBuilder<int> controlButton() {
+    void onPressed() {
+      if (currentTimer.isRunning) {
+        currentTimer.onStopTimer();
+        return;
+      }
+
+      if (finished) {
+        reset();
+        currentTimer.onStartTimer();
+        return;
+      }
+
+      currentTimer.onStartTimer();
+    }
+
+    IconData getIcon() {
+      if (currentTimer.isRunning) {
+        return Icons.pause;
+      }
+      if (finished) {
+        return Icons.restore;
+      }
+      return Icons.play_arrow;
+    }
+
+    return StreamBuilder(
+      stream: currentTimer.rawTime,
+      builder: (context, snapshot) {
+        if (snapshot.hasData == false) {
+          return Container();
+        }
+
+        return Center(
+          child: IconButton.filled(
+            onPressed: onPressed,
+            icon: Icon(getIcon()),
+            iconSize: Spacing.iconXXl,
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget topPart() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            widget.collection.label,
+            style: theme.textTheme.titleLarge,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
+        SizedBox(width: Spacing.lg),
+        Text(
+          isInfinite ? "∞" : "$laps/$maxLaps",
+          style: TextStyle(
+            fontSize: theme.textTheme.titleMedium!.fontSize,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(width: Spacing.base),
+        TimerCollectionSwitch(widget.collection),
+      ],
+    );
+  }
+
+  Widget timersList() {
+    return Center(
+      child: ListView.separated(
+        itemCount: timers.length,
+        scrollDirection: Axis.horizontal,
+        separatorBuilder:
+            (context, index) => SizedBox(width: Spacing.lg),
+        itemBuilder:
+            (context, index) => TimerDisplay(timers[index]),
       ),
+    );
+  }
+}
+
+class TimerCollectionSwitch extends ConsumerWidget {
+  const TimerCollectionSwitch(this.collection, {super.key});
+  final TimerCollection collection;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    TimerDatabase notifier = ref.read(
+      timerDatabaseProvider.notifier,
+    );
+    return Switch(
+      thumbIcon: WidgetStateProperty.resolveWith(
+        (states) => const Icon(Icons.loop),
+      ),
+      value: collection.isInfinite,
+      onChanged: (val) {
+        notifier.setCollection(
+          collection.copyWith(isInfinite: val),
+        );
+      },
     );
   }
 }
