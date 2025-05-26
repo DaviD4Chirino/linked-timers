@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -9,11 +11,11 @@ part 'timer_database.g.dart';
 class TimerDatabase extends _$TimerDatabase {
   @override
   List<TimerCollection> build() {
-    return List.generate(10, (i) {
+    return List.generate(15, (i) {
       return TimerCollection(
         title: "Timer collection Nro $i",
         timers: List.generate(
-          2,
+          Random().nextInt(10) + 1,
           (i) => Timer(
             mode: StopWatchMode.countDown,
             presetMillisecond: StopWatchTimer.getMilliSecFromSecond(2),

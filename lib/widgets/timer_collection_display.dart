@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/widgets/timer_display.dart';
@@ -88,12 +89,17 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 0,
         children: [
-          Text(widget.collection.title, style: theme.textTheme.titleLarge),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Expanded(
+                child: Text(
+                  widget.collection.title,
+                  style: theme.textTheme.titleLarge,
+                ),
+              ),
               Text(
-                isInfinite ? "Laps: ∞" : "Laps: $laps/$maxLaps",
+                isInfinite ? "∞" : "$laps/$maxLaps",
                 style: theme.textTheme.titleMedium,
               ),
               Switch(
@@ -110,7 +116,58 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
               ),
             ],
           ),
-          Row(
+          // Layout
+          SizedBox(
+            height: 65,
+            child: LayoutGrid(
+              columnSizes: [1.fr, 70.px],
+              rowSizes: [1.fr],
+              children: [
+                Center(
+                  child: ListView.separated(
+                    itemCount: timers.length,
+                    scrollDirection: Axis.horizontal,
+                    separatorBuilder: (context, index) => SizedBox(width: 8),
+                    itemBuilder:
+                        (context, index) => TimerDisplay(timers[index]),
+                    /* children:
+                        timers.map((timer) {
+                          return TimerDisplay(timer);
+                        }).toList(), */
+                  ),
+                ),
+                StreamBuilder(
+                  stream: currentTimer.rawTime,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData == false) return Container();
+
+                    return Center(
+                      child: IconButton.filled(
+                        onPressed:
+                            currentTimer.isRunning
+                                ? currentTimer.onStopTimer
+                                : finished
+                                ? () {
+                                  reset();
+                                  currentTimer.onStartTimer();
+                                }
+                                : currentTimer.onStartTimer,
+                        icon: Icon(
+                          currentTimer.isRunning
+                              ? Icons.pause
+                              : finished
+                              ? Icons.restart_alt
+                              : Icons.play_arrow,
+                        ),
+                        iconSize: 34,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          /* Row(
             children: [
               Expanded(
                 child: Wrap(
@@ -149,7 +206,7 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
                 },
               ),
             ],
-          ),
+          ), */
         ],
       ),
     );

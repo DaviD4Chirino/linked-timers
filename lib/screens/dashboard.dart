@@ -14,7 +14,7 @@ class Dashboard extends ConsumerWidget {
     return Scaffold(
       body: ListView.separated(
         itemCount: database.length,
-        itemBuilder: (constext, i) {
+        itemBuilder: (context, i) {
           return TimerCollectionDisplay(database[i]);
         },
         separatorBuilder: (context, i) => const Divider(),
