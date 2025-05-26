@@ -1,26 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/timer_display.dart';
 
-//TODO: A swipe resets the whole collection
-class TimerCollectionDisplay extends StatefulWidget {
-  const TimerCollectionDisplay(this.collection, {super.key});
+class TimerCollectionDisplay
+    extends ConsumerStatefulWidget {
+  const TimerCollectionDisplay(
+    this.collection, {
+    super.key,
+  });
 
   final TimerCollection collection;
-
   @override
-  State<TimerCollectionDisplay> createState() => _TimerCollectionDisplayState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _TimerCollectionDisplayState();
 }
 
-class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
+class _TimerCollectionDisplayState
+    extends ConsumerState<TimerCollectionDisplay> {
   int laps = 0;
 
   bool get isInfinite => widget.collection.isInfinite;
   int get maxLaps => widget.collection.laps;
   List<Timer> get timers => widget.collection.timers;
-  bool get finished => laps >= maxLaps && isInfinite == false;
+  bool get finished =>
+      laps >= maxLaps && isInfinite == false;
+
+  TimerDatabase get notifier =>
+      ref.read(timerDatabaseProvider.notifier);
 
   int timerIndex = 0;
   Timer currentTimer = Timer();
@@ -90,7 +100,8 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
         spacing: 0,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
@@ -108,7 +119,12 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
                 ),
                 value: isInfinite,
                 onChanged: (val) {
-                  widget.collection.isInfinite = val;
+                  notifier.setCollection(
+                    widget.collection.copyWith(
+                      isInfinite: val,
+                    ),
+                  );
+                  // widget.collection.isInfinite = val;
                   // setState(() {
                   //   infiniteLoops = val;
                   // });
@@ -127,9 +143,12 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
                   child: ListView.separated(
                     itemCount: timers.length,
                     scrollDirection: Axis.horizontal,
-                    separatorBuilder: (context, index) => SizedBox(width: 8),
+                    separatorBuilder:
+                        (context, index) =>
+                            SizedBox(width: 8),
                     itemBuilder:
-                        (context, index) => TimerDisplay(timers[index]),
+                        (context, index) =>
+                            TimerDisplay(timers[index]),
                     /* children:
                         timers.map((timer) {
                           return TimerDisplay(timer);
@@ -139,7 +158,9 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
                 StreamBuilder(
                   stream: currentTimer.rawTime,
                   builder: (context, snapshot) {
-                    if (snapshot.hasData == false) return Container();
+                    if (snapshot.hasData == false) {
+                      return Container();
+                    }
 
                     return Center(
                       child: IconButton.filled(
@@ -149,7 +170,8 @@ class _TimerCollectionDisplayState extends State<TimerCollectionDisplay> {
                                 : finished
                                 ? () {
                                   reset();
-                                  currentTimer.onStartTimer();
+                                  currentTimer
+                                      .onStartTimer();
                                 }
                                 : currentTimer.onStartTimer,
                         icon: Icon(

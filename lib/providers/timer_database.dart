@@ -9,6 +9,15 @@ part 'timer_database.g.dart';
 
 @Riverpod(keepAlive: true)
 class TimerDatabase extends _$TimerDatabase {
+  void setCollection(TimerCollection newCollection) {
+    List<TimerCollection> list = [...state];
+    int index = list.indexWhere(
+      (element) => element == newCollection,
+    );
+    list[index] = newCollection;
+    state = list;
+  }
+
   @override
   List<TimerCollection> build() {
     return List.generate(15, (i) {
@@ -18,7 +27,8 @@ class TimerDatabase extends _$TimerDatabase {
           Random().nextInt(10) + 1,
           (i) => Timer(
             mode: StopWatchMode.countDown,
-            presetMillisecond: StopWatchTimer.getMilliSecFromSecond(2),
+            presetMillisecond:
+                StopWatchTimer.getMilliSecFromSecond(2),
           ),
         ),
         laps: 2,
