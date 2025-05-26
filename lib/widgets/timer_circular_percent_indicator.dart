@@ -4,8 +4,12 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class TimerDisplay extends StatelessWidget {
-  const TimerDisplay(this.timer, {super.key});
+class TimerCircularPercentIndicator
+    extends StatelessWidget {
+  const TimerCircularPercentIndicator(
+    this.timer, {
+    super.key,
+  });
 
   final Timer timer;
 

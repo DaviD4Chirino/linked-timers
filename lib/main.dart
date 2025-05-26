@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/config/theme.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
-import 'package:linked_timers/screens/dashboard.dart';
+import 'package:linked_timers/screens/home_screen.dart';
 import 'package:linked_timers/screens/new_collection_screen.dart';
 
 void main() {
@@ -21,11 +21,11 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
       routes: {
-        Routes.home: (context) => const Dashboard(),
+        Routes.home: (context) => const HomeScreen(),
         Routes.newCollection:
             (context) => const NewCollectionScreen(),
       },
-      initialRoute: Routes.home,
+      initialRoute: Routes.newCollection,
     );
   }
 }

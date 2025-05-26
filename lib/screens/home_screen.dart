@@ -1,24 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/models/abstracts/routes.dart';
+import 'package:linked_timers/models/abstracts/spacing.dart';
+import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/providers/timer_database.dart';
+import 'package:linked_timers/widgets/timer_collection_control.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.title});
-  final String title;
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<TimerCollection> database = ref.watch(
+      timerDatabaseProvider,
+    );
 
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
-    // final ThemeData theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor:
-            Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      body: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: Spacing.xxl,
+        ),
+        child: ListView.separated(
+          itemCount: database.length,
+          itemBuilder: (context, i) {
+            return TimerCollectionControl(database[i]);
+          },
+          separatorBuilder:
+              (context, i) => Divider(height: Spacing.xxxl),
+        ),
       ),
-      body: ListView(children: []),
+
+      floatingActionButton: FloatingActionButton(
+        tooltip: "Create new collection",
+        onPressed: () {
+          Navigator.of(
+            context,
+          ).pushNamed(Routes.newCollection);
+        },
+        child: Icon(Icons.add, size: Spacing.iconXXl),
+      ),
     );
   }
 }

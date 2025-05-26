@@ -5,23 +5,32 @@ import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
-import 'package:linked_timers/widgets/timer_display.dart';
+import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
-class TimerCollectionDisplay
+class TimerCollectionControl
     extends ConsumerStatefulWidget {
-  const TimerCollectionDisplay(
+  const TimerCollectionControl(
     this.collection, {
+    this.titleWidget,
+    this.lapsWidget,
     super.key,
   });
 
   final TimerCollection collection;
+
+  /// This replaces the label at the top
+  final Widget? titleWidget;
+
+  /// This replaces the label at the top that marks the laps
+  final Widget? lapsWidget;
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _TimerCollectionDisplayState();
+      _TimerCollectionControlState();
 }
 
-class _TimerCollectionDisplayState
-    extends ConsumerState<TimerCollectionDisplay> {
+class _TimerCollectionControlState
+    extends ConsumerState<TimerCollectionControl> {
   ThemeData get theme => Theme.of(context);
 
   bool get isInfinite => widget.collection.isInfinite;
@@ -102,7 +111,7 @@ class _TimerCollectionDisplayState
         topPart(),
         // Layout
         SizedBox(
-          height: 70,
+          height: 90,
           child: LayoutGrid(
             columnSizes: [1.fr, 70.px],
             rowSizes: [1.fr],
@@ -165,25 +174,34 @@ class _TimerCollectionDisplayState
   Widget topPart() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.max,
       children: [
-        Expanded(
-          child: Text(
-            widget.collection.label,
-            style: theme.textTheme.titleLarge,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+        if (widget.titleWidget != null)
+          widget.titleWidget as Widget,
+
+        if (widget.titleWidget == null)
+          Expanded(
+            child: Text(
+              widget.collection.label,
+              style: theme.textTheme.titleLarge,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
-        ),
-        SizedBox(width: Spacing.lg),
-        Text(
-          isInfinite ? "∞" : "$laps/$maxLaps",
-          style: TextStyle(
-            fontSize: theme.textTheme.titleMedium!.fontSize,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        if (widget.lapsWidget != null)
+          SizedBox(width: Spacing.lg),
+        widget.lapsWidget ??
+            Text(
+              isInfinite ? "∞" : "$laps/$maxLaps",
+              style: TextStyle(
+                fontSize:
+                    theme.textTheme.titleMedium!.fontSize,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
         SizedBox(width: Spacing.base),
-        TimerCollectionSwitch(widget.collection),
+        if (widget.lapsWidget == null)
+          TimerCollectionSwitch(widget.collection),
       ],
     );
   }
@@ -196,7 +214,10 @@ class _TimerCollectionDisplayState
         separatorBuilder:
             (context, index) => SizedBox(width: Spacing.lg),
         itemBuilder:
-            (context, index) => TimerDisplay(timers[index]),
+            (context, index) =>
+                TimerCircularPercentIndicator(
+                  timers[index],
+                ),
       ),
     );
   }
