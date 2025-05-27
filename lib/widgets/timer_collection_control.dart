@@ -13,6 +13,7 @@ class TimerCollectionControl
     this.collection, {
     this.titleWidget,
     this.lapsWidget,
+    this.buttonWidget,
     this.onTimerTapped,
     super.key,
   });
@@ -24,6 +25,8 @@ class TimerCollectionControl
 
   /// This replaces the label at the top that marks the laps
   final Widget? lapsWidget;
+
+  final Widget? buttonWidget;
 
   final Function(Timer timer)? onTimerTapped;
 
@@ -134,7 +137,7 @@ class _TimerCollectionControlState
     );
   }
 
-  StreamBuilder<int> controlButton() {
+  Widget controlButton() {
     void onPressed() {
       if (timers.isEmpty) return;
 
@@ -162,20 +165,22 @@ class _TimerCollectionControlState
       return Icons.play_arrow;
     }
 
-    return StreamBuilder(
+    return widget.buttonWidget ??
+        StreamBuilder(
       stream: currentTimer.rawTime,
       builder: (context, snapshot) {
         if (snapshot.hasData == false) {
           return Container();
         }
 
-        return Center(
-          child: IconButton.filled(
-            onPressed: onPressed,
-            icon: Icon(getIcon()),
-            iconSize: Spacing.iconXXl,
-          ),
-        );
+        return 
+            Center(
+              child: IconButton.filled(
+                onPressed: onPressed,
+                icon: Icon(getIcon()),
+                iconSize: Spacing.iconXXl,
+              ),
+            );
       },
     );
   }

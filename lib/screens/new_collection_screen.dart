@@ -52,7 +52,7 @@ class _NewCollectionScreenState
       int initialPresetTime = timer.initialPresetTime;
 
       int totalSeconds = initialPresetTime ~/ 1000;
-      int hours = totalSeconds ~/ 3600;
+      // int hours = totalSeconds ~/ 3600;
       int minutes = (totalSeconds % 3600) ~/ 60;
       int seconds = totalSeconds % 60;
 
@@ -87,9 +87,20 @@ class _NewCollectionScreenState
             TimerCollectionControl(
               collection,
               onTimerTapped: onTimerTapped,
+              buttonWidget: Center(
+                child: IconButton.filled(
+                  onPressed: () {},
+                  icon: Icon(Icons.send),
+                  iconSize: Spacing.iconXl,
+                ),
+              ),
               titleWidget: Expanded(
                 flex: 2,
                 child: TextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    MinValueInputFormatter(0),
+                  ],
                   onChanged: (value) {
                     setState(() {
                       collectionName = value;
