@@ -315,6 +315,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  form_validation:
+    dependency: "direct main"
+    description:
+      name: form_validation
+      sha256: b0a9b0bcc118b6f04ebcd4a0b42ac45d358cde17216298890c3613b8578fa4f9
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.0"
+  form_validator:
+    dependency: "direct main"
+    description:
+      name: form_validator
+      sha256: "8cbe91b7d5260870d6fb9e23acd55d5d1d1fdf2397f0279a4931ac3c0c7bf8fb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   freezed_annotation:
     dependency: transitive
     description:
@@ -379,6 +395,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.2"
   io:
     dependency: transitive
     description:
@@ -403,6 +427,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
+  json_class:
+    dependency: transitive
+    description:
+      name: json_class
+      sha256: f27de435c3b47ceea23c13d0516afa98c71c62c7a762a6c8f1df665189eb855e
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   leak_tracker:
     dependency: transitive
     description:

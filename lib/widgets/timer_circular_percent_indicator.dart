@@ -4,17 +4,18 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class TimerCircularPercentIndicator
-    extends StatelessWidget {
-  const TimerCircularPercentIndicator(
-    this.timer, {
-    super.key,
-  });
+class TimerCircularPercentIndicator extends StatelessWidget {
+  const TimerCircularPercentIndicator(this.timer, {super.key});
 
   final Timer timer;
 
   @override
   Widget build(BuildContext context) {
+    bool hasMinute = timer.initialPresetTime >= 60000;
+    bool hasSecond = timer.initialPresetTime >= 1000;
+    bool hasHour = timer.initialPresetTime >= 3600000;
+    // 3600000
+
     return StreamBuilder(
       stream: timer.rawTime,
       builder: (context, data) {
@@ -37,8 +38,10 @@ class TimerCircularPercentIndicator
           center: Text(
             StopWatchTimer.getDisplayTime(
               data.data!,
-              hours: false,
-              minute: false,
+              hours: hasHour,
+              minute: hasMinute,
+              second: hasSecond && !hasHour,
+              milliSecond: hasSecond && !hasMinute && !hasHour,
             ),
             style: TextStyle(fontSize: 16),
           ),
