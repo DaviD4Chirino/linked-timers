@@ -7,11 +7,13 @@ import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
-class TimerCollectionControl extends ConsumerStatefulWidget {
+class TimerCollectionControl
+    extends ConsumerStatefulWidget {
   const TimerCollectionControl(
     this.collection, {
     this.titleWidget,
     this.lapsWidget,
+    this.onTimerTapped,
     super.key,
   });
 
@@ -22,6 +24,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   /// This replaces the label at the top that marks the laps
   final Widget? lapsWidget;
+
+  final Function(Timer timer)? onTimerTapped;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -35,9 +39,11 @@ class _TimerCollectionControlState
   bool get isInfinite => widget.collection.isInfinite;
   int get maxLaps => widget.collection.laps;
   List<Timer> get timers => widget.collection.timers;
-  bool get finished => laps >= maxLaps && isInfinite == false;
+  bool get finished =>
+      laps >= maxLaps && isInfinite == false;
 
-  TimerDatabase get notifier => ref.read(timerDatabaseProvider.notifier);
+  TimerDatabase get notifier =>
+      ref.read(timerDatabaseProvider.notifier);
 
   int laps = 0;
   int timerIndex = 0;
@@ -120,7 +126,10 @@ class _TimerCollectionControlState
           ),
         ),
         SizedBox(height: Spacing.sm),
-        Text(currentTimer.label, style: theme.textTheme.bodyLarge),
+        Text(
+          currentTimer.label,
+          style: theme.textTheme.bodyLarge,
+        ),
       ],
     );
   }
@@ -176,7 +185,8 @@ class _TimerCollectionControlState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       children: [
-        if (widget.titleWidget != null) widget.titleWidget as Widget,
+        if (widget.titleWidget != null)
+          widget.titleWidget as Widget,
 
         if (widget.titleWidget == null)
           Expanded(
@@ -187,29 +197,44 @@ class _TimerCollectionControlState
               maxLines: 1,
             ),
           ),
-        if (widget.lapsWidget != null) SizedBox(width: Spacing.lg),
+        if (widget.lapsWidget != null)
+          SizedBox(width: Spacing.lg),
         widget.lapsWidget ??
             Text(
               isInfinite ? "∞" : "$laps/$maxLaps",
               style: TextStyle(
-                fontSize: theme.textTheme.titleMedium!.fontSize,
+                fontSize:
+                    theme.textTheme.titleMedium!.fontSize,
                 fontWeight: FontWeight.bold,
               ),
             ),
         SizedBox(width: Spacing.base),
-        if (widget.lapsWidget == null) TimerCollectionSwitch(widget.collection),
+        if (widget.lapsWidget == null)
+          TimerCollectionSwitch(widget.collection),
       ],
     );
   }
 
   Widget timersList() {
     return Center(
-      child: ListView.separated(
+      child: ListView.builder(
         itemCount: timers.length,
         scrollDirection: Axis.horizontal,
-        separatorBuilder: (context, index) => SizedBox(width: Spacing.lg),
+        // separatorBuilder:
+        //     (context, index) => SizedBox(width: Spacing.lg),
         itemBuilder:
-            (context, index) => TimerCircularPercentIndicator(timers[index]),
+            (context, index) =>
+                TimerCircularPercentIndicator(
+                  timers[index],
+                  onTap:
+                      widget.onTimerTapped != null
+                          ? () {
+                            widget.onTimerTapped!(
+                              timers[index],
+                            );
+                          }
+                          : null,
+                ),
       ),
     );
   }
@@ -220,14 +245,18 @@ class TimerCollectionSwitch extends ConsumerWidget {
   final TimerCollection collection;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TimerDatabase notifier = ref.read(timerDatabaseProvider.notifier);
+    TimerDatabase notifier = ref.read(
+      timerDatabaseProvider.notifier,
+    );
     return Switch(
       thumbIcon: WidgetStateProperty.resolveWith(
         (states) => const Icon(Icons.loop),
       ),
       value: collection.isInfinite,
       onChanged: (val) {
-        notifier.setCollection(collection.copyWith(isInfinite: val));
+        notifier.setCollection(
+          collection.copyWith(isInfinite: val),
+        );
       },
     );
   }

@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         Routes.newCollection:
             (context) => const NewCollectionScreen(),
       },
-      initialRoute: Routes.newCollection,
+      initialRoute: Routes.home,
     );
   }
 }
