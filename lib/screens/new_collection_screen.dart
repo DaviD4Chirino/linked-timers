@@ -23,13 +23,13 @@ class _NewCollectionScreenState
   String? collectionName;
   int? collectionLaps;
   String? timerLabel;
+  int? hours;
   int? minutes;
   int? seconds;
 
-  TextEditingController minutesController =
-      TextEditingController();
-  TextEditingController secondsController =
-      TextEditingController();
+  TextEditingController minutesController = TextEditingController();
+  TextEditingController secondsController = TextEditingController();
+  TextEditingController hoursController = TextEditingController();
   TextEditingController timerLabelController =
       TextEditingController();
 
@@ -52,12 +52,13 @@ class _NewCollectionScreenState
       int initialPresetTime = timer.initialPresetTime;
 
       int totalSeconds = initialPresetTime ~/ 1000;
-      // int hours = totalSeconds ~/ 3600;
-      int minutes = (totalSeconds % 3600) ~/ 60;
-      int seconds = totalSeconds % 60;
+      int hours_ = totalSeconds ~/ 3600;
+      int minutes_ = (totalSeconds % 3600) ~/ 60;
+      int seconds_ = totalSeconds % 60;
 
-      minutesController.text = minutes.toString();
-      secondsController.text = seconds.toString();
+      hoursController.text = hours_.toString();
+      minutesController.text = minutes_.toString();
+      secondsController.text = seconds_.toString();
       timerLabelController.text = timer.label;
     });
   }
@@ -87,102 +88,26 @@ class _NewCollectionScreenState
             TimerCollectionControl(
               collection,
               onTimerTapped: onTimerTapped,
-              buttonWidget: Center(
-                child: IconButton.filled(
-                  onPressed: () {},
-                  icon: Icon(Icons.send),
-                  iconSize: Spacing.iconXl,
-                ),
-              ),
-              titleWidget: Expanded(
-                flex: 2,
-                child: TextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    MinValueInputFormatter(0),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      collectionName = value;
-                    });
-                  },
-                  decoration: InputDecoration.collapsed(
-                    border: UnderlineInputBorder(),
-                    hintText: collection.label,
-                  ),
-                ),
-              ),
-              lapsWidget: Expanded(
-                child: TextFormField(
-                  onChanged: (value) {
-                    setState(() {
-                      collectionLaps = value.toInt(
-                        fallback: 1,
-                      );
-                    });
-                  },
-                  decoration: InputDecoration.collapsed(
-                    border: UnderlineInputBorder(),
-                    hintText: "Nro of laps",
-                  ),
-                ),
-              ),
+              buttonWidget: buttonWidget(),
+              titleWidget: titleWidget(),
+              lapsWidget: lapsWidgets(),
             ),
 
             Expanded(
               child: SizedBox(
-                width: min(
-                  mediaQuery.width - Spacing.xl,
-                  250,
-                ),
+                width: min(mediaQuery.width - Spacing.xl, 350),
                 child: ListView(
                   children: [
                     Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment:
-                          CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       spacing: Spacing.base,
                       children: [
-                        TextFormField(
-                          controller: timerLabelController,
-                          onChanged: (value) {
-                            setState(() {
-                              timerLabel = value;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            label: Text(
-                              "Insert a Timer Name",
-                            ),
-                          ),
-                        ),
+                        timerLabelField(),
                         timersInputs(theme),
                         SizedBox(
                           width: double.infinity,
-                          child: FilledButton(
-                            onPressed: () {
-                              setState(() {
-                                Timer newTimer = Timer(
-                                  label: timerLabel ?? "",
-                                  mode:
-                                      StopWatchMode
-                                          .countDown,
-                                  presetMillisecond:
-                                      StopWatchTimer.getMilliSecFromMinute(
-                                        minutes ?? 0,
-                                      ) +
-                                      StopWatchTimer.getMilliSecFromSecond(
-                                        seconds ?? 0,
-                                      ),
-                                );
-
-                                collection.timers.add(
-                                  newTimer,
-                                );
-                              });
-                            },
-                            child: Text("Add"),
-                          ),
+                          child: addTimerButton(),
                         ),
                       ],
                     ),
@@ -196,11 +121,107 @@ class _NewCollectionScreenState
     );
   }
 
+  FilledButton addTimerButton() {
+    return FilledButton(
+      onPressed: () {
+        setState(() {
+          Timer newTimer = Timer(
+            label: timerLabel ?? "",
+            mode: StopWatchMode.countDown,
+            presetMillisecond:
+                StopWatchTimer.getMilliSecFromHour(hours ?? 0) +
+                StopWatchTimer.getMilliSecFromMinute(minutes ?? 0) +
+                StopWatchTimer.getMilliSecFromSecond(seconds ?? 0),
+          );
+
+          collection.timers.add(newTimer);
+        });
+      },
+      child: Text("Add Timer"),
+    );
+  }
+
+  TextFormField timerLabelField() {
+    return TextFormField(
+      controller: timerLabelController,
+      onChanged: (value) {
+        setState(() {
+          timerLabel = value;
+        });
+      },
+      decoration: InputDecoration(label: Text("Insert a Timer Name")),
+    );
+  }
+
+  Center buttonWidget() {
+    return Center(
+      child: IconButton.filled(
+        onPressed: () {},
+        icon: Icon(Icons.send),
+        iconSize: Spacing.iconXl,
+      ),
+    );
+  }
+
+  Expanded lapsWidgets() {
+    return Expanded(
+      child: TextFormField(
+        onChanged: (value) {
+          setState(() {
+            collectionLaps = value.toInt(fallback: 1);
+          });
+        },
+        decoration: InputDecoration.collapsed(
+          border: UnderlineInputBorder(),
+          hintText: "Nro of laps",
+        ),
+      ),
+    );
+  }
+
+  Expanded titleWidget() {
+    return Expanded(
+      flex: 2,
+      child: TextFormField(
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          MinValueInputFormatter(0),
+        ],
+        onChanged: (value) {
+          setState(() {
+            collectionName = value;
+          });
+        },
+        decoration: InputDecoration.collapsed(
+          border: UnderlineInputBorder(),
+          hintText: collection.label,
+        ),
+      ),
+    );
+  }
+
   Row timersInputs(ThemeData theme) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       spacing: Spacing.base,
       children: [
+        Expanded(
+          child: NumberTextField(
+            controller: hoursController,
+            onChanged: (value) {
+              setState(() {
+                hours = value.toInt(fallback: 0);
+              });
+            },
+          ), //* Hours
+        ),
+        Text(
+          ":",
+          style: TextStyle(
+            fontSize: theme.textTheme.displaySmall!.fontSize,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         Expanded(
           child: NumberTextField(
             controller: minutesController,
@@ -214,8 +235,7 @@ class _NewCollectionScreenState
         Text(
           ":",
           style: TextStyle(
-            fontSize:
-                theme.textTheme.displaySmall!.fontSize,
+            fontSize: theme.textTheme.displaySmall!.fontSize,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -235,11 +255,7 @@ class _NewCollectionScreenState
 }
 
 class NumberTextField extends StatelessWidget {
-  const NumberTextField({
-    this.onChanged,
-    this.controller,
-    super.key,
-  });
+  const NumberTextField({this.onChanged, this.controller, super.key});
   final Function(String value)? onChanged;
   final TextEditingController? controller;
 
@@ -279,9 +295,7 @@ class MaxValueInputFormatter extends TextInputFormatter {
       final String maxStr = max.toString();
       return TextEditingValue(
         text: maxStr,
-        selection: TextSelection.collapsed(
-          offset: maxStr.length,
-        ),
+        selection: TextSelection.collapsed(offset: maxStr.length),
       );
     }
     return newValue;
@@ -305,9 +319,7 @@ class MinValueInputFormatter extends TextInputFormatter {
       final String minStr = min.toString();
       return TextEditingValue(
         text: minStr,
-        selection: TextSelection.collapsed(
-          offset: minStr.length,
-        ),
+        selection: TextSelection.collapsed(offset: minStr.length),
       );
     }
     return newValue;
