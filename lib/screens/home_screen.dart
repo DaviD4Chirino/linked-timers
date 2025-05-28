@@ -11,15 +11,11 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<TimerCollection> database = ref.watch(
-      timerDatabaseProvider,
-    );
+    List<TimerCollection> database = ref.watch(timerDatabaseProvider);
 
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: Spacing.xxl,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: Spacing.xxl),
         child: ListView.separated(
           itemCount: database.length,
           itemBuilder: (context, i) {
@@ -33,9 +29,7 @@ class HomeScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         tooltip: "Create new collection",
         onPressed: () {
-          Navigator.of(
-            context,
-          ).pushNamed(Routes.newCollection);
+          Navigator.of(context).pushNamed(Routes.newCollection);
         },
         child: Icon(Icons.add, size: Spacing.iconXXl),
       ),

@@ -16,27 +16,17 @@ class TimerCollection {
   /// The title works as its id
   String label;
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! TimerCollection) return false;
-    return label == other.label;
-  }
-
-  @override
-  int get hashCode => label.hashCode;
-
   TimerCollection copyWith({
     List<Timer>? timers,
     int? laps,
     bool? isInfinite,
-    String? title,
+    String? label,
   }) {
     return TimerCollection(
       timers: timers ?? this.timers,
       laps: laps ?? this.laps,
       isInfinite: isInfinite ?? this.isInfinite,
-      label: title ?? this.label,
+      label: label ?? this.label,
     );
   }
 }

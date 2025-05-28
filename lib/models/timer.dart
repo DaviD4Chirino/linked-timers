@@ -17,16 +17,6 @@ class Timer extends StopWatchTimer {
   });
   Timer? nextTimer;
   String label;
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! Timer) return false;
-    return label == other.label;
-  }
-
-  @override
-  int get hashCode => label.hashCode;
 }
 // bool isLapHours = true,
 //   StopWatchMode mode = StopWatchMode.countUp,

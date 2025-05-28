@@ -12,10 +12,14 @@ class TimerDatabase extends _$TimerDatabase {
   void setCollection(TimerCollection newCollection) {
     List<TimerCollection> list = [...state];
     int index = list.indexWhere(
-      (element) => element == newCollection,
+      (element) => element.label == newCollection.label,
     );
     list[index] = newCollection;
     state = list;
+  }
+
+  void addCollection(TimerCollection newCollection) {
+    state = [newCollection, ...state];
   }
 
   @override
@@ -28,8 +32,9 @@ class TimerDatabase extends _$TimerDatabase {
           (j) => Timer(
             label: "Timer Nro: ${j + 1}",
             mode: StopWatchMode.countDown,
-            presetMillisecond:
-                StopWatchTimer.getMilliSecFromSecond(2),
+            presetMillisecond: StopWatchTimer.getMilliSecFromSecond(
+              2,
+            ),
           ),
         ),
         laps: 2,
