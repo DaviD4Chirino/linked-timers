@@ -5,6 +5,7 @@ import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/screens/home_screen.dart';
 import 'package:linked_timers/screens/new_collection_screen.dart';
 
+//! We Have problems with the identifying operation, add uuid immediately
 void main() {
   runApp(ProviderScope(child: MyApp()));
 }
