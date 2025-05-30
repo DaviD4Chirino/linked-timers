@@ -9,7 +9,6 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class NewCollectionScreen extends ConsumerStatefulWidget {
   const NewCollectionScreen({super.key});

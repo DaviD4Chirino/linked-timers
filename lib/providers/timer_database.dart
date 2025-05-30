@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 part 'timer_database.g.dart';
 

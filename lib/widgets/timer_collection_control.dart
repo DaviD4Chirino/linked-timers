@@ -4,12 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
-import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
@@ -59,12 +56,22 @@ class _TimerCollectionControlState
   StopWatchTimer currentStopWatch = StopWatchTimer();
   Timer currentTimer = Timer(label: "");
 
+  void scrollToIndex(int index) {
+    itemScrollController.scrollTo(
+      alignment: 0.2,
+      index: index,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
   void reset() {
     if (stopWatches.isEmpty) return;
     setState(() {
       laps = 0;
       currentStopWatch = stopWatches.first;
       currentTimer = widget.collection.timers.first;
+      scrollToIndex(0);
     });
   }
 
@@ -92,11 +99,7 @@ class _TimerCollectionControlState
           stopWatches[timerIndex]
             ..onResetTimer()
             ..onStartTimer();
-      itemScrollController.scrollTo(
-        index: timerIndex,
-        duration: Duration(seconds: 1),
-        curve: Curves.easeInOutCubic,
-      );
+      scrollToIndex(timerIndex);
 
       // controller.scrollToIndex(timerIndex);
       currentTimer = widget.collection.timers[timerIndex];
@@ -107,23 +110,20 @@ class _TimerCollectionControlState
     }
   }
 
-  buildStopWatches() {
+  void buildStopWatches() {
     setState(() {
       if (widget.collection.timers.isEmpty) return;
       stopWatches =
-          widget.collection.timers
-              .map(
-                (e) => StopWatchTimer(
-                  mode: StopWatchMode.countDown,
-                  presetMillisecond:
-                      StopWatchTimer.getMilliSecFromHour(e.hours) +
-                      StopWatchTimer.getMilliSecFromMinute(
-                        e.minutes,
-                      ) +
-                      StopWatchTimer.getMilliSecFromSecond(e.seconds),
-                ),
-              )
-              .toList();
+          widget.collection.timers.map((e) {
+            return StopWatchTimer(
+              mode: StopWatchMode.countDown,
+              presetMillisecond:
+                  StopWatchTimer.getMilliSecFromHour(e.hours) +
+                  StopWatchTimer.getMilliSecFromMinute(e.minutes) +
+                  StopWatchTimer.getMilliSecFromSecond(e.seconds),
+            );
+          }).toList();
+      currentTimer = widget.collection.timers[timerIndex];
     });
 
     for (StopWatchTimer timer in stopWatches) {
@@ -141,7 +141,6 @@ class _TimerCollectionControlState
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     buildStopWatches();
   }
