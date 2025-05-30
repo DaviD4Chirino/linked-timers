@@ -9,7 +9,6 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class NewCollectionScreen extends ConsumerStatefulWidget {
   const NewCollectionScreen({super.key});
@@ -53,7 +52,7 @@ class _NewCollectionScreenState
 
   void onTimerTapped(Timer timer) {
     setState(() {
-      selectedTimer = timer;
+      /* selectedTimer = timer;
       int initialPresetTime = timer.initialPresetTime;
 
       int totalSeconds = initialPresetTime ~/ 1000;
@@ -67,7 +66,7 @@ class _NewCollectionScreenState
       hoursController.text = hours_.toString();
       minutesController.text = minutes_.toString();
       secondsController.text = seconds_.toString();
-      timerLabelController.text = timer.label;
+      timerLabelController.text = timer.label; */
     });
   }
 
@@ -77,14 +76,12 @@ class _NewCollectionScreenState
 
       Timer newTimer = Timer(
         label: timerLabel ?? "New Timer $timersAdded",
-        mode: StopWatchMode.countDown,
-        presetMillisecond:
-            StopWatchTimer.getMilliSecFromHour(hours ?? 0) +
-            StopWatchTimer.getMilliSecFromMinute(minutes ?? 0) +
-            StopWatchTimer.getMilliSecFromSecond(seconds ?? 0),
+        hours: hours ?? 0,
+        minutes: minutes ?? 0,
+        seconds: seconds ?? 0,
       );
 
-      if (selectedTimer != null) {
+      /* if (selectedTimer != null) {
         int index = timers.indexWhere(
           (element) => element == selectedTimer,
         );
@@ -92,10 +89,10 @@ class _NewCollectionScreenState
         timers[index] = newTimer;
         collection.timers = timers;
         return;
-      }
+      } */
 
       timers.add(newTimer);
-      collection.timers = timers;
+      collection = collection.copyWith(timers: timers);
       timersAdded++;
     });
   }
@@ -123,12 +120,19 @@ class _NewCollectionScreenState
         ),
         child: Column(
           children: [
+            Row(
+              spacing: Spacing.base,
+              children: [titleWidget(), lapsWidgets()],
+            ),
             TimerCollectionControl(
               collection,
+              key: Key(collection.timers.length.toString()),
               // onTimerTapped: onTimerTapped,
               buttonWidget: buttonWidget(),
-              titleWidget: titleWidget(),
-              lapsWidget: lapsWidgets(),
+              // titleWidget: titleWidget(),
+              titleWidget: Container(),
+              // lapsWidget: lapsWidgets(),
+              lapsWidget: Container(),
             ),
 
             Expanded(

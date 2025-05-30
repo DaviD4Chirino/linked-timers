@@ -4,17 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
-import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class TimerCollectionControl
-    extends ConsumerStatefulWidget {
+class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
     this.collection, {
     this.titleWidget,
     this.lapsWidget,
     this.buttonWidget,
     this.onTimerTapped,
+    this.onTimerEnd,
     super.key,
   });
 
@@ -28,7 +29,9 @@ class TimerCollectionControl
 
   final Widget? buttonWidget;
 
-  final Function(Timer timer)? onTimerTapped;
+  final Function(StopWatchTimer timer)? onTimerTapped;
+
+  final void Function(int timerIndex)? onTimerEnd;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -37,77 +40,122 @@ class TimerCollectionControl
 
 class _TimerCollectionControlState
     extends ConsumerState<TimerCollectionControl> {
+  final ItemScrollController itemScrollController =
+      ItemScrollController();
+
   ThemeData get theme => Theme.of(context);
 
-  bool get isInfinite => widget.collection.isInfinite;
   int get maxLaps => widget.collection.laps;
-  List<Timer> get timers => widget.collection.timers;
-  bool get finished =>
-      laps >= maxLaps && isInfinite == false;
+  // List<Timer> get timers => widget.collection.timers;
+  List<StopWatchTimer> stopWatches = [];
+  bool get finished => laps >= maxLaps && isInfinite == false;
 
-  TimerDatabase get notifier =>
-      ref.read(timerDatabaseProvider.notifier);
-
+  bool isInfinite = false;
   int laps = 0;
   int timerIndex = 0;
+  StopWatchTimer currentStopWatch = StopWatchTimer();
   Timer currentTimer = Timer(label: "");
 
+  void scrollToIndex(int index) {
+    itemScrollController.scrollTo(
+      alignment: 0.2,
+      index: index,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
   void reset() {
+    if (stopWatches.isEmpty) return;
     setState(() {
       laps = 0;
-      currentTimer = timers.first;
+      currentStopWatch = stopWatches.first;
+      currentTimer = widget.collection.timers.first;
+      scrollToIndex(0);
     });
   }
 
-  void onTimerEnded(Timer timer) {
+  void onTimerEnded(StopWatchTimer timer) {
     timer.onStopTimer();
     setState(() {
-      if (timers.isEmpty) return;
-      timerIndex = (timerIndex + 1) % timers.length;
+      if (stopWatches.isEmpty) return;
+      timerIndex = (timerIndex + 1) % stopWatches.length;
       if (timerIndex == 0) {
         if (isInfinite == false) {
           laps++;
         }
         if (laps >= maxLaps && isInfinite == false) {
-          currentTimer = timers[timerIndex];
-          for (var timer in timers) {
+          currentStopWatch = stopWatches[timerIndex];
+          for (var timer in stopWatches) {
             timer.onResetTimer();
           }
           return;
         }
-        for (var timer in timers) {
+        for (var timer in stopWatches) {
           timer.onResetTimer();
         }
       }
-      currentTimer =
-          timers[timerIndex]
+      currentStopWatch =
+          stopWatches[timerIndex]
             ..onResetTimer()
             ..onStartTimer();
+      scrollToIndex(timerIndex);
+
+      // controller.scrollToIndex(timerIndex);
+      currentTimer = widget.collection.timers[timerIndex];
     });
+
+    if (widget.onTimerEnd != null) {
+      widget.onTimerEnd!(timerIndex);
+    }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    for (Timer timer in timers) {
-      if (timers.isEmpty) return;
+  void buildStopWatches() {
+    setState(() {
+      if (widget.collection.timers.isEmpty) return;
+      stopWatches =
+          widget.collection.timers.map((e) {
+            return StopWatchTimer(
+              mode: StopWatchMode.countDown,
+              presetMillisecond:
+                  StopWatchTimer.getMilliSecFromHour(e.hours) +
+                  StopWatchTimer.getMilliSecFromMinute(e.minutes) +
+                  StopWatchTimer.getMilliSecFromSecond(e.seconds),
+            );
+          }).toList();
+      currentTimer = widget.collection.timers[timerIndex];
+    });
+
+    for (StopWatchTimer timer in stopWatches) {
+      if (stopWatches.isEmpty) return;
       timer.fetchEnded.listen((data) {
         onTimerEnded(timer);
       });
     }
 
     setState(() {
-      if (timers.isEmpty) return;
-      currentTimer = timers.first;
+      if (stopWatches.isEmpty) return;
+      currentStopWatch = stopWatches.first;
     });
   }
 
   @override
-  void dispose() {
+  void initState() {
+    super.initState();
+    buildStopWatches();
+  }
+
+  @override
+  void didUpdateWidget(covariant TimerCollectionControl oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    buildStopWatches();
+  }
+
+  @override
+  void dispose() async {
     super.dispose();
-    if (timers.isEmpty) return;
-    for (var timer in timers) {
-      timer.dispose();
+    for (var timer in stopWatches) {
+      await timer.dispose();
     }
   }
 
@@ -129,34 +177,31 @@ class _TimerCollectionControlState
           ),
         ),
         SizedBox(height: Spacing.sm),
-        Text(
-          currentTimer.label,
-          style: theme.textTheme.bodyLarge,
-        ),
+        Text(currentTimer.label, style: theme.textTheme.bodyLarge),
       ],
     );
   }
 
   Widget controlButton() {
     void onPressed() {
-      if (timers.isEmpty) return;
+      if (stopWatches.isEmpty) return;
 
-      if (currentTimer.isRunning) {
-        currentTimer.onStopTimer();
+      if (currentStopWatch.isRunning) {
+        currentStopWatch.onStopTimer();
         return;
       }
 
       if (finished) {
         reset();
-        currentTimer.onStartTimer();
+        currentStopWatch.onStartTimer();
         return;
       }
 
-      currentTimer.onStartTimer();
+      currentStopWatch.onStartTimer();
     }
 
     IconData getIcon() {
-      if (currentTimer.isRunning) {
+      if (currentStopWatch.isRunning) {
         return Icons.pause;
       }
       if (finished) {
@@ -167,22 +212,21 @@ class _TimerCollectionControlState
 
     return widget.buttonWidget ??
         StreamBuilder(
-      stream: currentTimer.rawTime,
-      builder: (context, snapshot) {
-        if (snapshot.hasData == false) {
-          return Container();
-        }
+          stream: currentStopWatch.rawTime,
+          builder: (context, snapshot) {
+            if (snapshot.hasData == false) {
+              return Container();
+            }
 
-        return 
-            Center(
+            return Center(
               child: IconButton.filled(
                 onPressed: onPressed,
                 icon: Icon(getIcon()),
                 iconSize: Spacing.iconXXl,
               ),
             );
-      },
-    );
+          },
+        );
   }
 
   Widget topPart() {
@@ -190,8 +234,7 @@ class _TimerCollectionControlState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       children: [
-        if (widget.titleWidget != null)
-          widget.titleWidget as Widget,
+        if (widget.titleWidget != null) widget.titleWidget as Widget,
 
         if (widget.titleWidget == null)
           Expanded(
@@ -202,67 +245,68 @@ class _TimerCollectionControlState
               maxLines: 1,
             ),
           ),
-        if (widget.lapsWidget != null)
-          SizedBox(width: Spacing.lg),
+        if (widget.lapsWidget != null) SizedBox(width: Spacing.lg),
         widget.lapsWidget ??
             Text(
               isInfinite ? "∞" : "$laps/$maxLaps",
               style: TextStyle(
-                fontSize:
-                    theme.textTheme.titleMedium!.fontSize,
+                fontSize: theme.textTheme.titleMedium!.fontSize,
                 fontWeight: FontWeight.bold,
               ),
             ),
         SizedBox(width: Spacing.base),
         if (widget.lapsWidget == null)
-          TimerCollectionSwitch(widget.collection),
+          Switch(
+            thumbIcon: WidgetStateProperty.resolveWith(
+              (states) => const Icon(Icons.loop),
+            ),
+            value: isInfinite,
+            onChanged: (val) {
+              setState(() {
+                isInfinite = val;
+              });
+            },
+          ),
       ],
     );
   }
 
   Widget timersList() {
     return Center(
-      child: ListView.builder(
-        itemCount: timers.length,
+      child: ScrollablePositionedList.builder(
+        itemCount: stopWatches.length,
         scrollDirection: Axis.horizontal,
+
+        itemScrollController: itemScrollController,
         // separatorBuilder:
         //     (context, index) => SizedBox(width: Spacing.lg),
-        itemBuilder:
-            (context, index) =>
-                TimerCircularPercentIndicator(
-                  timers[index],
-                  onTap:
-                      widget.onTimerTapped != null
-                          ? () {
-                            widget.onTimerTapped!(
-                              timers[index],
-                            );
-                          }
-                          : null,
-                ),
+        itemBuilder: (context, index) {
+          return TimerCircularPercentIndicator(
+            stopWatches[index],
+            onTap:
+                widget.onTimerTapped != null
+                    ? () {
+                      widget.onTimerTapped!(stopWatches[index]);
+                    }
+                    : null,
+          );
+        },
       ),
     );
   }
 }
 
-class TimerCollectionSwitch extends ConsumerWidget {
-  const TimerCollectionSwitch(this.collection, {super.key});
-  final TimerCollection collection;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    TimerDatabase notifier = ref.read(
-      timerDatabaseProvider.notifier,
-    );
-    return Switch(
-      thumbIcon: WidgetStateProperty.resolveWith(
-        (states) => const Icon(Icons.loop),
-      ),
-      value: collection.isInfinite,
-      onChanged: (val) {
-        notifier.setCollection(
-          collection.copyWith(isInfinite: val),
-        );
-      },
-    );
-  }
-}
+// class TimerCollectionSwitch extends ConsumerWidget {
+//   const TimerCollectionSwitch(this.collection, {super.key});
+//   final TimerCollection collection;
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     return Switch(
+//       thumbIcon: WidgetStateProperty.resolveWith(
+//         (states) => const Icon(Icons.loop),
+//       ),
+//       value: collection.isInfinite,
+//       onChanged: (val) {},
+//     );
+//   }
+// }
