@@ -6,7 +6,10 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
@@ -15,6 +18,7 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
     this.lapsWidget,
     this.buttonWidget,
     this.onTimerTapped,
+    this.onTimerEnd,
     super.key,
   });
 
@@ -30,6 +34,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   final Function(StopWatchTimer timer)? onTimerTapped;
 
+  final void Function(int timerIndex)? onTimerEnd;
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _TimerCollectionControlState();
@@ -37,14 +43,17 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
 class _TimerCollectionControlState
     extends ConsumerState<TimerCollectionControl> {
+  final ItemScrollController itemScrollController =
+      ItemScrollController();
+
   ThemeData get theme => Theme.of(context);
 
-  bool isInfinite = false;
   int get maxLaps => widget.collection.laps;
   // List<Timer> get timers => widget.collection.timers;
   List<StopWatchTimer> stopWatches = [];
   bool get finished => laps >= maxLaps && isInfinite == false;
 
+  bool isInfinite = false;
   int laps = 0;
   int timerIndex = 0;
   StopWatchTimer currentStopWatch = StopWatchTimer();
@@ -83,8 +92,19 @@ class _TimerCollectionControlState
           stopWatches[timerIndex]
             ..onResetTimer()
             ..onStartTimer();
+      itemScrollController.scrollTo(
+        index: timerIndex,
+        duration: Duration(seconds: 1),
+        curve: Curves.easeInOutCubic,
+      );
+
+      // controller.scrollToIndex(timerIndex);
       currentTimer = widget.collection.timers[timerIndex];
     });
+
+    if (widget.onTimerEnd != null) {
+      widget.onTimerEnd!(timerIndex);
+    }
   }
 
   buildStopWatches() {
@@ -254,21 +274,24 @@ class _TimerCollectionControlState
 
   Widget timersList() {
     return Center(
-      child: ListView.builder(
+      child: ScrollablePositionedList.builder(
         itemCount: stopWatches.length,
         scrollDirection: Axis.horizontal,
+
+        itemScrollController: itemScrollController,
         // separatorBuilder:
         //     (context, index) => SizedBox(width: Spacing.lg),
-        itemBuilder:
-            (context, index) => TimerCircularPercentIndicator(
-              stopWatches[index],
-              onTap:
-                  widget.onTimerTapped != null
-                      ? () {
-                        widget.onTimerTapped!(stopWatches[index]);
-                      }
-                      : null,
-            ),
+        itemBuilder: (context, index) {
+          return TimerCircularPercentIndicator(
+            stopWatches[index],
+            onTap:
+                widget.onTimerTapped != null
+                    ? () {
+                      widget.onTimerTapped!(stopWatches[index]);
+                    }
+                    : null,
+          );
+        },
       ),
     );
   }
