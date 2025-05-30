@@ -1,5 +1,6 @@
 // I might as well track the isInfinite bool here
 import 'package:linked_timers/models/timer.dart';
+import 'package:uuid/uuid.dart';
 
 class TimerCollection {
   TimerCollection({
@@ -15,6 +16,17 @@ class TimerCollection {
 
   /// The title works as its id
   String label;
+  String id = Uuid().v4();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimerCollection &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 
   TimerCollection copyWith({
     List<Timer>? timers,

@@ -5,14 +5,15 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class TimerCircularPercentIndicator extends StatelessWidget {
+class TimerCircularPercentIndicator
+    extends StatelessWidget {
   const TimerCircularPercentIndicator(
     this.timer, {
     this.onTap,
     super.key,
   });
 
-  final Timer timer;
+  final StopWatchTimer timer;
   final VoidCallback? onTap;
 
   @override
@@ -24,7 +25,9 @@ class TimerCircularPercentIndicator extends StatelessWidget {
 
     return TextButton(
       style: ButtonStyle(
-        padding: WidgetStateProperty.all(EdgeInsets.all(Spacing.sm)),
+        padding: WidgetStateProperty.all(
+          EdgeInsets.all(Spacing.sm),
+        ),
       ),
       onPressed: onTap,
       child: StreamBuilder(
@@ -45,7 +48,6 @@ class TimerCircularPercentIndicator extends StatelessWidget {
             animation: true,
             animateToInitialPercent: true,
             animateFromLastPercent: true,
-
             center: Text(
               StopWatchTimer.getDisplayTime(
                 data.data!,
