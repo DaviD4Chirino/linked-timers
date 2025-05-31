@@ -46,6 +46,8 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   swipeable_tile: ^2.0.1
   visibility_detector: ^0.4.0+2
+  flutter_context_menu: ^0.2.2
+  contextmenu: ^3.0.0
 
 dev_dependencies:
   flutter_test:

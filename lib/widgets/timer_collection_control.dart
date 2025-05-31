@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/timers_list.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -125,6 +126,7 @@ class _TimerCollectionControlState
   }
 
   void buildStopWatches() {
+    reset();
     setState(() {
       if (widget.collection.timers.isEmpty) return;
       stopWatches =
@@ -183,7 +185,7 @@ class _TimerCollectionControlState
         topPart(),
         // Layout
         SizedBox(
-          height: 90,
+          height: 77,
           child: LayoutGrid(
             columnSizes: [1.fr, 70.px],
             rowSizes: [1.fr],
@@ -201,8 +203,17 @@ class _TimerCollectionControlState
             ],
           ),
         ),
-        SizedBox(height: Spacing.sm),
-        Text(currentTimer.label, style: theme.textTheme.bodyLarge),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              currentTimer.label,
+              style: theme.textTheme.bodyLarge,
+            ),
+            CollectionDropDownButton(widget.collection),
+          ],
+        ),
       ],
     );
   }
