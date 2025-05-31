@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
-import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
+import 'package:linked_timers/widgets/timers_list.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -42,27 +42,40 @@ class _TimerCollectionControlState
     extends ConsumerState<TimerCollectionControl> {
   final ItemScrollController itemScrollController =
       ItemScrollController();
-
-  ThemeData get theme => Theme.of(context);
-
-  int get maxLaps => widget.collection.laps;
-  // List<Timer> get timers => widget.collection.timers;
-  List<StopWatchTimer> stopWatches = [];
-  bool get finished => laps >= maxLaps && isInfinite == false;
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
 
   bool isInfinite = false;
   int laps = 0;
-  int timerIndex = 0;
+  int currentTimerIndex = 0;
+  double currentTimerVisibleFraction = 1.0;
+
   StopWatchTimer currentStopWatch = StopWatchTimer();
   Timer currentTimer = Timer(label: "");
 
-  void scrollToIndex(int index) {
-    itemScrollController.scrollTo(
-      alignment: 0.2,
-      index: index,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.easeOut,
-    );
+  ThemeData get theme => Theme.of(context);
+  int get maxLaps => widget.collection.laps;
+  List<StopWatchTimer> stopWatches = [];
+  bool get finished => laps >= maxLaps && isInfinite == false;
+
+  void maybeScrollToIndex(int index) {
+    // Get the currently visible indexes
+    final visibleIndexes =
+        itemPositionsListener.itemPositions.value
+            .map((item) => item.index)
+            .toSet();
+
+    final bool invisible = !visibleIndexes.contains(index);
+
+    // Only scroll if the index is not visible
+    if (invisible) {
+      itemScrollController.scrollTo(
+        alignment: 0.1,
+        index: index,
+        duration: const Duration(seconds: 1),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   void reset() {
@@ -71,7 +84,7 @@ class _TimerCollectionControlState
       laps = 0;
       currentStopWatch = stopWatches.first;
       currentTimer = widget.collection.timers.first;
-      scrollToIndex(0);
+      maybeScrollToIndex(0);
     });
   }
 
@@ -79,13 +92,14 @@ class _TimerCollectionControlState
     timer.onStopTimer();
     setState(() {
       if (stopWatches.isEmpty) return;
-      timerIndex = (timerIndex + 1) % stopWatches.length;
-      if (timerIndex == 0) {
+      currentTimerIndex =
+          (currentTimerIndex + 1) % stopWatches.length;
+      if (currentTimerIndex == 0) {
         if (isInfinite == false) {
           laps++;
         }
         if (laps >= maxLaps && isInfinite == false) {
-          currentStopWatch = stopWatches[timerIndex];
+          currentStopWatch = stopWatches[currentTimerIndex];
           for (var timer in stopWatches) {
             timer.onResetTimer();
           }
@@ -96,17 +110,17 @@ class _TimerCollectionControlState
         }
       }
       currentStopWatch =
-          stopWatches[timerIndex]
+          stopWatches[currentTimerIndex]
             ..onResetTimer()
             ..onStartTimer();
-      scrollToIndex(timerIndex);
+      maybeScrollToIndex(currentTimerIndex);
 
       // controller.scrollToIndex(timerIndex);
-      currentTimer = widget.collection.timers[timerIndex];
+      currentTimer = widget.collection.timers[currentTimerIndex];
     });
 
     if (widget.onTimerEnd != null) {
-      widget.onTimerEnd!(timerIndex);
+      widget.onTimerEnd!(currentTimerIndex);
     }
   }
 
@@ -123,7 +137,7 @@ class _TimerCollectionControlState
                   StopWatchTimer.getMilliSecFromSecond(e.seconds),
             );
           }).toList();
-      currentTimer = widget.collection.timers[timerIndex];
+      currentTimer = widget.collection.timers[currentTimerIndex];
     });
 
     for (StopWatchTimer timer in stopWatches) {
@@ -173,7 +187,18 @@ class _TimerCollectionControlState
           child: LayoutGrid(
             columnSizes: [1.fr, 70.px],
             rowSizes: [1.fr],
-            children: [timersList(), controlButton()],
+            children: [
+              Center(
+                child: TimersList(
+                  stopWatches,
+                  itemScrollController: itemScrollController,
+                  onTimerTapped: widget.onTimerTapped,
+                  currentTimerIndex: currentTimerIndex,
+                  itemPositionsListener: itemPositionsListener,
+                ),
+              ),
+              controlButton(),
+            ],
           ),
         ),
         SizedBox(height: Spacing.sm),
@@ -270,43 +295,4 @@ class _TimerCollectionControlState
       ],
     );
   }
-
-  Widget timersList() {
-    return Center(
-      child: ScrollablePositionedList.builder(
-        itemCount: stopWatches.length,
-        scrollDirection: Axis.horizontal,
-
-        itemScrollController: itemScrollController,
-        // separatorBuilder:
-        //     (context, index) => SizedBox(width: Spacing.lg),
-        itemBuilder: (context, index) {
-          return TimerCircularPercentIndicator(
-            stopWatches[index],
-            onTap:
-                widget.onTimerTapped != null
-                    ? () {
-                      widget.onTimerTapped!(stopWatches[index]);
-                    }
-                    : null,
-          );
-        },
-      ),
-    );
-  }
 }
-
-// class TimerCollectionSwitch extends ConsumerWidget {
-//   const TimerCollectionSwitch(this.collection, {super.key});
-//   final TimerCollection collection;
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     return Switch(
-//       thumbIcon: WidgetStateProperty.resolveWith(
-//         (states) => const Icon(Icons.loop),
-//       ),
-//       value: collection.isInfinite,
-//       onChanged: (val) {},
-//     );
-//   }
-// }

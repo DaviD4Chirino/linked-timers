@@ -19,7 +19,6 @@ class TimerCircularPercentIndicator extends StatelessWidget {
     bool hasMinute = timer.initialPresetTime >= 60000;
     bool hasSecond = timer.initialPresetTime >= 1000;
     bool hasHour = timer.initialPresetTime >= 3600000;
-    // 3600000
 
     return TextButton(
       style: ButtonStyle(
@@ -33,7 +32,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
             return Container();
           }
           return CircularPercentIndicator(
-            radius: 32,
+            radius: 34,
             percent: Utils.getPercentage(
               data.data!,
               0.0,
