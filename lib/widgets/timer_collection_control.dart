@@ -139,7 +139,7 @@ class _TimerCollectionControlState
                   StopWatchTimer.getMilliSecFromSecond(e.seconds),
             );
           }).toList();
-      // currentTimer = widget.collection.timers[currentTimerIndex];
+      currentTimer = widget.collection.timers.first;
     });
 
     for (StopWatchTimer timer in stopWatches) {

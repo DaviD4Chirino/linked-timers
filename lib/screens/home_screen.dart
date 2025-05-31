@@ -35,12 +35,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             items: database,
             itemBuilder: (context, animation, item, i) {
               return SizeFadeTransition(
+                key: Key(item.id),
                 sizeFraction: 0.1,
                 curve: Curves.easeInOut,
                 animation: animation,
-                child: TimerCollectionControl(
-                  item,
-                  key: Key(item.id),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TimerCollectionControl(item, key: Key(item.id)),
+                    Divider(height: Spacing.xl),
+                  ],
                 ),
               );
             },

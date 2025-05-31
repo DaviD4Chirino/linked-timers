@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/reusables/text_icon.dart';
@@ -20,14 +21,28 @@ class CollectionDropDownButton extends ConsumerWidget {
     ),
   ];
 
+  void onDelete(
+    BuildContext context,
+    TimerDatabase databaseNotifier,
+  ) async {
+    bool consented = await Utils.consentAlert(
+      context,
+      titleText: "${collection.label} will be removed",
+      contentText: "This action cannot be undone",
+    );
+    if (!consented) return;
+
+    databaseNotifier.deleteCollection(collection.id);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final databaseNotifier = ref.read(timerDatabaseProvider.notifier);
 
     return PopupMenuButton<String>(
-      onSelected: (String value) {
+      onSelected: (String value) async {
         if (value == "delete") {
-          databaseNotifier.deleteCollection(collection.id);
+          onDelete(context, databaseNotifier);
         }
       },
       itemBuilder: (BuildContext context) => entries,
