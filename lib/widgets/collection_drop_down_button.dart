@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/reusables/text_icon.dart';
 
-class CollectionDropDownButton extends StatelessWidget {
+class CollectionDropDownButton extends ConsumerWidget {
   CollectionDropDownButton(this.collection, {super.key});
 
   final TimerCollection collection;
@@ -19,9 +21,15 @@ class CollectionDropDownButton extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final databaseNotifier = ref.read(timerDatabaseProvider.notifier);
+
     return PopupMenuButton<String>(
-      onSelected: (String value) {},
+      onSelected: (String value) {
+        if (value == "delete") {
+          databaseNotifier.deleteCollection(collection.id);
+        }
+      },
       itemBuilder: (BuildContext context) => entries,
       offset: Offset(5, 35),
       icon: Icon(Icons.more_horiz),

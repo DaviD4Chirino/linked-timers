@@ -48,6 +48,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   flutter_context_menu: ^0.2.2
   contextmenu: ^3.0.0
+  animated_list_plus: ^0.5.2
 
 dev_dependencies:
   flutter_test:

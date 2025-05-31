@@ -46,6 +46,7 @@ class TimersList extends StatelessWidget {
       itemBuilder: (context, index) {
         return TimerCircularPercentIndicator(
           stopWatches[index],
+          key: Key(index.toString()),
           onTap:
               onTimerTapped != null
                   ? () {

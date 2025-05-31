@@ -1,3 +1,5 @@
+import 'package:animated_list_plus/animated_list_plus.dart';
+import 'package:animated_list_plus/transitions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
@@ -28,14 +30,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Spacing.xxl),
-        child: ListView.separated(
-          itemCount: database.length,
-          itemBuilder: (context, i) {
-            return TimerCollectionControl(database[i]);
+        child: SafeArea(
+          child: ImplicitlyAnimatedList(
+            items: database,
+            itemBuilder: (context, animation, item, i) {
+              return SizeFadeTransition(
+                sizeFraction: 0.1,
+                curve: Curves.easeInOut,
+                animation: animation,
+                child: TimerCollectionControl(
+                  item,
+                  key: Key(item.id),
+                ),
+              );
+            },
+            areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
+          ),
+        ),
+
+        /* AnimatedList.separated(
+          initialItemCount: database.length,
+          removedSeparatorBuilder:
+              (context, i, animation) =>
+                  Divider(height: Spacing.xxxl),
+          itemBuilder: (context, i, animation) {
+            return SlideTransition(
+              position: animation.drive(
+                Tween(begin: Offset(5, 5), end: Offset(10, 10)),
+              ),
+              child: TimerCollectionControl(
+                database[i],
+                key: Key(database[i].id),
+              ),
+            );
           },
           separatorBuilder:
-              (context, i) => Divider(height: Spacing.xxxl),
-        ),
+              (context, i, animation) =>
+                  Divider(height: Spacing.xxxl),
+        ), */
       ),
 
       floatingActionButton: FloatingActionButton(

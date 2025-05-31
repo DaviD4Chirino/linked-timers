@@ -19,12 +19,63 @@ class TimerDatabase extends _$TimerDatabase {
 
   void addCollection(TimerCollection newCollection) {
     state = [newCollection, ...state];
-    print(state.length);
+  }
+
+  /// Returns whether or it it suceded to edit the timer
+  bool editTimer({
+    required String collectionId,
+    required String timerId,
+    required Timer newTimer,
+  }) {
+    final list = [...state];
+    final collectionIndex = list.indexWhere(
+      (c) => c.id == collectionId,
+    );
+    if (collectionIndex == -1) return false; // Collection not found
+
+    final collection = list[collectionIndex];
+
+    final timers = [...collection.timers];
+    final timerIndex = timers.indexWhere((t) => t.id == timerId);
+    if (timerIndex == -1) return false; // Timer not found
+
+    timers[timerIndex] = newTimer;
+
+    final updatedCollection = collection.copyWith(timers: timers);
+    list[collectionIndex] = updatedCollection;
+    state = list;
+    return true;
+  }
+
+  bool editCollection({
+    required String collectionId,
+    required TimerCollection newCollection,
+  }) {
+    final list = [...state];
+    final index = list.indexWhere((c) => c.id == collectionId);
+    if (index == -1) return false; // Collection not found
+
+    list[index] = newCollection;
+    state = list;
+
+    return true;
+  }
+
+  void deleteCollection(String collectionId) {
+    state = state.where((c) => c.id != collectionId).toList();
+  }
+
+  TimerCollection? getCollection(String collectionId) {
+    final collectionIndex = state.indexWhere(
+      (c) => c.id == collectionId,
+    );
+    if (collectionIndex == -1) return null;
+    return state[collectionIndex];
   }
 
   @override
   List<TimerCollection> build() {
-    return List.generate(100, (i) {
+    return List.generate(15, (i) {
       return TimerCollection(
         label: "Timer collection Nro: ${i + 1}",
         timers: List.generate(

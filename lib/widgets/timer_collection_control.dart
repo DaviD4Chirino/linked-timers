@@ -139,7 +139,7 @@ class _TimerCollectionControlState
                   StopWatchTimer.getMilliSecFromSecond(e.seconds),
             );
           }).toList();
-      currentTimer = widget.collection.timers[currentTimerIndex];
+      // currentTimer = widget.collection.timers[currentTimerIndex];
     });
 
     for (StopWatchTimer timer in stopWatches) {
@@ -164,7 +164,9 @@ class _TimerCollectionControlState
   @override
   void didUpdateWidget(covariant TimerCollectionControl oldWidget) {
     super.didUpdateWidget(oldWidget);
-    buildStopWatches();
+    if (oldWidget.collection != widget.collection) {
+      buildStopWatches();
+    }
   }
 
   @override
