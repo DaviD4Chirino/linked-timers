@@ -12,6 +12,7 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
     this.collection, {
+    this.showMore = true,
     this.titleWidget,
     this.lapsWidget,
     this.buttonWidget,
@@ -19,6 +20,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
     this.onTimerEnd,
     super.key,
   });
+
+  final bool showMore;
 
   final TimerCollection collection;
 
@@ -133,10 +136,7 @@ class _TimerCollectionControlState
           widget.collection.timers.map((e) {
             return StopWatchTimer(
               mode: StopWatchMode.countDown,
-              presetMillisecond:
-                  StopWatchTimer.getMilliSecFromHour(e.hours) +
-                  StopWatchTimer.getMilliSecFromMinute(e.minutes) +
-                  StopWatchTimer.getMilliSecFromSecond(e.seconds),
+              presetMillisecond: e.timeAsMilliseconds,
             );
           }).toList();
       currentTimer = widget.collection.timers.first;
@@ -213,7 +213,8 @@ class _TimerCollectionControlState
               currentTimer.label,
               style: theme.textTheme.bodyLarge,
             ),
-            CollectionDropDownButton(widget.collection),
+            if (widget.showMore)
+              CollectionDropDownButton(widget.collection),
           ],
         ),
       ],

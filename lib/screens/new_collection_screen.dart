@@ -8,6 +8,7 @@ import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
+import 'package:linked_timers/widgets/edit_timer_form.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
 
 class NewCollectionScreen extends ConsumerStatefulWidget {
@@ -70,16 +71,16 @@ class _NewCollectionScreenState
     });
   }
 
-  void addTimer() {
+  void addTimer(Timer newTimer) {
     setState(() {
       List<Timer> timers = [...collection.timers];
 
-      Timer newTimer = Timer(
-        label: timerLabel ?? "New Timer $timersAdded",
+      /* Timer newTimer = Timer(
+        label: timerLabel ?? "New Timer ${timersAdded + 1}",
         hours: hours ?? 0,
         minutes: minutes ?? 0,
         seconds: seconds ?? 0,
-      );
+      ); */
 
       /* if (selectedTimer != null) {
         int index = timers.indexWhere(
@@ -119,54 +120,35 @@ class _NewCollectionScreenState
           top: Spacing.xxxl,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
           children: [
             Row(
               spacing: Spacing.base,
               children: [titleWidget(), lapsWidgets()],
             ),
+
             TimerCollectionControl(
               collection,
               key: Key(collection.timers.length.toString()),
-              // onTimerTapped: onTimerTapped,
               buttonWidget: buttonWidget(),
-              // titleWidget: titleWidget(),
               titleWidget: Container(),
-              // lapsWidget: lapsWidgets(),
               lapsWidget: Container(),
+              showMore: false,
             ),
-
             Expanded(
               child: SizedBox(
                 width: min(mediaQuery.width - Spacing.xl, 350),
+                height: double.infinity,
                 child: ListView(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      spacing: Spacing.base,
-                      children: [
-                        timerLabelField(),
-                        timersInputs(theme),
-                        SizedBox(
-                          width: double.infinity,
-                          child: addTimerButton(),
-                        ),
-                      ],
-                    ),
-                  ],
+                  children: [EditTimerForm(onSubmit: addTimer)],
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  FilledButton addTimerButton() {
-    return FilledButton(
-      onPressed: addTimer,
-      child: Text("Add Timer"),
     );
   }
 

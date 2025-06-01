@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -8,11 +7,13 @@ class TimerCircularPercentIndicator extends StatelessWidget {
   const TimerCircularPercentIndicator(
     this.timer, {
     this.onTap,
+    this.selected = false,
     super.key,
   });
 
   final StopWatchTimer timer;
   final VoidCallback? onTap;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
 
     return TextButton(
       style: ButtonStyle(
-        padding: WidgetStateProperty.all(EdgeInsets.all(Spacing.sm)),
+        padding: WidgetStateProperty.all(EdgeInsets.all(0)),
       ),
       onPressed: onTap,
       child: StreamBuilder(
@@ -42,6 +43,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
               timer.initialPresetTime,
               // StopWatchTimer.getMilliSecFromSecond(5),
             ),
+            header: selected ? Text("Selected") : null,
             lineWidth: 4,
             animation: true,
             animateToInitialPercent: true,

@@ -1,4 +1,4 @@
-package com.example.myapp
+package com.davidspace.linkedtimers
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -18,6 +18,9 @@ class Timer {
   String label;
   String id = Uuid().v4();
 
+  int get timeAsMilliseconds =>
+      ((hours * 60 * 60) + (minutes * 60) + seconds) * 1000;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
