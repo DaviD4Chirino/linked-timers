@@ -121,7 +121,7 @@ class _EditTimerFormState extends State<EditTimerForm> {
                 Timer(
                   label: quickControllerTernary(
                     widget.timerLabelController,
-                    "New Timer",
+                    "News Timer",
                   ),
                   hours:
                       quickControllerTernary(

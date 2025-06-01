@@ -10,6 +10,8 @@ import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/edit_timer_form.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
+import 'package:linked_timers/widgets/timers_list.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class NewCollectionScreen extends ConsumerStatefulWidget {
   const NewCollectionScreen({super.key});
@@ -51,23 +53,22 @@ class _NewCollectionScreenState
     Navigator.pop(context);
   }
 
-  void onTimerTapped(Timer timer) {
+  void onTimerTapped(StopWatchTimer stopWatch, {String label = ""}) {
     setState(() {
-      /* selectedTimer = timer;
-      int initialPresetTime = timer.initialPresetTime;
-
-      int totalSeconds = initialPresetTime ~/ 1000;
+      Timer timer = Timer.fromStopWatchTimer(stopWatch, label: label);
+      selectedTimer = timer;
+      /* int totalSeconds = initialPresetTime ~/ 1000;
       int hours_ = totalSeconds ~/ 3600;
       int minutes_ = (totalSeconds % 3600) ~/ 60;
       int seconds_ = totalSeconds % 60;
       hours = hours_;
       minutes = minutes_;
-      seconds = seconds_;
+      seconds = seconds_; */
 
-      hoursController.text = hours_.toString();
-      minutesController.text = minutes_.toString();
-      secondsController.text = seconds_.toString();
-      timerLabelController.text = timer.label; */
+      hoursController.text = timer.hours.toString();
+      minutesController.text = timer.minutes.toString();
+      secondsController.text = timer.seconds.toString();
+      timerLabelController.text = timer.label;
     });
   }
 
@@ -128,13 +129,24 @@ class _NewCollectionScreenState
               spacing: Spacing.base,
               children: [titleWidget(), lapsWidgets()],
             ),
-
+            //TODO: Make a "custom" timersList so taps works properly, maybe even as buttons?
+            SizedBox(
+              height: 150,
+              child: TimersList(
+                collection.timers
+                    .map((e) => e.toStopWatchTimer())
+                    .toList(),
+              ),
+            ),
             TimerCollectionControl(
               collection,
               key: Key(collection.timers.length.toString()),
               buttonWidget: buttonWidget(),
               titleWidget: Container(),
               lapsWidget: Container(),
+              onTimerTapped: (timer, label) {
+                onTimerTapped(timer, label: label);
+              },
               showMore: false,
             ),
             Expanded(
@@ -142,7 +154,15 @@ class _NewCollectionScreenState
                 width: min(mediaQuery.width - Spacing.xl, 350),
                 height: double.infinity,
                 child: ListView(
-                  children: [EditTimerForm(onSubmit: addTimer)],
+                  children: [
+                    EditTimerForm(
+                      onSubmit: addTimer,
+                      minutesController: minutesController,
+                      secondsController: secondsController,
+                      hoursController: hoursController,
+                      timerLabelController: timerLabelController,
+                    ),
+                  ],
                 ),
               ),
             ),

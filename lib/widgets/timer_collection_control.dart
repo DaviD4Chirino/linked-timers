@@ -33,7 +33,7 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   final Widget? buttonWidget;
 
-  final Function(StopWatchTimer timer)? onTimerTapped;
+  final Function(StopWatchTimer timer, String label)? onTimerTapped;
 
   final void Function(int timerIndex)? onTimerEnd;
 
@@ -196,7 +196,14 @@ class _TimerCollectionControlState
                 child: TimersList(
                   stopWatches,
                   itemScrollController: itemScrollController,
-                  onTimerTapped: widget.onTimerTapped,
+                  onTimerTapped: (stopWatch) {
+                    if (widget.onTimerTapped != null) {
+                      widget.onTimerTapped!(
+                        stopWatch,
+                        currentTimer.label,
+                      );
+                    }
+                  },
                   currentTimerIndex: currentTimerIndex,
                   itemPositionsListener: itemPositionsListener,
                 ),
