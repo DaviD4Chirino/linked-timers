@@ -8,6 +8,7 @@ class EditTimerForm extends StatefulWidget {
   const EditTimerForm({
     super.key,
     required this.onSubmit,
+    this.timer,
     this.timerLabelController,
     this.hoursController,
     this.minutesController,
@@ -32,6 +33,8 @@ class EditTimerForm extends StatefulWidget {
   final TextEditingController? minutesController;
   final TextEditingController? secondsController;
 
+  final Timer? timer;
+
   final String initialLabel;
   final int initialHours;
   final int initialMinutes;
@@ -42,11 +45,23 @@ class EditTimerForm extends StatefulWidget {
 }
 
 class _EditTimerFormState extends State<EditTimerForm> {
+  late TextEditingController timerLabelController =
+      TextEditingController(text: widget.timer?.label);
+  late TextEditingController hoursController = TextEditingController(
+    text: widget.timer?.hours.toString(),
+  );
+  late TextEditingController minutesController =
+      TextEditingController(text: widget.timer?.minutes.toString());
+  late TextEditingController secondsController =
+      TextEditingController(text: widget.timer?.seconds.toString());
+
   String quickControllerTernary(
     TextEditingController? controller,
     String fallback,
   ) {
-    if (controller != null) {
+    print(controller);
+    print(fallback);
+    if (controller != null && controller.text.isNotEmpty) {
       return controller.text;
     }
     return fallback;
@@ -60,6 +75,10 @@ class _EditTimerFormState extends State<EditTimerForm> {
   @override
   void dispose() {
     super.dispose();
+    timerLabelController.dispose();
+    hoursController.dispose();
+    minutesController.dispose();
+    secondsController.dispose();
   }
 
   @override
@@ -72,7 +91,8 @@ class _EditTimerFormState extends State<EditTimerForm> {
       spacing: Spacing.base,
       children: [
         TextFormField(
-          controller: widget.timerLabelController,
+          controller:
+              widget.timerLabelController ?? timerLabelController,
           decoration: InputDecoration(
             label: Text("Insert a Timer Name"),
           ),
@@ -83,7 +103,7 @@ class _EditTimerFormState extends State<EditTimerForm> {
           children: [
             Expanded(
               child: NumberTextField(
-                controller: widget.hoursController,
+                controller: widget.hoursController ?? hoursController,
                 maxChars: 24,
               ), //* Hours
             ),
@@ -96,7 +116,8 @@ class _EditTimerFormState extends State<EditTimerForm> {
             ),
             Expanded(
               child: NumberTextField(
-                controller: widget.minutesController,
+                controller:
+                    widget.minutesController ?? minutesController,
               ), //* Minutes
             ),
             Text(
@@ -108,7 +129,8 @@ class _EditTimerFormState extends State<EditTimerForm> {
             ),
             Expanded(
               child: NumberTextField(
-                controller: widget.secondsController,
+                controller:
+                    widget.secondsController ?? secondsController,
               ),
             ), //* Seconds
           ],
@@ -117,27 +139,57 @@ class _EditTimerFormState extends State<EditTimerForm> {
           width: double.infinity,
           child: FilledButton(
             onPressed: () {
+              if (widget.timer != null) {
+                widget.onSubmit(
+                  Timer(
+                    label: quickControllerTernary(
+                      timerLabelController,
+                      widget.timer!.label,
+                    ),
+                    hours:
+                        quickControllerTernary(
+                          hoursController,
+                          widget.timer!.hours.toString(),
+                        ).toInt(),
+
+                    minutes:
+                        quickControllerTernary(
+                          minutesController,
+                          widget.timer!.minutes.toString(),
+                        ).toInt(),
+
+                    seconds:
+                        quickControllerTernary(
+                          secondsController,
+                          widget.timer!.seconds.toString(),
+                        ).toInt(),
+                  ),
+                );
+                return;
+              }
+
               widget.onSubmit(
                 Timer(
                   label: quickControllerTernary(
-                    widget.timerLabelController,
+                    widget.timerLabelController ??
+                        timerLabelController,
                     "News Timer",
                   ),
                   hours:
                       quickControllerTernary(
-                        widget.hoursController,
+                        widget.hoursController ?? hoursController,
                         "0",
                       ).toInt(),
 
                   minutes:
                       quickControllerTernary(
-                        widget.minutesController,
+                        widget.minutesController ?? minutesController,
                         "0",
                       ).toInt(),
 
                   seconds:
                       quickControllerTernary(
-                        widget.secondsController,
+                        widget.secondsController ?? secondsController,
                         "0",
                       ).toInt(),
                 ),

@@ -9,6 +9,7 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/edit_timer_form.dart';
+import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
 import 'package:linked_timers/widgets/timers_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -53,23 +54,31 @@ class _NewCollectionScreenState
     Navigator.pop(context);
   }
 
-  void onTimerTapped(StopWatchTimer stopWatch, {String label = ""}) {
-    setState(() {
-      Timer timer = Timer.fromStopWatchTimer(stopWatch, label: label);
-      selectedTimer = timer;
-      /* int totalSeconds = initialPresetTime ~/ 1000;
-      int hours_ = totalSeconds ~/ 3600;
-      int minutes_ = (totalSeconds % 3600) ~/ 60;
-      int seconds_ = totalSeconds % 60;
-      hours = hours_;
-      minutes = minutes_;
-      seconds = seconds_; */
+  void onTimerTapped(Timer timer) async {
+    List<Timer> timers = [...collection.timers];
 
-      hoursController.text = timer.hours.toString();
-      minutesController.text = timer.minutes.toString();
-      secondsController.text = timer.seconds.toString();
-      timerLabelController.text = timer.label;
-    });
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Edit timer"),
+          content: EditTimerForm(
+            timer: timer,
+            onSubmit: (timer_) {
+              setState(() {
+                int index = timers.indexWhere(
+                  (element) => element.id == timer.id,
+                );
+                if (index == -1) return;
+                timers[index] = timer_;
+                collection = collection.copyWith(timers: timers);
+              });
+              Navigator.pop(context);
+            },
+          ),
+        );
+      },
+    );
   }
 
   void addTimer(Timer newTimer) {
@@ -129,26 +138,37 @@ class _NewCollectionScreenState
               spacing: Spacing.base,
               children: [titleWidget(), lapsWidgets()],
             ),
+
             //TODO: Make a "custom" timersList so taps works properly, maybe even as buttons?
             SizedBox(
               height: 150,
-              child: TimersList(
-                collection.timers
-                    .map((e) => e.toStopWatchTimer())
-                    .toList(),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: collection.timers.length,
+                itemBuilder:
+                    (context, index) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TimerCircularPercentIndicator(
+                          collection.timers[index].toStopWatchTimer(),
+                          onTap: () {
+                            onTimerTapped(collection.timers[index]);
+                          },
+                        ),
+                        SizedBox(
+                          width: 90,
+                          child: Text(
+                            collection.timers[index].label,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
               ),
             ),
-            TimerCollectionControl(
-              collection,
-              key: Key(collection.timers.length.toString()),
-              buttonWidget: buttonWidget(),
-              titleWidget: Container(),
-              lapsWidget: Container(),
-              onTimerTapped: (timer, label) {
-                onTimerTapped(timer, label: label);
-              },
-              showMore: false,
-            ),
+
             Expanded(
               child: SizedBox(
                 width: min(mediaQuery.width - Spacing.xl, 350),
@@ -157,10 +177,10 @@ class _NewCollectionScreenState
                   children: [
                     EditTimerForm(
                       onSubmit: addTimer,
-                      minutesController: minutesController,
+                      /* minutesController: minutesController,
                       secondsController: secondsController,
                       hoursController: hoursController,
-                      timerLabelController: timerLabelController,
+                      timerLabelController: timerLabelController, */
                     ),
                   ],
                 ),
