@@ -78,7 +78,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         tooltip: "Create new collection",
         onPressed: () {
-          Navigator.of(context).pushNamed(Routes.newCollection);
+          Navigator.of(context).pushNamed(Routes.manageCollection);
         },
         child: Icon(Icons.add, size: Spacing.iconXXl),
       ),

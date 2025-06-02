@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:linked_timers/extensions/string_extensions.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
-import 'package:linked_timers/screens/new_collection_screen.dart';
+import 'package:linked_timers/screens/manage_collection_screen.dart';
 
 class EditTimerForm extends StatefulWidget {
   const EditTimerForm({

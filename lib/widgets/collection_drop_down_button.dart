@@ -39,7 +39,7 @@ class CollectionDropDownButton extends ConsumerWidget {
   void onEdit(BuildContext context) {
     Navigator.of(
       context,
-    ).pushNamed(Routes.newCollection, arguments: collection);
+    ).pushNamed(Routes.manageCollection, arguments: collection);
   }
 
   @override

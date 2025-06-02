@@ -11,8 +11,8 @@ import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/edit_timer_form.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
-class NewCollectionScreen extends ConsumerStatefulWidget {
-  const NewCollectionScreen({super.key});
+class ManageCollectionScreen extends ConsumerStatefulWidget {
+  const ManageCollectionScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -20,7 +20,7 @@ class NewCollectionScreen extends ConsumerStatefulWidget {
 }
 
 class _NewCollectionScreenState
-    extends ConsumerState<NewCollectionScreen> {
+    extends ConsumerState<ManageCollectionScreen> {
   String? collectionName;
   int? collectionLaps;
   String? timerLabel;
