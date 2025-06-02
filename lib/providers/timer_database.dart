@@ -47,10 +47,10 @@ class TimerDatabase extends _$TimerDatabase {
     return true;
   }
 
-  bool editCollection({
-    required String collectionId,
-    required TimerCollection newCollection,
-  }) {
+  bool editCollection(
+     String collectionId,
+     TimerCollection newCollection,
+  ) {
     final list = [...state];
     final index = list.indexWhere((c) => c.id == collectionId);
     if (index == -1) return false; // Collection not found

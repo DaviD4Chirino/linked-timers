@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
@@ -35,6 +36,12 @@ class CollectionDropDownButton extends ConsumerWidget {
     databaseNotifier.deleteCollection(collection.id);
   }
 
+  void onEdit(BuildContext context) {
+    Navigator.of(
+      context,
+    ).pushNamed(Routes.newCollection, arguments: collection);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final databaseNotifier = ref.read(timerDatabaseProvider.notifier);
@@ -43,6 +50,9 @@ class CollectionDropDownButton extends ConsumerWidget {
       onSelected: (String value) async {
         if (value == "delete") {
           onDelete(context, databaseNotifier);
+        }
+        if (value == "edit") {
+          onEdit(context);
         }
       },
       itemBuilder: (BuildContext context) => entries,
