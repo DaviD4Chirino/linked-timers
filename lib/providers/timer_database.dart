@@ -48,8 +48,8 @@ class TimerDatabase extends _$TimerDatabase {
   }
 
   bool editCollection(
-     String collectionId,
-     TimerCollection newCollection,
+    String collectionId,
+    TimerCollection newCollection,
   ) {
     final list = [...state];
     final index = list.indexWhere((c) => c.id == collectionId);

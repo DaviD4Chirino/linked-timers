@@ -37,10 +37,14 @@ class _NewCollectionScreenState
       TextEditingController();
 
   late TimerCollection collection =
-      ModalRoute.of(context) == null
+      ModalRoute.of(context)?.settings.arguments == null
           ? TimerCollection(timers: [], label: "Collection Name")
           : ModalRoute.of(context)!.settings.arguments
               as TimerCollection;
+
+  late String? replacementId =
+      (ModalRoute.of(context)?.settings.arguments as TimerCollection)
+          .id;
 
   Timer? selectedTimer;
 
@@ -58,7 +62,8 @@ class _NewCollectionScreenState
   }
 
   void editCollection() {
-    timerNotifier.editCollection(collection.id, collection);
+    if (replacementId == null) return;
+    timerNotifier.editCollection(replacementId!, collection);
     Navigator.pop(context);
   }
 
@@ -72,11 +77,14 @@ class _NewCollectionScreenState
             timer: timer,
             onSubmit: (timer_) {
               setState(() {
-                int index = collection.timers.indexWhere(
+                List<Timer> timers = [...collection.timers];
+                int index = timers.indexWhere(
                   (element) => element.id == timer.id,
                 );
                 if (index == -1) return;
-                collection.timers[index] = timer_;
+                timers[index] = timer_;
+
+                collection = collection.copyWith(timers: timers);
               });
               Navigator.pop(context);
             },
@@ -129,19 +137,7 @@ class _NewCollectionScreenState
               children: [titleWidget(), lapsWidgets()],
             ),
             SizedBox(height: Spacing.lg),
-
-            SizedBox(
-              height: 100,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(flex: 4, child: timersDisplay()),
-                  Expanded(flex: 1, child: buttonWidget()),
-                ],
-              ),
-            ),
-
+            SizedBox(height: 100, child: timersDisplay()),
             Expanded(
               child: SizedBox(
                 width: min(mediaQuery.width - Spacing.xl, 350),

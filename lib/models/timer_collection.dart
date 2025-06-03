@@ -1,4 +1,5 @@
 // I might as well track the isInfinite bool here
+import 'package:flutter/foundation.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -23,7 +24,8 @@ class TimerCollection {
       identical(this, other) ||
       other is TimerCollection &&
           runtimeType == other.runtimeType &&
-          id == other.id;
+          id == other.id &&
+          listEquals(timers, other.timers);
 
   @override
   int get hashCode => id.hashCode;
