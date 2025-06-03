@@ -9,6 +9,7 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/edit_timer_form.dart';
+import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
 class ManageCollectionScreen extends ConsumerStatefulWidget {
@@ -138,23 +139,28 @@ class _NewCollectionScreenState
             ),
             SizedBox(height: Spacing.lg),
             SizedBox(height: 100, child: timersDisplay()),
-            Expanded(
-              child: SizedBox(
+            Expanded(child: EditTimerListWheel()),
+
+            /* SizedBox(
                 width: min(mediaQuery.width - Spacing.xl, 350),
                 height: double.infinity,
                 child: ListView(
                   children: [
-                    EditTimerForm(
+                    SizedBox(
+                      height: 300,
+                      child: EditTimerListWheel(),
+                    ),
+                    /* EditTimerForm(
                       onSubmit: addTimer,
                       /* minutesController: minutesController,
                       secondsController: secondsController,
                       hoursController: hoursController,
                       timerLabelController: timerLabelController, */
-                    ),
+                    ), */
                   ],
                 ),
               ),
-            ),
+            ), */
           ],
         ),
       ),
