@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:linked_timers/models/abstracts/local_storage.dart';
+import 'package:linked_timers/models/abstracts/local_storage_routes.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -73,17 +76,41 @@ class TimerDatabase extends _$TimerDatabase {
     return state[collectionIndex];
   }
 
+  void fetchDatabase() async {
+    List<String>? existingDatabase = await LocalStorage.getStringList(
+      LocalStorageRoutes.database,
+    );
+    if (existingDatabase == null) {
+      return;
+    }
+    state =
+        existingDatabase
+            .map(
+              (e) => TimerCollection.fromMap(JsonCodec().decode(e)),
+            )
+            .toList();
+  }
+
+  void saveDatabase() {
+    LocalStorage.setStringList(
+      LocalStorageRoutes.database,
+      state.map((e) => JsonCodec().encode(e.toMap())).toList(),
+    );
+  }
+
   @override
   List<TimerCollection> build() {
-    return List.generate(15, (i) {
-      return TimerCollection(
-        label: "Timer collection Nro: ${i + 1}",
-        timers: List.generate(
-          Random().nextInt(10) + 1,
-          (j) => Timer(label: "Timer Nro: ${j + 1}", seconds: 2),
-        ),
-        laps: 2,
-      );
-    });
+    return generateListDebug();
   }
+
+  List<TimerCollection> generateListDebug() => List.generate(15, (i) {
+    return TimerCollection(
+      label: "Timer collection Nro: ${i + 1}",
+      timers: List.generate(
+        Random().nextInt(10) + 1,
+        (j) => Timer(label: "Timer Nro: ${j + 1}", seconds: 2),
+      ),
+      laps: 2,
+    );
+  });
 }

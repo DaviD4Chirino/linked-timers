@@ -43,4 +43,22 @@ class TimerCollection {
       label: label ?? this.label,
     );
   }
+
+  Map<String, dynamic> toMap() => {
+    "timers": timers.map((e) => e.toMap()).toList(),
+    "laps": laps,
+    "isInfinite": isInfinite,
+    "label": label,
+    "id": id,
+  };
+  factory TimerCollection.fromMap(Map<String, dynamic> map) =>
+      TimerCollection(
+        timers:
+            (map["timers"] as List)
+                .map((e) => Timer.fromMap(e))
+                .toList(),
+        laps: map["laps"],
+        isInfinite: map["isInfinite"],
+        label: map["label"],
+      )..id = map["id"];
 }

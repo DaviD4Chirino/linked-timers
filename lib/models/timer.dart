@@ -37,7 +37,7 @@ class Timer {
     return "$hours:$minutes:$seconds";
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
     "id": id,
     "label": label,
     "hours": hours,
@@ -46,7 +46,7 @@ class Timer {
     // "nextTimer": nextTimer?.toJson(),
   };
 
-  Timer.fromJson(Map<String, dynamic> json)
+  Timer.fromMap(Map<String, dynamic> json)
     : id = json["id"],
       label = json["label"],
       hours = json["hours"] ?? 0,

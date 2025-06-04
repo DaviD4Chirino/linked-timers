@@ -21,6 +21,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.watch(timerDatabaseProvider);
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((duration) {
+      ref.read(timerDatabaseProvider.notifier).fetchDatabase();
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
   }
