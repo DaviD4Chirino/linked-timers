@@ -24,10 +24,10 @@ class _NewCollectionScreenState
     extends ConsumerState<ManageCollectionScreen> {
   String? collectionName;
   int? collectionLaps;
-  String? timerLabel;
-  int? hours;
-  int? minutes;
-  int? seconds;
+  String timerLabel = "";
+  int hours = 0;
+  int minutes = 0;
+  int seconds = 0;
 
   int timersAdded = 0;
 
@@ -138,8 +138,48 @@ class _NewCollectionScreenState
               children: [titleWidget(), lapsWidgets()],
             ),
             SizedBox(height: Spacing.lg),
-            SizedBox(height: 100, child: timersDisplay()),
-            Expanded(child: EditTimerListWheel()),
+            SizedBox(
+              height: 100,
+              child: Row(
+                children: [
+                  Expanded(child: timersDisplay()),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton.outlined(
+                        onPressed: () {
+                          addTimer(
+                            Timer(
+                              label: timerLabel,
+                              hours: hours,
+                              minutes: minutes,
+                              seconds: seconds,
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.add_alarm_rounded),
+                      ),
+                      Text(
+                        "Add Timer",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: EditTimerListWheel(
+                onChanged: (label, hours, minutes, seconds) {
+                  timerLabel = label;
+                  this.hours = hours;
+                  this.minutes = minutes;
+                  this.seconds = seconds;
+                },
+              ),
+            ),
 
             /* SizedBox(
                 width: min(mediaQuery.width - Spacing.xl, 350),

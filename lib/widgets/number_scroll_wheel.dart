@@ -6,7 +6,8 @@ class NumberScrollWheel extends StatefulWidget {
     required this.count,
     required this.itemHeight,
     this.label,
-    this.onItemTapCallback,
+    this.onItemTap,
+    this.onSelectedItemChanged,
     this.zeroBased = false,
     super.key,
   });
@@ -16,7 +17,8 @@ class NumberScrollWheel extends StatefulWidget {
 
   final Widget? label;
 
-  final dynamic Function(int)? onItemTapCallback;
+  final dynamic Function(int index)? onItemTap;
+  final void Function(int index)? onSelectedItemChanged;
 
   @override
   State<NumberScrollWheel> createState() => _NumberScrollWheelState();
@@ -28,7 +30,10 @@ class _NumberScrollWheelState extends State<NumberScrollWheel> {
   late final ThemeData theme = Theme.of(context);
 
   late List<Center> list = List.generate(widget.count, (index) {
-    String text = widget.zeroBased ? "$index" : "${index + 1}";
+    String text =
+        widget.zeroBased
+            ? index.toString().padLeft(2, "0")
+            : (index + 1).toString().padLeft(2, "0");
     return Center(
       child: Text(
         text,
@@ -60,9 +65,10 @@ class _NumberScrollWheelState extends State<NumberScrollWheel> {
           scrollController: _scrollController,
           itemCount: list.length,
           itemHeight: widget.itemHeight,
-          onItemTapCallback: widget.onItemTapCallback,
+          onItemTapCallback: widget.onItemTap,
           child: ListWheelScrollView(
             physics: const FixedExtentScrollPhysics(),
+            onSelectedItemChanged: widget.onSelectedItemChanged,
             controller: _scrollController,
             overAndUnderCenterOpacity: 0.2,
             itemExtent: widget.itemHeight,
