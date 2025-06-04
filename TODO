@@ -1,0 +1,12 @@
+
+Todo:
+  General:
+    ☐ Make sure notifications and alerts play when selected timers or the collection ends
+    ☐ Make the app run continuously
+    ☐ Save locally the timer Database
+
+  Individual:
+    manage_collection_screen.dart:
+      ☐ Make bulk timer editing
+      ☐ Timer edit allows for individual "alert when finish"
+      ☐ Collection edit allows for individual "alert when finish"

@@ -9,6 +9,7 @@ class NumberScrollWheel extends StatefulWidget {
     this.onItemTap,
     this.onSelectedItemChanged,
     this.zeroBased = false,
+    this.scrollController,
     super.key,
   });
   final double itemHeight;
@@ -16,6 +17,8 @@ class NumberScrollWheel extends StatefulWidget {
   final bool zeroBased;
 
   final Widget? label;
+
+  final FixedExtentScrollController? scrollController;
 
   final dynamic Function(int index)? onItemTap;
   final void Function(int index)? onSelectedItemChanged;
@@ -25,7 +28,8 @@ class NumberScrollWheel extends StatefulWidget {
 }
 
 class _NumberScrollWheelState extends State<NumberScrollWheel> {
-  final _scrollController = FixedExtentScrollController();
+  late final FixedExtentScrollController _scrollController =
+      widget.scrollController ?? FixedExtentScrollController();
 
   late final ThemeData theme = Theme.of(context);
 
@@ -47,7 +51,9 @@ class _NumberScrollWheelState extends State<NumberScrollWheel> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    if (widget.scrollController == null) {
+      _scrollController.dispose();
+    }
     super.dispose();
   }
 

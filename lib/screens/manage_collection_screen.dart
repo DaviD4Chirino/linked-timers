@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +6,6 @@ import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
-import 'package:linked_timers/widgets/edit_timer_form.dart';
 import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
@@ -69,27 +66,60 @@ class _NewCollectionScreenState
   }
 
   void onTimerTapped(Timer timer) async {
+    Timer newTimer = Timer()..id = timer.id;
+
     await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text("Edit timer"),
-          content: EditTimerForm(
-            timer: timer,
-            onSubmit: (timer_) {
-              setState(() {
-                List<Timer> timers = [...collection.timers];
-                int index = timers.indexWhere(
-                  (element) => element.id == timer.id,
-                );
-                if (index == -1) return;
-                timers[index] = timer_;
+          content: Container(
+            constraints: BoxConstraints(maxHeight: 500),
+            child: EditTimerListWheel(
+              timer: timer,
+              onChanged: (label, hours, minutes, seconds) {
+                newTimer.label = label;
+                newTimer.hours = hours;
+                newTimer.minutes = minutes;
+                newTimer.seconds = seconds;
+              },
+              /* onSubmit: (timer_) {
+                setState(() {
+                  List<Timer> timers = [...collection.timers];
+                  int index = timers.indexWhere(
+                    (element) => element.id == timer.id,
+                  );
+                  if (index == -1) return;
+                  timers[index] = timer_;
 
-                collection = collection.copyWith(timers: timers);
-              });
-              Navigator.pop(context);
-            },
+                  collection = collection.copyWith(timers: timers);
+                });
+                Navigator.pop(context);
+              }, */
+            ),
           ),
+
+          actions: [
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  setState(() {
+                    List<Timer> timers = [...collection.timers];
+                    int index = timers.indexWhere(
+                      (element) => element.id == timer.id,
+                    );
+                    if (index == -1) return;
+                    timers[index] = newTimer;
+
+                    collection = collection.copyWith(timers: timers);
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text("Accept"),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -113,7 +143,6 @@ class _NewCollectionScreenState
 
   @override
   Widget build(BuildContext context) {
-    final Size mediaQuery = MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -143,10 +172,11 @@ class _NewCollectionScreenState
               child: Row(
                 children: [
                   Expanded(child: timersDisplay()),
+                  SizedBox(width: Spacing.lg),
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton.outlined(
+                      IconButton.filled(
                         onPressed: () {
                           addTimer(
                             Timer(
@@ -158,7 +188,9 @@ class _NewCollectionScreenState
                           );
                         },
                         icon: Icon(Icons.add_alarm_rounded),
+                        iconSize: Spacing.iconXXl,
                       ),
+                      SizedBox(height: Spacing.sm),
                       Text(
                         "Add Timer",
                         overflow: TextOverflow.ellipsis,
