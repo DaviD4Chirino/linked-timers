@@ -10,3 +10,5 @@ Todo:
       ☐ Make bulk timer editing
       ☐ Timer edit allows for individual "alert when finish"
       ☐ Collection edit allows for individual "alert when finish"
+    timer_collection_controll:
+      ☐ Move the creation of stopwatches to the database
