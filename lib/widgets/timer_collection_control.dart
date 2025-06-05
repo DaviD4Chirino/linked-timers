@@ -8,7 +8,6 @@ import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/timers_list.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
     this.collection, {

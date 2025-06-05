@@ -18,10 +18,12 @@ class TimerDatabase extends _$TimerDatabase {
     );
     list[index] = newCollection;
     state = list;
+    saveDatabase();
   }
 
   void addCollection(TimerCollection newCollection) {
     state = [newCollection, ...state];
+    saveDatabase();
   }
 
   /// Returns whether or it it suceded to edit the timer
@@ -47,6 +49,7 @@ class TimerDatabase extends _$TimerDatabase {
     final updatedCollection = collection.copyWith(timers: timers);
     list[collectionIndex] = updatedCollection;
     state = list;
+    saveDatabase();
     return true;
   }
 
@@ -60,12 +63,13 @@ class TimerDatabase extends _$TimerDatabase {
 
     list[index] = newCollection;
     state = list;
-
+    saveDatabase();
     return true;
   }
 
   void deleteCollection(String collectionId) {
     state = state.where((c) => c.id != collectionId).toList();
+    saveDatabase();
   }
 
   TimerCollection? getCollection(String collectionId) {
@@ -100,7 +104,7 @@ class TimerDatabase extends _$TimerDatabase {
 
   @override
   List<TimerCollection> build() {
-    return generateListDebug();
+    return [];
   }
 
   List<TimerCollection> generateListDebug() => List.generate(15, (i) {

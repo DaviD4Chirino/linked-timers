@@ -3,7 +3,7 @@ Todo:
   General:
     ☐ Make sure notifications and alerts play when selected timers or the collection ends
     ☐ Make the app run continuously
-    ☐ Save locally the timer Database
+    ✔ Save locally the timer Database @started(25-06-05 17:08) @done(25-06-05 17:15) @lasted(7m46s)
 
   Individual:
     manage_collection_screen.dart:
