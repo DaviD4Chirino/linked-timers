@@ -55,6 +55,14 @@ class _NewCollectionScreenState
       ref.watch(timerDatabaseProvider.notifier);
 
   void addCollection() {
+    if (collection.timers.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Add at least one timer to the collection"),
+        ),
+      );
+      return;
+    }
     timerNotifier.addCollection(collection);
     Navigator.pop(context);
   }
@@ -104,6 +112,17 @@ class _NewCollectionScreenState
               width: double.infinity,
               child: FilledButton(
                 onPressed: () {
+                  if (newTimer.timeAsMilliseconds < 1000) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Make sure the timer is longer than 1 second",
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
                   setState(() {
                     List<Timer> timers = [...collection.timers];
                     int index = timers.indexWhere(
@@ -126,6 +145,16 @@ class _NewCollectionScreenState
   }
 
   void addTimer(Timer newTimer) {
+
+    if(newTimer.timeAsMilliseconds<1000){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Make sure the timer is longer than 1 second"),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       collection.timers.add(newTimer);
       timersAdded++;

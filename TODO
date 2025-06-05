@@ -10,5 +10,7 @@ Todo:
       ☐ Make bulk timer editing
       ☐ Timer edit allows for individual "alert when finish"
       ☐ Collection edit allows for individual "alert when finish"
+      ✔ Make it impossible for a timer to be add if theres less than a second on it @started(25-06-05 17:21) @done(25-06-05 17:29) @lasted(8m52s)
+
     timer_collection_controll:
       ☐ Move the creation of stopwatches to the database
