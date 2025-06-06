@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
@@ -97,6 +98,9 @@ class _TimerCollectionControlState
     timer.onStopTimer();
     setState(() {
       if (stopWatches.isEmpty) return;
+      NotificationService.showTimerEndedNotification(
+        widget.collection.timers[currentTimerIndex],
+      );
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
       if (currentTimerIndex == 0) {
@@ -108,6 +112,9 @@ class _TimerCollectionControlState
           for (var timer in stopWatches) {
             timer.onResetTimer();
           }
+          NotificationService.showCollectionEndedNotification(
+            widget.collection,
+          );
           return;
         }
         for (var timer in stopWatches) {
@@ -121,7 +128,6 @@ class _TimerCollectionControlState
       maybeScrollToIndex(currentTimerIndex);
 
       currentTimer = widget.collection.timers[currentTimerIndex];
-      NotificationService.showTimerEndedNotification(currentTimer);
     });
 
     if (widget.onTimerEnd != null) {
