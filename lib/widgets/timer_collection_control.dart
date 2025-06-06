@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/services/notification_service.dart';
 import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/timers_list.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
     this.collection, {
@@ -118,8 +120,8 @@ class _TimerCollectionControlState
             ..onStartTimer();
       maybeScrollToIndex(currentTimerIndex);
 
-      // controller.scrollToIndex(timerIndex);
       currentTimer = widget.collection.timers[currentTimerIndex];
+      NotificationService.showTimerEndedNotification(currentTimer);
     });
 
     if (widget.onTimerEnd != null) {
