@@ -7,6 +7,16 @@ abstract class NotificationService {
 
   static bool isInitialized = false;
 
+  static AndroidNotificationDetails
+  androidCollectionRunningDetails() => AndroidNotificationDetails(
+    "linked-timers-bg-service",
+    "Linked Timers running in the background",
+    channelDescription:
+        "Shows when a collection is running in the background",
+    importance: Importance.min,
+    priority: Priority.min,
+  );
+
   static AndroidNotificationDetails androidTimerEndedDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
@@ -32,6 +42,17 @@ abstract class NotificationService {
     "collection-ended",
     "Collection Ended",
     channelDescription: "Alerts when any collection ends it's run",
+    importance: Importance.high,
+    priority: Priority.high,
+    actions: actions,
+  );
+
+  static AndroidNotificationDetails androidCollectionStartedDetails({
+    List<AndroidNotificationAction>? actions,
+  }) => AndroidNotificationDetails(
+    "collection-started",
+    "Collection Started",
+    channelDescription: "Alerts when any collection start it's run",
     importance: Importance.high,
     priority: Priority.high,
     actions: actions,
@@ -79,9 +100,9 @@ abstract class NotificationService {
 
   static Future<void> showAppRunningNotification() {
     return notificationPlugin.show(
-      0,
+      6969,
       "Linked Timers is Running in the background",
-      "",
+      "Linked Timers is Running in the background",
       NotificationDetails(android: androidAppRunningDetails()),
     );
   }
@@ -96,6 +117,20 @@ abstract class NotificationService {
       "${collection.label} finished",
       NotificationDetails(
         android: androidCollectionEndedDetails(actions: actions),
+      ),
+    );
+  }
+
+  static Future<void> showCollectionStartedNotification(
+    TimerCollection collection, {
+    List<AndroidNotificationAction>? actions,
+  }) {
+    return notificationPlugin.show(
+      collection.id.hashCode,
+      "Start!",
+      "${collection.label} started",
+      NotificationDetails(
+        android: androidCollectionStartedDetails(actions: actions),
       ),
     );
   }

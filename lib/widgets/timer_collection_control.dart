@@ -113,9 +113,7 @@ class _TimerCollectionControlState
           for (var timer in stopWatches) {
             timer.onResetTimer();
           }
-          NotificationService.showCollectionEndedNotification(
-            widget.collection,
-          );
+          stopBackgroundTask();
           return;
         }
         for (var timer in stopWatches) {
@@ -164,15 +162,15 @@ class _TimerCollectionControlState
   }
 
   void startBackgroundTask() {
-    return;
-    /* Workmanager().registerOneOffTask(
-      "${widget.collection.id}_${DateTime.now().millisecondsSinceEpoch}", // Unique name
-      "runCollectionTask",
-      inputData: {
-        'collectionLabel': widget.collection.label,
-        // Add more info as needed
-      },
-    ); */
+    Workmanager().registerOneOffTask(
+      widget.collection.id, // uniqueName
+      "collection_running_task",
+      inputData: {'collectionLabel': widget.collection.label},
+    );
+  }
+
+  void stopBackgroundTask() {
+    Workmanager().cancelByUniqueName(widget.collection.id);
   }
 
   @override

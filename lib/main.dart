@@ -12,8 +12,8 @@ import 'package:linked_timers/services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.init();
-  BackgroundService.initialize();
   await NotificationService.initialize();
+  BackgroundService.initialize();
 
   runApp(ProviderScope(child: MyApp()));
 }

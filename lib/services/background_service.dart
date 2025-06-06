@@ -5,14 +5,24 @@ import 'package:workmanager/workmanager.dart';
 
 abstract class BackgroundService {
   @pragma('vm:entry-point')
-  static Future<void> showBackgroundNotification() async {
-    await NotificationService.showAppRunningNotification();
+  static Future<void> showCollectionRunningNotification(
+    String label,
+  ) async {
+    await NotificationService.showNotification(
+      id: 6969,
+      title: "$label is Running in the background",
+      body: "$label is Running in the background",
+      details: NotificationDetails(
+        android: NotificationService.androidAppRunningDetails(),
+      ),
+    );
   }
 
+  @pragma('vm:entry-point')
   static void callbackDispatcher() {
     Workmanager().executeTask((task, inputData) async {
-      await showBackgroundNotification();
-
+      /* final label = inputData?['collectionLabel'] ?? "A Collection";
+      await showCollectionRunningNotification(label); */
       return Future.value(true);
     });
   }
