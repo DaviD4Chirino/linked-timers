@@ -5,12 +5,14 @@ import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/local_storage.dart';
 import 'package:linked_timers/screens/home_screen.dart';
 import 'package:linked_timers/screens/manage_collection_screen.dart';
+import 'package:linked_timers/services/background_service.dart';
 import 'package:linked_timers/services/notification_service.dart';
 
 //! We Have problems with the identifying operation, add uuid immediately
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.init();
+  BackgroundService.initialize();
   await NotificationService.initialize();
 
   runApp(ProviderScope(child: MyApp()));

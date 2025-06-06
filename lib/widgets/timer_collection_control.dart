@@ -10,6 +10,7 @@ import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/timers_list.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:workmanager/workmanager.dart';
 
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
@@ -162,6 +163,17 @@ class _TimerCollectionControlState
     });
   }
 
+  void startBackgroundTask() {
+    Workmanager().registerOneOffTask(
+      "${widget.collection.id}_${DateTime.now().millisecondsSinceEpoch}", // Unique name
+      "runCollectionTask",
+      inputData: {
+        'collectionLabel': widget.collection.label,
+        // Add more info as needed
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -237,10 +249,15 @@ class _TimerCollectionControlState
 
   Widget controlButton() {
     void onPressed() {
-      if (stopWatches.isEmpty) return;
+      if (stopWatches.isEmpty) {
+        Workmanager().cancelByUniqueName("runCollectionTask");
+
+        return;
+      }
 
       if (currentStopWatch.isRunning) {
         currentStopWatch.onStopTimer();
+        Workmanager().cancelByUniqueName("runCollectionTask");
         return;
       }
 
@@ -249,7 +266,7 @@ class _TimerCollectionControlState
         currentStopWatch.onStartTimer();
         return;
       }
-
+      startBackgroundTask();
       currentStopWatch.onStartTimer();
     }
 
