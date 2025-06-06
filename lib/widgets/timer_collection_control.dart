@@ -164,14 +164,15 @@ class _TimerCollectionControlState
   }
 
   void startBackgroundTask() {
-    Workmanager().registerOneOffTask(
+    return;
+    /* Workmanager().registerOneOffTask(
       "${widget.collection.id}_${DateTime.now().millisecondsSinceEpoch}", // Unique name
       "runCollectionTask",
       inputData: {
         'collectionLabel': widget.collection.label,
         // Add more info as needed
       },
-    );
+    ); */
   }
 
   @override

@@ -17,6 +17,15 @@ abstract class NotificationService {
     priority: Priority.low,
     actions: actions,
   );
+  static AndroidNotificationDetails androidAppRunningDetails() =>
+      AndroidNotificationDetails(
+        "linked-timers-bg-service",
+        "Linked Timers running in the background",
+        channelDescription:
+            "Shows when the app is running in the background",
+        importance: Importance.min,
+        priority: Priority.min,
+      );
   static AndroidNotificationDetails androidCollectionEndedDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
@@ -65,6 +74,15 @@ abstract class NotificationService {
       "Timeout",
       "${timer.label} finished",
       NotificationDetails(android: androidTimerEndedDetails()),
+    );
+  }
+
+  static Future<void> showAppRunningNotification() {
+    return notificationPlugin.show(
+      0,
+      "Linked Timers is Running in the background",
+      "",
+      NotificationDetails(android: androidAppRunningDetails()),
     );
   }
 
