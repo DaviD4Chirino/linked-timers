@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
-import 'package:linked_timers/services/notification_service.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class CollectionTotalProgress extends StatelessWidget {

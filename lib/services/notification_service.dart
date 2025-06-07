@@ -1,7 +1,13 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
+
+enum NotificationIds {
+  linkedTimersBgService,
+  timerEnded,
+  collectionEnded,
+}
 
 abstract class NotificationService {
   static final notificationPlugin = FlutterLocalNotificationsPlugin();
@@ -57,17 +63,19 @@ abstract class NotificationService {
     importance: Importance.high,
     priority: Priority.high,
     actions: actions,
+    playSound: true,
   );
-  static AndroidNotificationDetails
-  androidCollectionProgressNotificationDetails({
+  static AndroidNotificationDetails androidCollectionProgressDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
     "collection-progress",
     "Progress of a Collection",
     channelDescription:
         "Tells you the current progress of a Collection",
-    importance: Importance.high,
-    priority: Priority.high,
+    importance: Importance.min, // <-- change to min
+    priority: Priority.min, // <-- change to min
+    playSound: false, // <-- explicitly disable sound
+    enableVibration: false, // <-- explicitly disable vibration
     actions: actions,
   );
 
@@ -113,7 +121,7 @@ abstract class NotificationService {
 
   static Future<void> showAppRunningNotification() {
     return notificationPlugin.show(
-      6969,
+      NotificationIds.linkedTimersBgService.index,
       "Linked Timers is Running in the background",
       "Linked Timers is Running in the background",
       NotificationDetails(android: androidAppRunningDetails()),
@@ -125,7 +133,7 @@ abstract class NotificationService {
     List<AndroidNotificationAction>? actions,
   }) {
     return notificationPlugin.show(
-      collection.id.hashCode,
+      collection.id.hashCode * 2,
       "Timeout",
       "${collection.label} finished",
       NotificationDetails(
@@ -155,12 +163,17 @@ abstract class NotificationService {
   }) {
     return notificationPlugin.show(
       collection.id.hashCode,
-      "${collection.label} Start!",
-      "${collection.label} is Running\n Timer remaining: ${Utils.getDurationAsString(milliSeconds)}",
+      milliSeconds > 0
+          ? "${collection.label} Started"
+          : "${collection.label} Finished!",
+      milliSeconds > 0
+          ? "Remaining Time: ${StopWatchTimer.getDisplayTime(milliSeconds, milliSecond: false)}"
+          : null,
       NotificationDetails(
-        android: androidCollectionProgressNotificationDetails(
-          actions: actions,
-        ),
+        android:
+            milliSeconds > 0
+                ? androidCollectionProgressDetails(actions: actions)
+                : androidCollectionStartedDetails(actions: actions),
       ),
     );
   }

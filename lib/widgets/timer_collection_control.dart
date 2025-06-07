@@ -164,9 +164,35 @@ class _TimerCollectionControlState
         .reduce((a, b) => a + b);
 
     globalStopWatch = StopWatchTimer(
-      mode: StopWatchMode.countDown,
-      presetMillisecond: totalMillis,
-    );
+        mode: StopWatchMode.countDown,
+        presetMillisecond: totalMillis,
+      )
+      ..secondTime.listen((value) {
+        print(value);
+        // If its at the start do not show notification
+        if ((value * 1000) == totalMillis) return;
+
+        NotificationService.showCollectionProgressNotification(
+          widget.collection,
+          milliSeconds: value * 1000,
+        );
+        /* NotificationService.showNotification(
+          id: widget.collection.id.hashCode + 1000,
+          title: "${widget.collection.label} is running",
+          body: StopWatchTimer.getDisplayTime(
+            value * 1000,
+            milliSecond: false,
+          ),
+          details: NotificationDetails(
+            android: AndroidNotificationDetails(
+              "a",
+              "AAAA",
+              importance: Importance.low,
+              priority: Priority.low,
+            ),
+          ),
+        ); */
+      });
 
     setState(() {
       if (stopWatches.isEmpty) return;
