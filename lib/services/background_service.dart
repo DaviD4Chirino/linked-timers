@@ -1,36 +1,22 @@
+import 'dart:isolate';
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/services/notification_service.dart';
-import 'package:workmanager/workmanager.dart';
 
 abstract class BackgroundService {
   @pragma('vm:entry-point')
-  static Future<void> showCollectionRunningNotification(
-    String label,
-  ) async {
-    await NotificationService.showNotification(
-      id: 6969,
-      title: "$label is Running in the background",
-      body: "$label is Running in the background",
-      details: NotificationDetails(
-        android: NotificationService.androidAppRunningDetails(),
-      ),
+  static void debug() {
+    print("debug");
+    final DateTime now = DateTime.now();
+    final int isolateId = Isolate.current.hashCode;
+    NotificationService.showCollectionStartedNotification(
+      TimerCollection(timers: [], label: "new"),
     );
-  }
-
-  @pragma('vm:entry-point')
-  static void callbackDispatcher() {
-    Workmanager().executeTask((task, inputData) async {
-      /* final label = inputData?['collectionLabel'] ?? "A Collection";
-      await showCollectionRunningNotification(label); */
-      return Future.value(true);
-    });
-  }
-
-  static void initialize() {
-    Workmanager().initialize(
-      callbackDispatcher, // The top-level function
-      isInDebugMode: kDebugMode, // Set to false in production
-    );
+    if (kDebugMode) {
+      print(
+        "[$now] Hello, world! isolate=$isolateId function='$debug'",
+      );
+    }
   }
 }

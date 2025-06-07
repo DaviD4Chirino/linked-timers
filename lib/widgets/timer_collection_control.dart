@@ -1,16 +1,19 @@
+import 'dart:isolate';
+
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/services/background_service.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
+
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/services/notification_service.dart';
 import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/timers_list.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:workmanager/workmanager.dart';
 
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
@@ -96,6 +99,7 @@ class _TimerCollectionControlState
   }
 
   void onTimerEnded(StopWatchTimer timer) {
+    stopBackgroundTask();
     timer.onStopTimer();
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -113,7 +117,6 @@ class _TimerCollectionControlState
           for (var timer in stopWatches) {
             timer.onResetTimer();
           }
-          stopBackgroundTask();
           return;
         }
         for (var timer in stopWatches) {
@@ -161,16 +164,18 @@ class _TimerCollectionControlState
     });
   }
 
-  void startBackgroundTask() {
-    Workmanager().registerOneOffTask(
-      widget.collection.id, // uniqueName
-      "collection_running_task",
-      inputData: {'collectionLabel': widget.collection.label},
+  Future<void> startBackgroundTask() async {
+    print("Runninf");
+    var x = await AndroidAlarmManager.periodic(
+      const Duration(seconds: 2),
+      widget.collection.id.hashCode,
+      alarmTest,
     );
+    print(x);
   }
 
-  void stopBackgroundTask() {
-    Workmanager().cancelByUniqueName(widget.collection.id);
+  Future<bool> stopBackgroundTask() async {
+    return AndroidAlarmManager.cancel(widget.collection.id.hashCode);
   }
 
   @override
@@ -249,14 +254,11 @@ class _TimerCollectionControlState
   Widget controlButton() {
     void onPressed() {
       if (stopWatches.isEmpty) {
-        Workmanager().cancelByUniqueName("runCollectionTask");
-
         return;
       }
 
       if (currentStopWatch.isRunning) {
         currentStopWatch.onStopTimer();
-        Workmanager().cancelByUniqueName("runCollectionTask");
         return;
       }
 
@@ -339,4 +341,9 @@ class _TimerCollectionControlState
       ],
     );
   }
+}
+
+@pragma('vm:entry-point')
+void alarmTest() {
+  print("alarmTest triggered!");
 }
