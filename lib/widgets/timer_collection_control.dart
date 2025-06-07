@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/widgets/collection_total_progress.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -57,12 +58,17 @@ class _TimerCollectionControlState
   double currentTimerVisibleFraction = 1.0;
 
   StopWatchTimer currentStopWatch = StopWatchTimer();
+  StopWatchTimer globalStopWatch = StopWatchTimer();
   Timer currentTimer = Timer(label: "");
+
+  Timer? notificationUpdateTimer;
 
   ThemeData get theme => Theme.of(context);
   int get maxLaps => widget.collection.laps;
   List<StopWatchTimer> stopWatches = [];
   bool get finished => laps >= maxLaps && isInfinite == false;
+
+  void startNotificationUpdates() {}
 
   void maybeScrollToIndex(int index) {
     // Get the currently visible indexes
@@ -90,6 +96,7 @@ class _TimerCollectionControlState
       laps = 0;
       currentStopWatch = stopWatches.first;
       currentTimer = widget.collection.timers.first;
+      globalStopWatch.onResetTimer();
       maybeScrollToIndex(0);
     });
   }
@@ -152,6 +159,14 @@ class _TimerCollectionControlState
         onTimerEnded(timer);
       });
     }
+    int totalMillis = stopWatches
+        .map((sw) => sw.initialPresetTime)
+        .reduce((a, b) => a + b);
+
+    globalStopWatch = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      presetMillisecond: totalMillis,
+    );
 
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -176,6 +191,7 @@ class _TimerCollectionControlState
   @override
   void dispose() async {
     super.dispose();
+    globalStopWatch.dispose();
     for (var timer in stopWatches) {
       await timer.dispose();
     }
@@ -216,6 +232,8 @@ class _TimerCollectionControlState
             ],
           ),
         ),
+        SizedBox(height: Spacing.lg),
+        CollectionTotalProgress(globalStopWatch),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -239,15 +257,18 @@ class _TimerCollectionControlState
       }
 
       if (currentStopWatch.isRunning) {
+        globalStopWatch.onStopTimer();
         currentStopWatch.onStopTimer();
         return;
       }
 
       if (finished) {
         reset();
+        globalStopWatch.onStartTimer();
         currentStopWatch.onStartTimer();
         return;
       }
+      globalStopWatch.onStartTimer();
       currentStopWatch.onStartTimer();
     }
 

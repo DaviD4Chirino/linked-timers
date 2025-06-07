@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 
@@ -53,6 +54,18 @@ abstract class NotificationService {
     "collection-started",
     "Collection Started",
     channelDescription: "Alerts when any collection start it's run",
+    importance: Importance.high,
+    priority: Priority.high,
+    actions: actions,
+  );
+  static AndroidNotificationDetails
+  androidCollectionProgressNotificationDetails({
+    List<AndroidNotificationAction>? actions,
+  }) => AndroidNotificationDetails(
+    "collection-progress",
+    "Progress of a Collection",
+    channelDescription:
+        "Tells you the current progress of a Collection",
     importance: Importance.high,
     priority: Priority.high,
     actions: actions,
@@ -131,6 +144,23 @@ abstract class NotificationService {
       "${collection.label} started",
       NotificationDetails(
         android: androidCollectionStartedDetails(actions: actions),
+      ),
+    );
+  }
+
+  static Future<void> showCollectionProgressNotification(
+    TimerCollection collection, {
+    int milliSeconds = 0,
+    List<AndroidNotificationAction>? actions,
+  }) {
+    return notificationPlugin.show(
+      collection.id.hashCode,
+      "${collection.label} Start!",
+      "${collection.label} is Running\n Timer remaining: ${Utils.getDurationAsString(milliSeconds)}",
+      NotificationDetails(
+        android: androidCollectionProgressNotificationDetails(
+          actions: actions,
+        ),
       ),
     );
   }

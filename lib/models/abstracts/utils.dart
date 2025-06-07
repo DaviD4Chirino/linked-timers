@@ -42,4 +42,14 @@ abstract class Utils {
     );
     return consented;
   }
+
+  static String getDurationAsString(int milliSeconds) {
+    int totalSeconds = milliSeconds ~/ 1000;
+    int hours = totalSeconds ~/ 3600;
+    int minutes = (totalSeconds % 3600) ~/ 60;
+    int seconds = totalSeconds % 60;
+
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    return "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}";
+  }
 }
