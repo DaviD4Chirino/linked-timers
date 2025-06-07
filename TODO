@@ -1,7 +1,7 @@
 
 Todo:
   General:
-    ☐ Make sure notifications and alerts play when selected timers or the collection ends
+    ☐ Make sure notifications and alerts play when selected timers or the collection ends @started(25-06-06 23:19)
     ☐ Make the app run continuously
     ✔ Save locally the timer Database @started(25-06-05 17:08) @done(25-06-05 17:15) @lasted(7m46s)
     ☐ Add an guide to make a new timer when theres none

@@ -1,10 +1,6 @@
-import 'dart:isolate';
-
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:linked_timers/services/background_service.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -99,7 +95,6 @@ class _TimerCollectionControlState
   }
 
   void onTimerEnded(StopWatchTimer timer) {
-    stopBackgroundTask();
     timer.onStopTimer();
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -162,20 +157,6 @@ class _TimerCollectionControlState
       if (stopWatches.isEmpty) return;
       currentStopWatch = stopWatches.first;
     });
-  }
-
-  Future<void> startBackgroundTask() async {
-    print("Runninf");
-    var x = await AndroidAlarmManager.periodic(
-      const Duration(seconds: 2),
-      widget.collection.id.hashCode,
-      alarmTest,
-    );
-    print(x);
-  }
-
-  Future<bool> stopBackgroundTask() async {
-    return AndroidAlarmManager.cancel(widget.collection.id.hashCode);
   }
 
   @override
@@ -267,7 +248,6 @@ class _TimerCollectionControlState
         currentStopWatch.onStartTimer();
         return;
       }
-      startBackgroundTask();
       currentStopWatch.onStartTimer();
     }
 
