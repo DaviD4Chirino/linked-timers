@@ -21,6 +21,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.watch(timerDatabaseProvider);
 
   @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((duration) {
+      ref.read(timerDatabaseProvider.notifier).fetchDatabase();
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
   }
@@ -78,7 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         tooltip: "Create new collection",
         onPressed: () {
-          Navigator.of(context).pushNamed(Routes.newCollection);
+          Navigator.of(context).pushNamed(Routes.manageCollection);
         },
         child: Icon(Icons.add, size: Spacing.iconXXl),
       ),

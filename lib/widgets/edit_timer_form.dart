@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:linked_timers/extensions/string_extensions.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
-import 'package:linked_timers/screens/new_collection_screen.dart';
+import 'package:linked_timers/screens/manage_collection_screen.dart';
 
 class EditTimerForm extends StatefulWidget {
   const EditTimerForm({
@@ -48,19 +48,30 @@ class _EditTimerFormState extends State<EditTimerForm> {
   late TextEditingController timerLabelController =
       TextEditingController(text: widget.timer?.label);
   late TextEditingController hoursController = TextEditingController(
-    text: widget.timer?.hours.toString(),
+    text:
+        widget.timer?.hours.toString() == "0"
+            ? ""
+            : widget.timer?.hours.toString(),
   );
   late TextEditingController minutesController =
-      TextEditingController(text: widget.timer?.minutes.toString());
+      TextEditingController(
+        text:
+            widget.timer?.minutes.toString() == "0"
+                ? ""
+                : widget.timer?.minutes.toString(),
+      );
   late TextEditingController secondsController =
-      TextEditingController(text: widget.timer?.seconds.toString());
+      TextEditingController(
+        text:
+            widget.timer?.seconds.toString() == "0"
+                ? ""
+                : widget.timer?.seconds.toString(),
+      );
 
   String quickControllerTernary(
     TextEditingController? controller,
     String fallback,
   ) {
-    print(controller);
-    print(fallback);
     if (controller != null && controller.text.isNotEmpty) {
       return controller.text;
     }
@@ -173,29 +184,31 @@ class _EditTimerFormState extends State<EditTimerForm> {
                   label: quickControllerTernary(
                     widget.timerLabelController ??
                         timerLabelController,
-                    "News Timer",
+                    "New Timer",
                   ),
                   hours:
                       quickControllerTernary(
                         widget.hoursController ?? hoursController,
-                        "0",
+                        "",
                       ).toInt(),
 
                   minutes:
                       quickControllerTernary(
                         widget.minutesController ?? minutesController,
-                        "0",
+                        "",
                       ).toInt(),
 
                   seconds:
                       quickControllerTernary(
                         widget.secondsController ?? secondsController,
-                        "0",
+                        "",
                       ).toInt(),
                 ),
               );
             },
-            child: Text("Add Timer"),
+            child: Text(
+              widget.timer != null ? "Edit Timer" : "Add Timer",
+            ),
           ),
         ),
       ],

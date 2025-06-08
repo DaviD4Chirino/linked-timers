@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/config/theme.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
+import 'package:linked_timers/models/abstracts/local_storage.dart';
 import 'package:linked_timers/screens/home_screen.dart';
-import 'package:linked_timers/screens/new_collection_screen.dart';
+import 'package:linked_timers/screens/manage_collection_screen.dart';
 
 //! We Have problems with the identifying operation, add uuid immediately
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalStorage.init();
+
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -23,8 +27,8 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       routes: {
         Routes.home: (context) => const HomeScreen(),
-        Routes.newCollection:
-            (context) => const NewCollectionScreen(),
+        Routes.manageCollection:
+            (context) => const ManageCollectionScreen(),
       },
       initialRoute: Routes.home,
     );

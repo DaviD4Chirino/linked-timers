@@ -1,0 +1,16 @@
+
+Todo:
+  General:
+    ☐ Make sure notifications and alerts play when selected timers or the collection ends
+    ☐ Make the app run continuously
+    ✔ Save locally the timer Database @started(25-06-05 17:08) @done(25-06-05 17:15) @lasted(7m46s)
+
+  Individual:
+    manage_collection_screen.dart:
+      ☐ Make bulk timer editing
+      ☐ Timer edit allows for individual "alert when finish"
+      ☐ Collection edit allows for individual "alert when finish"
+      ✔ Make it impossible for a timer to be add if theres less than a second on it @started(25-06-05 17:21) @done(25-06-05 17:29) @lasted(8m52s)
+      ☐ The timer should be able to be deleted when the user long press on the timer
+    timer_collection_controll:
+      ☐ Move the creation of stopwatches to the database

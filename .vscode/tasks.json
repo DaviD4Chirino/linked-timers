@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "flutter",
+      "command": "flutter",
+      "args": ["dart", "run", "build_runner", "watch"],
+      "problemMatcher": ["$dart-build_runner"],
+      "group": "build",
+      "label": "flutter: flutter dart run build_runner watch",
+      "detail": ""
+    }
+  ]
+}

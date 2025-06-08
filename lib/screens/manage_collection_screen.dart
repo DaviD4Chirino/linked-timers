@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,14 +6,11 @@ import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
-import 'package:linked_timers/widgets/edit_timer_form.dart';
+import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
-import 'package:linked_timers/widgets/timer_collection_control.dart';
-import 'package:linked_timers/widgets/timers_list.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-class NewCollectionScreen extends ConsumerStatefulWidget {
-  const NewCollectionScreen({super.key});
+class ManageCollectionScreen extends ConsumerStatefulWidget {
+  const ManageCollectionScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -23,13 +18,13 @@ class NewCollectionScreen extends ConsumerStatefulWidget {
 }
 
 class _NewCollectionScreenState
-    extends ConsumerState<NewCollectionScreen> {
+    extends ConsumerState<ManageCollectionScreen> {
   String? collectionName;
   int? collectionLaps;
-  String? timerLabel;
-  int? hours;
-  int? minutes;
-  int? seconds;
+  String timerLabel = "";
+  int hours = 0;
+  int minutes = 0;
+  int seconds = 0;
 
   int timersAdded = 0;
 
@@ -39,71 +34,129 @@ class _NewCollectionScreenState
   TextEditingController timerLabelController =
       TextEditingController();
 
-  TimerCollection collection = TimerCollection(
-    timers: [],
-    label: "Collection Name",
-  );
+  late TimerCollection collection =
+      ModalRoute.of(context)?.settings.arguments == null
+          ? TimerCollection(timers: [], label: "Collection Name")
+          : ModalRoute.of(context)!.settings.arguments
+              as TimerCollection;
+
+  late String? replacementId =
+      (ModalRoute.of(context)?.settings.arguments as TimerCollection)
+          .id;
 
   Timer? selectedTimer;
+
+  late bool editing =
+      ModalRoute.of(context)?.settings.arguments == null
+          ? false
+          : true;
 
   TimerDatabase get timerNotifier =>
       ref.watch(timerDatabaseProvider.notifier);
 
   void addCollection() {
+    if (collection.timers.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Add at least one timer to the collection"),
+        ),
+      );
+      return;
+    }
     timerNotifier.addCollection(collection);
     Navigator.pop(context);
   }
 
+  void editCollection() {
+    if (replacementId == null) return;
+    timerNotifier.editCollection(replacementId!, collection);
+    Navigator.pop(context);
+  }
+
   void onTimerTapped(Timer timer) async {
-    List<Timer> timers = [...collection.timers];
+    Timer newTimer = Timer()..id = timer.id;
 
     await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text("Edit timer"),
-          content: EditTimerForm(
-            timer: timer,
-            onSubmit: (timer_) {
-              setState(() {
-                int index = timers.indexWhere(
-                  (element) => element.id == timer.id,
-                );
-                if (index == -1) return;
-                timers[index] = timer_;
-                collection = collection.copyWith(timers: timers);
-              });
-              Navigator.pop(context);
-            },
+          content: Container(
+            constraints: BoxConstraints(maxHeight: 500),
+            child: EditTimerListWheel(
+              timer: timer,
+              onChanged: (label, hours, minutes, seconds) {
+                newTimer.label = label;
+                newTimer.hours = hours;
+                newTimer.minutes = minutes;
+                newTimer.seconds = seconds;
+              },
+              /* onSubmit: (timer_) {
+                setState(() {
+                  List<Timer> timers = [...collection.timers];
+                  int index = timers.indexWhere(
+                    (element) => element.id == timer.id,
+                  );
+                  if (index == -1) return;
+                  timers[index] = timer_;
+
+                  collection = collection.copyWith(timers: timers);
+                });
+                Navigator.pop(context);
+              }, */
+            ),
           ),
+
+          actions: [
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  if (newTimer.timeAsMilliseconds < 1000) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Make sure the timer is longer than 1 second",
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  setState(() {
+                    List<Timer> timers = [...collection.timers];
+                    int index = timers.indexWhere(
+                      (element) => element.id == timer.id,
+                    );
+                    if (index == -1) return;
+                    timers[index] = newTimer;
+
+                    collection = collection.copyWith(timers: timers);
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text("Accept"),
+              ),
+            ),
+          ],
         );
       },
     );
   }
 
   void addTimer(Timer newTimer) {
+
+    if(newTimer.timeAsMilliseconds<1000){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Make sure the timer is longer than 1 second"),
+        ),
+      );
+      return;
+    }
+
     setState(() {
-      List<Timer> timers = [...collection.timers];
-
-      /* Timer newTimer = Timer(
-        label: timerLabel ?? "New Timer ${timersAdded + 1}",
-        hours: hours ?? 0,
-        minutes: minutes ?? 0,
-        seconds: seconds ?? 0,
-      ); */
-
-      /* if (selectedTimer != null) {
-        int index = timers.indexWhere(
-          (element) => element == selectedTimer,
-        );
-        if (index == -1) return;
-        timers[index] = newTimer;
-        collection.timers = timers;
-        return;
-      } */
-
-      timers.add(newTimer);
-      collection = collection.copyWith(timers: timers);
+      collection.timers.add(newTimer);
       timersAdded++;
     });
   }
@@ -119,10 +172,14 @@ class _NewCollectionScreenState
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final Size mediaQuery = MediaQuery.sizeOf(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Add a new Collection")),
+      appBar: AppBar(
+        title: Text(
+          editing
+              ? "Editing ${collection.label}"
+              : "Add a new Collection",
+        ),
+      ),
       body: Padding(
         padding: EdgeInsets.only(
           right: Spacing.xl,
@@ -138,57 +195,113 @@ class _NewCollectionScreenState
               spacing: Spacing.base,
               children: [titleWidget(), lapsWidgets()],
             ),
-
-            //TODO: Make a "custom" timersList so taps works properly, maybe even as buttons?
+            SizedBox(height: Spacing.lg),
             SizedBox(
-              height: 150,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: collection.timers.length,
-                itemBuilder:
-                    (context, index) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TimerCircularPercentIndicator(
-                          collection.timers[index].toStopWatchTimer(),
-                          onTap: () {
-                            onTimerTapped(collection.timers[index]);
-                          },
-                        ),
-                        SizedBox(
-                          width: 90,
-                          child: Text(
-                            collection.timers[index].label,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
+              height: 100,
+              child: Row(
+                children: [
+                  Expanded(child: timersDisplay()),
+                  SizedBox(width: Spacing.lg),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton.filled(
+                        onPressed: () {
+                          addTimer(
+                            Timer(
+                              label: timerLabel,
+                              hours: hours,
+                              minutes: minutes,
+                              seconds: seconds,
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.add_alarm_rounded),
+                        iconSize: Spacing.iconXXl,
+                      ),
+                      SizedBox(height: Spacing.sm),
+                      Text(
+                        "Add Timer",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: EditTimerListWheel(
+                onChanged: (label, hours, minutes, seconds) {
+                  timerLabel = label;
+                  this.hours = hours;
+                  this.minutes = minutes;
+                  this.seconds = seconds;
+                },
               ),
             ),
 
-            Expanded(
-              child: SizedBox(
+            /* SizedBox(
                 width: min(mediaQuery.width - Spacing.xl, 350),
                 height: double.infinity,
                 child: ListView(
                   children: [
-                    EditTimerForm(
+                    SizedBox(
+                      height: 300,
+                      child: EditTimerListWheel(),
+                    ),
+                    /* EditTimerForm(
                       onSubmit: addTimer,
                       /* minutesController: minutesController,
                       secondsController: secondsController,
                       hoursController: hoursController,
                       timerLabelController: timerLabelController, */
-                    ),
+                    ), */
                   ],
                 ),
               ),
-            ),
+            ), */
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: editing ? editCollection : addCollection,
+        label: Row(
+          children: [
+            Icon(Icons.add),
+            Text(editing ? "Modify Collection" : "Add Collection"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ListView timersDisplay() {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: collection.timers.length,
+      itemBuilder:
+          (context, index) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TimerCircularPercentIndicator(
+                collection.timers[index].toStopWatchTimer(),
+                onTap: () {
+                  onTimerTapped(collection.timers[index]);
+                },
+              ),
+              SizedBox(
+                width: 90,
+                child: Text(
+                  collection.timers[index].label,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
     );
   }
 
@@ -204,7 +317,7 @@ class _NewCollectionScreenState
     );
   }
 
-  Center buttonWidget() {
+  Widget buttonWidget() {
     return Center(
       child: IconButton.filled(
         onPressed: collection.timers.isEmpty ? null : addCollection,
