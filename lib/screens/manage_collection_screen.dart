@@ -145,11 +145,12 @@ class _NewCollectionScreenState
   }
 
   void addTimer(Timer newTimer) {
-
-    if(newTimer.timeAsMilliseconds<1000){
+    if (newTimer.timeAsMilliseconds < 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Make sure the timer is longer than 1 second"),
+          content: Text(
+            "Make sure the timer is longer than 1 second",
+          ),
         ),
       );
       return;

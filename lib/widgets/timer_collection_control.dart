@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/widgets/collection_total_progress.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
+
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/services/notification_service.dart';
 import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/timers_list.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
+
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
     this.collection, {
@@ -54,12 +58,17 @@ class _TimerCollectionControlState
   double currentTimerVisibleFraction = 1.0;
 
   StopWatchTimer currentStopWatch = StopWatchTimer();
+  StopWatchTimer globalStopWatch = StopWatchTimer();
   Timer currentTimer = Timer(label: "");
+
+  Timer? notificationUpdateTimer;
 
   ThemeData get theme => Theme.of(context);
   int get maxLaps => widget.collection.laps;
   List<StopWatchTimer> stopWatches = [];
   bool get finished => laps >= maxLaps && isInfinite == false;
+
+  void startNotificationUpdates() {}
 
   void maybeScrollToIndex(int index) {
     // Get the currently visible indexes
@@ -87,6 +96,7 @@ class _TimerCollectionControlState
       laps = 0;
       currentStopWatch = stopWatches.first;
       currentTimer = widget.collection.timers.first;
+      globalStopWatch.onResetTimer();
       maybeScrollToIndex(0);
     });
   }
@@ -95,9 +105,14 @@ class _TimerCollectionControlState
     timer.onStopTimer();
     setState(() {
       if (stopWatches.isEmpty) return;
+      NotificationService.showTimerEndedNotification(
+        widget.collection.timers[currentTimerIndex],
+        widget.collection.id,
+      );
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
       if (currentTimerIndex == 0) {
+        globalStopWatch.onResetTimer();
         if (isInfinite == false) {
           laps++;
         }
@@ -106,11 +121,17 @@ class _TimerCollectionControlState
           for (var timer in stopWatches) {
             timer.onResetTimer();
           }
+          NotificationService.showCollectionProgressNotification(
+            widget.collection,
+            milliSeconds: 0,
+            displayCollectionEnded: true,
+          );
           return;
         }
         for (var timer in stopWatches) {
           timer.onResetTimer();
         }
+        globalStopWatch.onStartTimer();
       }
       currentStopWatch =
           stopWatches[currentTimerIndex]
@@ -118,7 +139,6 @@ class _TimerCollectionControlState
             ..onStartTimer();
       maybeScrollToIndex(currentTimerIndex);
 
-      // controller.scrollToIndex(timerIndex);
       currentTimer = widget.collection.timers[currentTimerIndex];
     });
 
@@ -147,6 +167,16 @@ class _TimerCollectionControlState
         onTimerEnded(timer);
       });
     }
+    int totalMillis = stopWatches
+        .map((sw) => sw.initialPresetTime)
+        .reduce((a, b) => a + b);
+
+    globalStopWatch = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      presetMillisecond: totalMillis,
+    );
+    globalStopWatch.secondTime.listen(onGlobalSecondTimer);
+    // ..fetchEnded.listen(onGlobalStopWatchEnded);
 
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -171,6 +201,7 @@ class _TimerCollectionControlState
   @override
   void dispose() async {
     super.dispose();
+    globalStopWatch.dispose();
     for (var timer in stopWatches) {
       await timer.dispose();
     }
@@ -211,6 +242,8 @@ class _TimerCollectionControlState
             ],
           ),
         ),
+        SizedBox(height: Spacing.lg),
+        CollectionTotalProgress(globalStopWatch),
         Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -229,19 +262,28 @@ class _TimerCollectionControlState
 
   Widget controlButton() {
     void onPressed() {
-      if (stopWatches.isEmpty) return;
+      if (stopWatches.isEmpty) {
+        return;
+      }
 
       if (currentStopWatch.isRunning) {
+        globalStopWatch.onStopTimer();
         currentStopWatch.onStopTimer();
         return;
       }
 
       if (finished) {
         reset();
+        globalStopWatch.onStartTimer();
         currentStopWatch.onStartTimer();
         return;
       }
-
+      if (laps >= widget.collection.laps) {
+        setState(() {
+          laps = 0;
+        });
+      }
+      globalStopWatch.onStartTimer();
       currentStopWatch.onStartTimer();
     }
 
@@ -315,4 +357,26 @@ class _TimerCollectionControlState
       ],
     );
   }
+
+  void onGlobalSecondTimer(int value) {
+    // If its at the start do not show notification
+    if ((value * 1000) == globalStopWatch.initialPresetTime) return;
+    NotificationService.showCollectionProgressNotification(
+      widget.collection,
+      milliSeconds: value * 1000,
+    );
+  }
+
+  void onGlobalStopWatchEnded(bool val) {
+    NotificationService.showCollectionProgressNotification(
+      widget.collection,
+      milliSeconds: 0,
+      displayCollectionEnded: finished,
+    );
+  }
+}
+
+@pragma('vm:entry-point')
+void alarmTest() {
+  print("alarmTest triggered!");
 }
