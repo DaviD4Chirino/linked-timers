@@ -110,9 +110,12 @@ abstract class NotificationService {
     );
   }
 
-  static Future<void> showTimerEndedNotification(Timer timer) {
+  static Future<void> showTimerEndedNotification(
+    Timer timer,
+    String ownerId,
+  ) {
     return notificationPlugin.show(
-      timer.id.hashCode,
+      "${ownerId}_child".hashCode,
       "Timeout",
       "${timer.label} finished",
       NotificationDetails(android: androidTimerEndedDetails()),

@@ -5,6 +5,8 @@ Todo:
     ✔ Make the app run continuously @started(25-06-05 10:36) @done(25-06-07 15:18) @lasted(8s)
     ✔ Save locally the timer Database @started(25-06-05 17:08) @done(25-06-05 17:15) @lasted(7m46s)
     ☐ Add an guide to make a new timer when theres none
+    ☐ Make a proper icon
+    ✔ Instead of each timer notifying individually, the collection notifies that X timer ends, taking 1 notification slot @done(25-06-07 23:49)
 
   Individual:
     manage_collection_screen.dart:

@@ -107,6 +107,7 @@ class _TimerCollectionControlState
       if (stopWatches.isEmpty) return;
       NotificationService.showTimerEndedNotification(
         widget.collection.timers[currentTimerIndex],
+        widget.collection.id,
       );
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
