@@ -111,6 +111,7 @@ class _TimerCollectionControlState
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
       if (currentTimerIndex == 0) {
+        globalStopWatch.onResetTimer();
         if (isInfinite == false) {
           laps++;
         }
@@ -119,11 +120,17 @@ class _TimerCollectionControlState
           for (var timer in stopWatches) {
             timer.onResetTimer();
           }
+          NotificationService.showCollectionProgressNotification(
+            widget.collection,
+            milliSeconds: 0,
+            displayCollectionEnded: true,
+          );
           return;
         }
         for (var timer in stopWatches) {
           timer.onResetTimer();
         }
+        globalStopWatch.onStartTimer();
       }
       currentStopWatch =
           stopWatches[currentTimerIndex]
@@ -164,35 +171,11 @@ class _TimerCollectionControlState
         .reduce((a, b) => a + b);
 
     globalStopWatch = StopWatchTimer(
-        mode: StopWatchMode.countDown,
-        presetMillisecond: totalMillis,
-      )
-      ..secondTime.listen((value) {
-        print(value);
-        // If its at the start do not show notification
-        if ((value * 1000) == totalMillis) return;
-
-        NotificationService.showCollectionProgressNotification(
-          widget.collection,
-          milliSeconds: value * 1000,
-        );
-        /* NotificationService.showNotification(
-          id: widget.collection.id.hashCode + 1000,
-          title: "${widget.collection.label} is running",
-          body: StopWatchTimer.getDisplayTime(
-            value * 1000,
-            milliSecond: false,
-          ),
-          details: NotificationDetails(
-            android: AndroidNotificationDetails(
-              "a",
-              "AAAA",
-              importance: Importance.low,
-              priority: Priority.low,
-            ),
-          ),
-        ); */
-      });
+      mode: StopWatchMode.countDown,
+      presetMillisecond: totalMillis,
+    );
+    globalStopWatch.secondTime.listen(onGlobalSecondTimer);
+    // ..fetchEnded.listen(onGlobalStopWatchEnded);
 
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -294,6 +277,11 @@ class _TimerCollectionControlState
         currentStopWatch.onStartTimer();
         return;
       }
+      if (laps >= widget.collection.laps) {
+        setState(() {
+          laps = 0;
+        });
+      }
       globalStopWatch.onStartTimer();
       currentStopWatch.onStartTimer();
     }
@@ -366,6 +354,23 @@ class _TimerCollectionControlState
             },
           ),
       ],
+    );
+  }
+
+  void onGlobalSecondTimer(int value) {
+    // If its at the start do not show notification
+    if ((value * 1000) == globalStopWatch.initialPresetTime) return;
+    NotificationService.showCollectionProgressNotification(
+      widget.collection,
+      milliSeconds: value * 1000,
+    );
+  }
+
+  void onGlobalStopWatchEnded(bool val) {
+    NotificationService.showCollectionProgressNotification(
+      widget.collection,
+      milliSeconds: 0,
+      displayCollectionEnded: finished,
     );
   }
 }

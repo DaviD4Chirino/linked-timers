@@ -160,20 +160,21 @@ abstract class NotificationService {
     TimerCollection collection, {
     int milliSeconds = 0,
     List<AndroidNotificationAction>? actions,
+    bool displayCollectionEnded = false,
   }) {
     return notificationPlugin.show(
       collection.id.hashCode,
-      milliSeconds > 0
-          ? "${collection.label} Started"
-          : "${collection.label} Finished!",
-      milliSeconds > 0
-          ? "Remaining Time: ${StopWatchTimer.getDisplayTime(milliSeconds, milliSecond: false)}"
-          : null,
+      displayCollectionEnded
+          ? "${collection.label} Finished"
+          : "${collection.label} Started!",
+      displayCollectionEnded
+          ? null
+          : "Remaining Time: ${StopWatchTimer.getDisplayTime(milliSeconds, milliSecond: false)}",
       NotificationDetails(
         android:
-            milliSeconds > 0
-                ? androidCollectionProgressDetails(actions: actions)
-                : androidCollectionStartedDetails(actions: actions),
+            displayCollectionEnded
+                ? androidCollectionEndedDetails(actions: actions)
+                : androidCollectionProgressDetails(actions: actions),
       ),
     );
   }
