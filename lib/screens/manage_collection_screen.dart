@@ -6,7 +6,9 @@ import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
+import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
+import 'package:linked_timers/widgets/reusables/text_icon.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
 class ManageCollectionScreen extends ConsumerStatefulWidget {
@@ -152,6 +154,33 @@ class _NewCollectionScreenState
     );
   }
 
+  void onTimerLongPress() async {
+    final RenderBox button =
+        context.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject()
+            as RenderBox;
+    final Offset buttonPosition = button.localToGlobal(
+      Offset.zero,
+    );
+    final Size buttonSize = button.size;
+
+    final selected = await showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+        buttonPosition & buttonSize,
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem(value: 1, child: Text('Option 1')),
+        PopupMenuItem(value: 2, child: Text('Option 2')),
+      ],
+    );
+
+    print(selected);
+    // Handle the selected value if needed
+  }
+
   void addTimer(Timer newTimer) {
     if (newTimer.timeAsMilliseconds < 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -209,7 +238,7 @@ class _NewCollectionScreenState
               height: 100,
               child: Row(
                 children: [
-                  Expanded(child: timersDisplay()),
+                  Expanded(child: timersDisplay(context)),
                   SizedBox(width: Spacing.lg),
                   Column(
                     mainAxisSize: MainAxisSize.min,
@@ -288,7 +317,38 @@ class _NewCollectionScreenState
     );
   }
 
-  ListView timersDisplay() {
+  ListView timersDisplay(BuildContext context) {
+    var items = [
+      ThemedPopupMenuItem(
+        value: "alert",
+        child: TextIcon(
+          icon: Icon(Icons.notifications_outlined),
+          text: Text("Alert when it ends"),
+        ),
+      ),
+      ThemedPopupMenuItem(
+        themeStyle: ThemedPopupMenuStyle.error,
+        value: "remove",
+        child: TextIcon(
+          icon: Icon(Icons.remove_circle_outline),
+          text: Text("Remove this timer"),
+        ),
+      ),
+    ];
+    void onLongPress(LongPressStartDetails details) async {
+      final overlay =
+          Overlay.of(context).context.findRenderObject()
+              as RenderBox;
+      final selected = await showMenu(
+        context: context,
+        position: RelativeRect.fromRect(
+          details.globalPosition & const Size(40, 40),
+          Offset.zero & overlay.size,
+        ),
+        items: items,
+      );
+    }
+
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: collection.timers.length,
@@ -296,11 +356,14 @@ class _NewCollectionScreenState
           (context, index) => Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TimerCircularPercentIndicator(
-                collection.timers[index].toStopWatchTimer(),
-                onTap: () {
-                  onTimerTapped(collection.timers[index]);
-                },
+              GestureDetector(
+                onLongPressStart: onLongPress,
+                child: TimerCircularPercentIndicator(
+                  collection.timers[index].toStopWatchTimer(),
+                  onTap: () {
+                    onTimerTapped(collection.timers[index]);
+                  },
+                ),
               ),
               SizedBox(
                 width: 90,

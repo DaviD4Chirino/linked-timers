@@ -7,12 +7,14 @@ class TimerCircularPercentIndicator extends StatelessWidget {
   const TimerCircularPercentIndicator(
     this.timer, {
     this.onTap,
+    this.onLongPress,
     this.selected = false,
     super.key,
   });
 
   final StopWatchTimer timer;
   final VoidCallback? onTap;
+  final void Function()? onLongPress;
   final bool selected;
 
   @override
@@ -28,6 +30,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
         padding: WidgetStateProperty.all(EdgeInsets.all(0)),
       ),
       onPressed: onTap,
+      onLongPress: onLongPress,
       child: StreamBuilder(
         stream: timer.rawTime,
         builder: (context, data) {
