@@ -12,13 +12,20 @@ class CollectionDropDownButton extends ConsumerWidget {
   final TimerCollection collection;
 
   final entries = [
-    PopupMenuItem(
+    ThemedPopupMenuItem(
       value: "edit",
-      child: TextIcon(icon: Icon(Icons.edit), text: Text("Edit")),
+      child: TextIcon(
+        icon: Icon(Icons.edit),
+        text: Text("Edit"),
+      ),
     ),
-    PopupMenuItem(
+    ThemedPopupMenuItem(
+      themeStyle: ThemedPopupMenuStyle.error,
       value: "delete",
-      child: TextIcon(icon: Icon(Icons.delete), text: Text("Delete")),
+      child: TextIcon(
+        icon: Icon(Icons.delete),
+        text: Text("Delete"),
+      ),
     ),
   ];
 
@@ -44,7 +51,9 @@ class CollectionDropDownButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final databaseNotifier = ref.read(timerDatabaseProvider.notifier);
+    final databaseNotifier = ref.read(
+      timerDatabaseProvider.notifier,
+    );
 
     return PopupMenuButton<String>(
       onSelected: (String value) async {
@@ -59,5 +68,60 @@ class CollectionDropDownButton extends ConsumerWidget {
       offset: Offset(5, 35),
       icon: Icon(Icons.more_horiz),
     );
+  }
+}
+
+enum ThemedPopupMenuStyle {
+  none,
+  primary,
+  secondary,
+  tertiary,
+  error,
+}
+
+class ThemedPopupMenuItem<T> extends PopupMenuItem<T> {
+  ThemedPopupMenuItem({
+    super.key,
+    required super.value,
+    required Widget child,
+    ThemedPopupMenuStyle themeStyle = ThemedPopupMenuStyle.none,
+    super.enabled,
+    super.height,
+    TextStyle? textStyle,
+  }) : super(
+         child: Builder(
+           builder: (context) {
+             final color = _resolveColor(context, themeStyle);
+             return IconTheme.merge(
+               data: IconThemeData(color: color),
+               child: DefaultTextStyle(
+                 style:
+                     textStyle ??
+                     Theme.of(context).textTheme.titleMedium!
+                         .copyWith(color: color),
+                 child: child,
+               ),
+             );
+           },
+         ),
+       );
+
+  static Color _resolveColor(
+    BuildContext context,
+    ThemedPopupMenuStyle style,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    switch (style) {
+      case ThemedPopupMenuStyle.none:
+        return colorScheme.onSurface;
+      case ThemedPopupMenuStyle.primary:
+        return colorScheme.primary;
+      case ThemedPopupMenuStyle.secondary:
+        return colorScheme.secondary;
+      case ThemedPopupMenuStyle.tertiary:
+        return colorScheme.tertiary;
+      case ThemedPopupMenuStyle.error:
+        return colorScheme.error;
+    }
   }
 }

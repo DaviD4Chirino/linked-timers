@@ -15,6 +15,6 @@ Todo:
       ☐ Timer edit allows for individual "alert when finish"
       ☐ Collection edit allows for individual "alert when finish"
       ✔ Make it impossible for a timer to be add if theres less than a second on it @started(25-06-05 17:21) @done(25-06-05 17:29) @lasted(8m52s)
-      ☐ The timer should be able to be deleted when the user long press on the timer
+      ☐ The timer should be able to be deleted when the user long press on the timer @started(25-06-08 18:38)
     timer_collection_control:
       ☐ Move the creation of stopwatches to the database

@@ -28,9 +28,12 @@ class _NewCollectionScreenState
 
   int timersAdded = 0;
 
-  TextEditingController minutesController = TextEditingController();
-  TextEditingController secondsController = TextEditingController();
-  TextEditingController hoursController = TextEditingController();
+  TextEditingController minutesController =
+      TextEditingController();
+  TextEditingController secondsController =
+      TextEditingController();
+  TextEditingController hoursController =
+      TextEditingController();
   TextEditingController timerLabelController =
       TextEditingController();
 
@@ -41,7 +44,8 @@ class _NewCollectionScreenState
               as TimerCollection;
 
   late String? replacementId =
-      (ModalRoute.of(context)?.settings.arguments as TimerCollection)
+      (ModalRoute.of(context)?.settings.arguments
+              as TimerCollection)
           .id;
 
   Timer? selectedTimer;
@@ -58,7 +62,9 @@ class _NewCollectionScreenState
     if (collection.timers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Add at least one timer to the collection"),
+          content: Text(
+            "Add at least one timer to the collection",
+          ),
         ),
       );
       return;
@@ -131,7 +137,9 @@ class _NewCollectionScreenState
                     if (index == -1) return;
                     timers[index] = newTimer;
 
-                    collection = collection.copyWith(timers: timers);
+                    collection = collection.copyWith(
+                      timers: timers,
+                    );
                   });
                   Navigator.pop(context);
                 },
@@ -271,7 +279,9 @@ class _NewCollectionScreenState
         label: Row(
           children: [
             Icon(Icons.add),
-            Text(editing ? "Modify Collection" : "Add Collection"),
+            Text(
+              editing ? "Modify Collection" : "Add Collection",
+            ),
           ],
         ),
       ),
@@ -314,14 +324,17 @@ class _NewCollectionScreenState
           timerLabel = value;
         });
       },
-      decoration: InputDecoration(label: Text("Insert a Timer Name")),
+      decoration: InputDecoration(
+        label: Text("Insert a Timer Name"),
+      ),
     );
   }
 
   Widget buttonWidget() {
     return Center(
       child: IconButton.filled(
-        onPressed: collection.timers.isEmpty ? null : addCollection,
+        onPressed:
+            collection.timers.isEmpty ? null : addCollection,
         icon: Icon(Icons.send),
         iconSize: Spacing.iconXl,
       ),
@@ -356,7 +369,8 @@ class _NewCollectionScreenState
         onChanged: (value) {
           setState(() {
             collectionName = value;
-            collection.label = collectionName ?? "New Collection";
+            collection.label =
+                collectionName ?? "New Collection";
           });
         },
         decoration: InputDecoration.collapsed(
@@ -469,7 +483,9 @@ class MaxValueInputFormatter extends TextInputFormatter {
       final String maxStr = max.toString();
       return TextEditingValue(
         text: maxStr,
-        selection: TextSelection.collapsed(offset: maxStr.length),
+        selection: TextSelection.collapsed(
+          offset: maxStr.length,
+        ),
       );
     }
     return newValue;
@@ -493,7 +509,9 @@ class MinValueInputFormatter extends TextInputFormatter {
       final String minStr = min.toString();
       return TextEditingValue(
         text: minStr,
-        selection: TextSelection.collapsed(offset: minStr.length),
+        selection: TextSelection.collapsed(
+          offset: minStr.length,
+        ),
       );
     }
     return newValue;
