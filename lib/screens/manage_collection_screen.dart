@@ -154,33 +154,6 @@ class _NewCollectionScreenState
     );
   }
 
-  void onTimerLongPress() async {
-    final RenderBox button =
-        context.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject()
-            as RenderBox;
-    final Offset buttonPosition = button.localToGlobal(
-      Offset.zero,
-    );
-    final Size buttonSize = button.size;
-
-    final selected = await showMenu(
-      context: context,
-      position: RelativeRect.fromRect(
-        buttonPosition & buttonSize,
-        Offset.zero & overlay.size,
-      ),
-      items: [
-        PopupMenuItem(value: 1, child: Text('Option 1')),
-        PopupMenuItem(value: 2, child: Text('Option 2')),
-      ],
-    );
-
-    print(selected);
-    // Handle the selected value if needed
-  }
-
   void addTimer(Timer newTimer) {
     if (newTimer.timeAsMilliseconds < 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -279,27 +252,6 @@ class _NewCollectionScreenState
                 },
               ),
             ),
-
-            /* SizedBox(
-                width: min(mediaQuery.width - Spacing.xl, 350),
-                height: double.infinity,
-                child: ListView(
-                  children: [
-                    SizedBox(
-                      height: 300,
-                      child: EditTimerListWheel(),
-                    ),
-                    /* EditTimerForm(
-                      onSubmit: addTimer,
-                      /* minutesController: minutesController,
-                      secondsController: secondsController,
-                      hoursController: hoursController,
-                      timerLabelController: timerLabelController, */
-                    ), */
-                  ],
-                ),
-              ),
-            ), */
           ],
         ),
       ),
@@ -335,7 +287,10 @@ class _NewCollectionScreenState
         ),
       ),
     ];
-    void onLongPress(LongPressStartDetails details) async {
+    void onLongPress(
+      LongPressStartDetails details,
+      Timer timer,
+    ) async {
       final overlay =
           Overlay.of(context).context.findRenderObject()
               as RenderBox;
@@ -347,35 +302,46 @@ class _NewCollectionScreenState
         ),
         items: items,
       );
+
+      if (selected == "remove") {
+        collection.timers =
+            collection.timers
+                .where((timer_) => timer_ != timer)
+                .toList();
+      }
     }
 
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: collection.timers.length,
-      itemBuilder:
-          (context, index) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onLongPressStart: onLongPress,
-                child: TimerCircularPercentIndicator(
-                  collection.timers[index].toStopWatchTimer(),
-                  onTap: () {
-                    onTimerTapped(collection.timers[index]);
-                  },
-                ),
+      itemBuilder: (context, index) {
+        Timer timer = collection.timers[index];
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onLongPressStart: (details) {
+                onLongPress(details, timer);
+              },
+              child: TimerCircularPercentIndicator(
+                collection.timers[index].toStopWatchTimer(),
+                onTap: () {
+                  onTimerTapped(timer);
+                },
               ),
-              SizedBox(
-                width: 90,
-                child: Text(
-                  collection.timers[index].label,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                ),
+            ),
+            SizedBox(
+              width: 90,
+              child: Text(
+                timer.label,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                textAlign: TextAlign.center,
               ),
-            ],
-          ),
+            ),
+          ],
+        );
+      },
     );
   }
 
