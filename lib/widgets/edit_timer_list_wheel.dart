@@ -4,7 +4,11 @@ import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/widgets/number_scroll_wheel.dart';
 
 class EditTimerListWheel extends StatefulWidget {
-  const EditTimerListWheel({super.key, this.onChanged, this.timer});
+  const EditTimerListWheel({
+    super.key,
+    this.onChanged,
+    this.timer,
+  });
 
   final void Function(
     String label,
@@ -23,7 +27,8 @@ class EditTimerListWheel extends StatefulWidget {
       _EditTimerListWheelState();
 }
 
-class _EditTimerListWheelState extends State<EditTimerListWheel> {
+class _EditTimerListWheelState
+    extends State<EditTimerListWheel> {
   late final TextEditingController timerNameController;
   late final FixedExtentScrollController hoursController;
   late final FixedExtentScrollController minutesController;
@@ -33,6 +38,8 @@ class _EditTimerListWheelState extends State<EditTimerListWheel> {
   int hours = 0;
   int minutes = 0;
   int seconds = 0;
+
+  final double itemHeight = 50;
 
   @override
   void initState() {
@@ -47,9 +54,13 @@ class _EditTimerListWheelState extends State<EditTimerListWheel> {
     minutes = timer.minutes;
     seconds = timer.seconds;
 
-    timerNameController = TextEditingController(text: timer.label);
+    timerNameController = TextEditingController(
+      text: timer.label,
+    );
 
-    hoursController = FixedExtentScrollController(initialItem: hours);
+    hoursController = FixedExtentScrollController(
+      initialItem: hours,
+    );
     minutesController = FixedExtentScrollController(
       initialItem: minutes,
     );
@@ -127,11 +138,13 @@ class _EditTimerListWheelState extends State<EditTimerListWheel> {
           children: [
             Positioned(
               child: Container(
-                height: 40,
+                height: 30,
                 width: mediaQuery.width,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.all(Radius.circular(50)),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(50),
+                  ),
                 ),
               ),
             ),
@@ -149,14 +162,14 @@ class _EditTimerListWheelState extends State<EditTimerListWheel> {
                     scrollController: hoursController,
                     zeroBased: true,
                     count: 25,
-                    itemHeight: 60,
+                    itemHeight: itemHeight,
                     label: Text(
                       "Hours",
-                      style: theme.textTheme.bodyLarge,
+                      style: theme.textTheme.bodySmall,
                     ),
                   ),
                 ),
-                Text(":", style: theme.textTheme.bodyLarge),
+                Text(":", style: theme.textTheme.titleLarge),
                 Expanded(
                   child: NumberScrollWheel(
                     onSelectedItemChanged: (index) {
@@ -169,14 +182,14 @@ class _EditTimerListWheelState extends State<EditTimerListWheel> {
                     scrollController: minutesController,
                     zeroBased: true,
                     count: 61,
-                    itemHeight: 60,
+                    itemHeight: itemHeight,
                     label: Text(
                       "Minutes",
-                      style: theme.textTheme.bodyLarge,
+                      style: theme.textTheme.bodySmall,
                     ),
                   ),
                 ),
-                Text(":", style: theme.textTheme.bodyLarge),
+                Text(":", style: theme.textTheme.titleLarge),
                 Expanded(
                   child: NumberScrollWheel(
                     onSelectedItemChanged: (index) {
@@ -189,10 +202,10 @@ class _EditTimerListWheelState extends State<EditTimerListWheel> {
                     scrollController: secondsController,
                     zeroBased: true,
                     count: 61,
-                    itemHeight: 60,
+                    itemHeight: itemHeight,
                     label: Text(
                       "Seconds",
-                      style: theme.textTheme.bodyLarge,
+                      style: theme.textTheme.bodySmall,
                     ),
                   ),
                 ),

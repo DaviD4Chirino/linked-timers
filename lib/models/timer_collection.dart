@@ -44,6 +44,10 @@ class TimerCollection {
     );
   }
 
+  void removeTimer(Timer timer) {
+    timers = timers.where((timer_) => timer_ != timer).toList();
+  }
+
   Map<String, dynamic> toMap() => {
     "timers": timers.map((e) => e.toMap()).toList(),
     "laps": laps,

@@ -1,5 +1,6 @@
 import 'package:clickable_list_wheel_view/clickable_list_wheel_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class NumberScrollWheel extends StatefulWidget {
   const NumberScrollWheel({
@@ -24,7 +25,8 @@ class NumberScrollWheel extends StatefulWidget {
   final void Function(int index)? onSelectedItemChanged;
 
   @override
-  State<NumberScrollWheel> createState() => _NumberScrollWheelState();
+  State<NumberScrollWheel> createState() =>
+      _NumberScrollWheelState();
 }
 
 class _NumberScrollWheelState extends State<NumberScrollWheel> {
@@ -42,7 +44,7 @@ class _NumberScrollWheelState extends State<NumberScrollWheel> {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: theme.textTheme.headlineSmall!.fontSize,
+          fontSize: theme.textTheme.titleLarge!.fontSize,
           // fontWeight: FontWeight.bold,
         ),
       ),
@@ -64,7 +66,9 @@ class _NumberScrollWheelState extends State<NumberScrollWheel> {
         if (widget.label != null)
           Positioned.fill(
             top: widget.itemHeight,
-            child: IgnorePointer(child: Center(child: widget.label)),
+            child: IgnorePointer(
+              child: Center(child: widget.label),
+            ),
           ),
         ClickableListWheelScrollView(
           loop: true,
@@ -72,13 +76,17 @@ class _NumberScrollWheelState extends State<NumberScrollWheel> {
           itemCount: list.length,
           itemHeight: widget.itemHeight,
           onItemTapCallback: widget.onItemTap,
-          child: ListWheelScrollView(
+          child: ListWheelScrollView.useDelegate(
             physics: const FixedExtentScrollPhysics(),
             onSelectedItemChanged: widget.onSelectedItemChanged,
             controller: _scrollController,
             overAndUnderCenterOpacity: 0.2,
+            diameterRatio: 3,
+            perspective: 0.01,
             itemExtent: widget.itemHeight,
-            children: list,
+            childDelegate: ListWheelChildLoopingListDelegate(
+              children: list,
+            ),
           ),
         ),
       ],

@@ -42,8 +42,9 @@ class _NewCollectionScreenState
   late TimerCollection collection =
       ModalRoute.of(context)?.settings.arguments == null
           ? TimerCollection(timers: [], label: "Collection Name")
-          : ModalRoute.of(context)!.settings.arguments
-              as TimerCollection;
+          : (ModalRoute.of(context)!.settings.arguments
+                  as TimerCollection)
+              .copyWith();
 
   late String? replacementId =
       (ModalRoute.of(context)?.settings.arguments
@@ -304,10 +305,7 @@ class _NewCollectionScreenState
       );
 
       if (selected == "remove") {
-        collection.timers =
-            collection.timers
-                .where((timer_) => timer_ != timer)
-                .toList();
+        collection.removeTimer(timer);
       }
     }
 
