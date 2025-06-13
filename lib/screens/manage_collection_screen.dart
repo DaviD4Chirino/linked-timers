@@ -184,14 +184,9 @@ class _NewCollectionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          editing
-              ? "Editing ${collection.label}"
-              : "Add a new Collection",
-        ),
-      ),
+      appBar: appBar(theme),
       body: Padding(
         padding: EdgeInsets.only(
           right: Spacing.xl,
@@ -256,7 +251,7 @@ class _NewCollectionScreenState
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      /* floatingActionButton: FloatingActionButton.extended(
         onPressed: editing ? editCollection : addCollection,
         label: Row(
           children: [
@@ -266,7 +261,31 @@ class _NewCollectionScreenState
             ),
           ],
         ),
+      ), */
+    );
+  }
+
+  AppBar appBar(ThemeData theme) {
+    return AppBar(
+      title: Text(
+        editing
+            ? "Editing ${collection.label}"
+            : "Add a new Collection",
       ),
+      actions: [
+        IconButton.filled(
+          tooltip: editing ? "Apply changes" : "Add Collection",
+          onPressed: editing ? editCollection : addCollection,
+          icon: Icon(Icons.alarm_on_rounded),
+          color: theme.colorScheme.onTertiary,
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(
+              theme.colorScheme.tertiary,
+            ),
+          ),
+        ),
+        SizedBox(width: 5),
+      ],
     );
   }
 
