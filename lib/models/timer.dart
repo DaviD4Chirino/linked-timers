@@ -8,8 +8,13 @@ class Timer {
     this.hours = 0,
     this.minutes = 0,
     this.seconds = 0,
+    this.notify = false,
     this.nextTimer,
   });
+
+  /// A flag that shows a notification when this timer specifically
+  /// ends
+  bool notify = false;
 
   int hours = 0;
   int minutes = 0;
@@ -43,6 +48,7 @@ class Timer {
     "hours": hours,
     "minutes": minutes,
     "seconds": seconds,
+    "notify": notify,
     // "nextTimer": nextTimer?.toJson(),
   };
 
@@ -51,7 +57,8 @@ class Timer {
       label = json["label"],
       hours = json["hours"] ?? 0,
       minutes = json["minutes"] ?? 0,
-      seconds = json["seconds"] ?? 0;
+      seconds = json["seconds"] ?? 0,
+      notify = json["notify"] ?? false;
 
   factory Timer.fromStopWatchTimer(
     StopWatchTimer swt, {

@@ -9,11 +9,15 @@ class TimerCollection {
     required this.label,
     this.laps = 1,
     this.isInfinite = false,
+    this.alert = false,
   });
 
   List<Timer> timers = [];
   int laps = 5;
   bool isInfinite = false;
+
+  /// A flag that starts an alert when this collection ends
+  bool alert = false;
 
   /// The title works as its id
   String label;
@@ -52,6 +56,7 @@ class TimerCollection {
     "timers": timers.map((e) => e.toMap()).toList(),
     "laps": laps,
     "isInfinite": isInfinite,
+    "alert": alert,
     "label": label,
     "id": id,
   };
@@ -63,6 +68,7 @@ class TimerCollection {
                 .toList(),
         laps: map["laps"],
         isInfinite: map["isInfinite"],
+        alert: map["alert"] ?? false,
         label: map["label"],
       )..id = map["id"];
 }
