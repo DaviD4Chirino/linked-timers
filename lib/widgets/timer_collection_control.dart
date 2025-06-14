@@ -255,6 +255,8 @@ class _TimerCollectionControlState
             Text(
               currentTimer.label,
               style: theme.textTheme.bodyLarge,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             if (widget.showMore)
               CollectionDropDownButton(widget.collection),

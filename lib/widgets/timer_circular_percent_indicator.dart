@@ -25,7 +25,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
     bool hasSecond = timer.initialPresetTime >= 1000;
     bool hasHour = timer.initialPresetTime >= 3600000;
 
-    // final ThemeData theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return TextButton(
       style: ButtonStyle(
@@ -44,12 +44,13 @@ class TimerCircularPercentIndicator extends StatelessWidget {
             children: [
               CircularPercentIndicator(
                 radius: 34,
-                // progressColor: theme.colorScheme.secondary,
+                circularStrokeCap: CircularStrokeCap.round,
+                progressColor: theme.colorScheme.secondary,
+                backgroundColor: Colors.transparent,
                 percent: Utils.getPercentage(
                   data.data!,
                   0.0,
                   timer.initialPresetTime,
-                  // StopWatchTimer.getMilliSecFromSecond(5),
                 ),
                 header: selected ? Text("Selected") : null,
                 lineWidth: 4,
@@ -76,6 +77,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
                   child: Icon(
                     Icons.notifications_rounded,
                     size: 16,
+                    color: theme.colorScheme.secondary,
                   ),
                 ),
             ],

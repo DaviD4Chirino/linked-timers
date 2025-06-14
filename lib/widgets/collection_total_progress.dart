@@ -9,7 +9,6 @@ class CollectionTotalProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return StreamBuilder(
       stream: stopWatch.rawTime,
       builder: (context, snapshot) {
@@ -23,7 +22,6 @@ class CollectionTotalProgress extends StatelessWidget {
             0,
             stopWatch.initialPresetTime,
           ),
-          color: theme.colorScheme.secondary,
         );
       },
     );
