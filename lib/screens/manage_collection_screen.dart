@@ -160,7 +160,7 @@ class _NewCollectionScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "Make sure the timer is longer than 1 second",
+            "Make sure the timer is at leas 1 second long",
           ),
         ),
       );
@@ -220,6 +220,7 @@ class _NewCollectionScreenState
                               hours: hours,
                               minutes: minutes,
                               seconds: seconds,
+                              notify: true,
                             ),
                           );
                         },
@@ -290,23 +291,6 @@ class _NewCollectionScreenState
   }
 
   ListView timersDisplay(BuildContext context) {
-    var items = [
-      ThemedPopupMenuItem(
-        value: "alert",
-        child: TextIcon(
-          icon: Icon(Icons.notifications_outlined),
-          text: Text("Alert when it ends"),
-        ),
-      ),
-      ThemedPopupMenuItem(
-        themeStyle: ThemedPopupMenuStyle.error,
-        value: "remove",
-        child: TextIcon(
-          icon: Icon(Icons.remove_circle_outline),
-          text: Text("Remove this timer"),
-        ),
-      ),
-    ];
     void onLongPress(
       LongPressStartDetails details,
       Timer timer,
@@ -320,11 +304,47 @@ class _NewCollectionScreenState
           details.globalPosition & const Size(40, 40),
           Offset.zero & overlay.size,
         ),
-        items: items,
+        items: [
+          ThemedPopupMenuItem(
+            value: "toggle-notify",
+            child: TextIcon(
+              icon: Icon(
+                timer.notify
+                    ? Icons.notifications_off_sharp
+                    : Icons.notification_add,
+              ),
+              text: Text(
+                timer.notify
+                    ? "Don't notify when it ends"
+                    : "Notify when it ends",
+              ),
+            ),
+          ),
+          ThemedPopupMenuItem(
+            themeStyle: ThemedPopupMenuStyle.error,
+            value: "remove",
+            child: TextIcon(
+              icon: Icon(Icons.remove_circle_outline),
+              text: Text("Remove this timer"),
+            ),
+          ),
+        ],
       );
 
       if (selected == "remove") {
         collection.removeTimer(timer);
+      }
+      if (selected == "toggle-notify") {
+        var timers = collection.timers;
+        int index = timers.indexOf(timer);
+        Timer collTimer = timers[index];
+        timers[index] = collTimer.copyWith(
+          notify: !collTimer.notify,
+        );
+
+        setState(() {
+          collection = collection.copyWith(timers: timers);
+        });
       }
     }
 
@@ -342,6 +362,7 @@ class _NewCollectionScreenState
               },
               child: TimerCircularPercentIndicator(
                 collection.timers[index].toStopWatchTimer(),
+                notify: collection.timers[index].notify,
                 onTap: () {
                   onTimerTapped(timer);
                 },

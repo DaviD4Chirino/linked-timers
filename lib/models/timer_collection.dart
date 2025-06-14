@@ -41,7 +41,10 @@ class TimerCollection {
     String? label,
   }) {
     return TimerCollection(
-      timers: timers ?? this.timers,
+      timers:
+          (timers ?? this.timers)
+              .map((t) => t.copyWith())
+              .toList(), // deep copy
       laps: laps ?? this.laps,
       isInfinite: isInfinite ?? this.isInfinite,
       label: label ?? this.label,

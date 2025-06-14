@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
+import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -8,6 +9,7 @@ class TimersList extends StatelessWidget {
   const TimersList(
     this.stopWatches, {
     super.key,
+    required this.timers,
     this.currentTimerIndex,
     this.itemScrollController,
     this.scrollOffsetController,
@@ -20,6 +22,7 @@ class TimersList extends StatelessWidget {
   final int? currentTimerIndex;
 
   final List<StopWatchTimer> stopWatches;
+  final List<Timer> timers;
   final ItemScrollController? itemScrollController;
   final ScrollOffsetController? scrollOffsetController;
   final ItemPositionsListener? itemPositionsListener;
@@ -47,6 +50,7 @@ class TimersList extends StatelessWidget {
         return TimerCircularPercentIndicator(
           stopWatches[index],
           key: Key(index.toString()),
+          notify: timers[index].notify,
           onTap:
               onTimerTapped != null
                   ? () {

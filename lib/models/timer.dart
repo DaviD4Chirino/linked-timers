@@ -3,17 +3,16 @@ import 'package:uuid/uuid.dart';
 
 class Timer {
   Timer({
-    // required this.title,
     this.label = "New Timer",
     this.hours = 0,
     this.minutes = 0,
     this.seconds = 0,
     this.notify = false,
     this.nextTimer,
-  });
+    String? id,
+  }) : id = id ?? Uuid().v4();
 
-  /// A flag that shows a notification when this timer specifically
-  /// ends
+  /// A flag that shows a notification when this timer specifically ends
   bool notify = false;
 
   int hours = 0;
@@ -22,7 +21,7 @@ class Timer {
 
   Timer? nextTimer;
   String label;
-  String id = Uuid().v4();
+  String id;
 
   int get timeAsMilliseconds =>
       ((hours * 60 * 60) + (minutes * 60) + seconds) * 1000;
@@ -78,6 +77,7 @@ class Timer {
       nextTimer: nextTimer,
     );
   }
+
   StopWatchTimer toStopWatchTimer() {
     return StopWatchTimer(
       mode: StopWatchMode.countDown,
@@ -85,17 +85,24 @@ class Timer {
     );
   }
 
-  /* nextTimer =
-          json["nextTimer"] != null
-              ? Timer.fromJson(json["nextTimer"])
-              : null; */
+  /// Returns a copy of this Timer with the given fields replaced by new values.
+  Timer copyWith({
+    String? label,
+    int? hours,
+    int? minutes,
+    int? seconds,
+    bool? notify,
+    Timer? nextTimer,
+    String? id,
+  }) {
+    return Timer(
+      label: label ?? this.label,
+      hours: hours ?? this.hours,
+      minutes: minutes ?? this.minutes,
+      seconds: seconds ?? this.seconds,
+      notify: notify ?? this.notify,
+      nextTimer: nextTimer ?? this.nextTimer,
+      id: id ?? this.id,
+    );
+  }
 }
-// bool isLapHours = true,
-//   StopWatchMode mode = StopWatchMode.countUp,
-//   int presetMillisecond = 0,
-//   int refreshTime = 1,
-//   void Function(int)? onChange,
-//   void Function(int)? onChangeRawSecond,
-//   void Function(int)? onChangeRawMinute,
-//   void Function()? onStopped,
-//   void Function()? onEnded,

@@ -36,7 +36,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   final Widget? buttonWidget;
 
-  final Function(StopWatchTimer timer, String label)? onTimerTapped;
+  final Function(StopWatchTimer timer, String label)?
+  onTimerTapped;
 
   final void Function(int timerIndex)? onTimerEnd;
 
@@ -191,7 +192,9 @@ class _TimerCollectionControlState
   }
 
   @override
-  void didUpdateWidget(covariant TimerCollectionControl oldWidget) {
+  void didUpdateWidget(
+    covariant TimerCollectionControl oldWidget,
+  ) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.collection != widget.collection) {
       buildStopWatches();
@@ -225,6 +228,7 @@ class _TimerCollectionControlState
               Center(
                 child: TimersList(
                   stopWatches,
+                  timers: widget.collection.timers,
                   itemScrollController: itemScrollController,
                   onTimerTapped: (stopWatch) {
                     if (widget.onTimerTapped != null) {
@@ -321,7 +325,8 @@ class _TimerCollectionControlState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       children: [
-        if (widget.titleWidget != null) widget.titleWidget as Widget,
+        if (widget.titleWidget != null)
+          widget.titleWidget as Widget,
 
         if (widget.titleWidget == null)
           Expanded(
@@ -332,7 +337,8 @@ class _TimerCollectionControlState
               maxLines: 1,
             ),
           ),
-        if (widget.lapsWidget != null) SizedBox(width: Spacing.lg),
+        if (widget.lapsWidget != null)
+          SizedBox(width: Spacing.lg),
         widget.lapsWidget ??
             Text(
               isInfinite ? "∞" : "$laps/$maxLaps",
@@ -360,7 +366,8 @@ class _TimerCollectionControlState
 
   void onGlobalSecondTimer(int value) {
     // If its at the start do not show notification
-    if ((value * 1000) == globalStopWatch.initialPresetTime) return;
+    if ((value * 1000) == globalStopWatch.initialPresetTime)
+      return;
     NotificationService.showCollectionProgressNotification(
       widget.collection,
       milliSeconds: value * 1000,

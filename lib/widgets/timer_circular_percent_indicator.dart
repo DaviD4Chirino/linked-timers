@@ -9,6 +9,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.selected = false,
+    this.notify = false,
     super.key,
   });
 
@@ -16,6 +17,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
   final VoidCallback? onTap;
   final void Function()? onLongPress;
   final bool selected;
+  final bool notify;
 
   @override
   Widget build(BuildContext context) {
@@ -37,33 +39,46 @@ class TimerCircularPercentIndicator extends StatelessWidget {
           if (data.hasData == false) {
             return Container();
           }
-          return CircularPercentIndicator(
-            radius: 34,
-            // progressColor: theme.colorScheme.secondary,
-            percent: Utils.getPercentage(
-              data.data!,
-              0.0,
-              timer.initialPresetTime,
-              // StopWatchTimer.getMilliSecFromSecond(5),
-            ),
-            header: selected ? Text("Selected") : null,
-            lineWidth: 4,
-            animation: true,
-            animateToInitialPercent: true,
-            animateFromLastPercent: true,
-            center: Text(
-              StopWatchTimer.getDisplayTime(
-                data.data!,
-                hours: hasHour,
-                minute: hasMinute,
-                second: hasSecond && !hasHour,
-                milliSecond: !hasHour && !hasMinute,
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              CircularPercentIndicator(
+                radius: 34,
+                // progressColor: theme.colorScheme.secondary,
+                percent: Utils.getPercentage(
+                  data.data!,
+                  0.0,
+                  timer.initialPresetTime,
+                  // StopWatchTimer.getMilliSecFromSecond(5),
+                ),
+                header: selected ? Text("Selected") : null,
+                lineWidth: 4,
+                animation: true,
+                animateToInitialPercent: true,
+                animateFromLastPercent: true,
+                center: Text(
+                  StopWatchTimer.getDisplayTime(
+                    data.data!,
+                    hours: hasHour,
+                    minute: hasMinute,
+                    second: hasSecond && !hasHour,
+                    milliSecond: !hasHour && !hasMinute,
+                  ),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+              if (notify)
+                Positioned(
+                  right: -10,
+                  child: Icon(
+                    Icons.notifications_rounded,
+                    size: 16,
+                  ),
+                ),
+            ],
           );
         },
       ),
