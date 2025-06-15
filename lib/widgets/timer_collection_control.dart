@@ -106,10 +106,15 @@ class _TimerCollectionControlState
     timer.onStopTimer();
     setState(() {
       if (stopWatches.isEmpty) return;
-      NotificationService.showTimerEndedNotification(
-        widget.collection.timers[currentTimerIndex],
-        widget.collection.id,
-      );
+      currentTimer;
+
+      if (widget.collection.timers[currentTimerIndex].notify) {
+        NotificationService.showTimerEndedNotification(
+          widget.collection.timers[currentTimerIndex],
+          widget.collection.id,
+        );
+      }
+
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
       if (currentTimerIndex == 0) {
@@ -395,8 +400,9 @@ class _TimerCollectionControlState
 
   void onGlobalSecondTimer(int value) {
     // If its at the start do not show notification
-    if ((value * 1000) == globalStopWatch.initialPresetTime)
+    if ((value * 1000) == globalStopWatch.initialPresetTime) {
       return;
+    }
     NotificationService.showCollectionProgressNotification(
       widget.collection,
       milliSeconds: value * 1000,
@@ -410,9 +416,4 @@ class _TimerCollectionControlState
       displayCollectionEnded: finished,
     );
   }
-}
-
-@pragma('vm:entry-point')
-void alarmTest() {
-  print("alarmTest triggered!");
 }

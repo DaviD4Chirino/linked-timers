@@ -28,6 +28,8 @@ class _NewCollectionScreenState
   int minutes = 0;
   int seconds = 0;
 
+  bool notify = false;
+
   int timersAdded = 0;
 
   TextEditingController minutesController =
@@ -94,11 +96,18 @@ class _NewCollectionScreenState
             constraints: BoxConstraints(maxHeight: 500),
             child: EditTimerListWheel(
               timer: timer,
-              onChanged: (label, hours, minutes, seconds) {
+              onChanged: (
+                label,
+                hours,
+                minutes,
+                seconds,
+                notify,
+              ) {
                 newTimer.label = label;
                 newTimer.hours = hours;
                 newTimer.minutes = minutes;
                 newTimer.seconds = seconds;
+                newTimer.notify = notify;
               },
               /* onSubmit: (timer_) {
                 setState(() {
@@ -185,8 +194,28 @@ class _NewCollectionScreenState
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    List<Widget> persistentFooterButtons = [
+      SizedBox(
+        width: double.infinity,
+        child: FilledButton.icon(
+          label: Text(
+            editing ? "Apply changes" : "Add Collection",
+          ),
+          onPressed: editing ? editCollection : addCollection,
+          icon: Icon(Icons.alarm_on_rounded),
+          // color: theme.colorScheme.onTertiary,
+          /*  style: ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll(
+                theme.colorScheme.tertiary,
+              ),
+            ), */
+        ),
+      ),
+    ];
+
     return Scaffold(
       appBar: appBar(theme),
+      persistentFooterButtons: persistentFooterButtons,
       body: Padding(
         padding: EdgeInsets.only(
           right: Spacing.xl,
@@ -220,7 +249,7 @@ class _NewCollectionScreenState
                               hours: hours,
                               minutes: minutes,
                               seconds: seconds,
-                              notify: true,
+                              notify: notify,
                             ),
                           );
                         },
@@ -241,11 +270,18 @@ class _NewCollectionScreenState
             ),
             Expanded(
               child: EditTimerListWheel(
-                onChanged: (label, hours, minutes, seconds) {
+                onChanged: (
+                  label,
+                  hours,
+                  minutes,
+                  seconds,
+                  notify,
+                ) {
                   timerLabel = label;
                   this.hours = hours;
                   this.minutes = minutes;
                   this.seconds = seconds;
+                  this.notify = notify;
                 },
               ),
             ),
@@ -273,7 +309,7 @@ class _NewCollectionScreenState
             ? "Editing ${collection.label}"
             : "Add a new Collection",
       ),
-      actions: [
+      /* actions: [
         IconButton.filled(
           tooltip: editing ? "Apply changes" : "Add Collection",
           onPressed: editing ? editCollection : addCollection,
@@ -286,7 +322,7 @@ class _NewCollectionScreenState
           ),
         ),
         SizedBox(width: 5),
-      ],
+      ], */
     );
   }
 

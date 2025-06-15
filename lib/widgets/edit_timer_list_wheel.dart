@@ -15,6 +15,7 @@ class EditTimerListWheel extends StatefulWidget {
     int hours,
     int minutes,
     int seconds,
+    bool notify,
   )?
   onChanged;
 
@@ -38,35 +39,42 @@ class _EditTimerListWheelState
   int hours = 0;
   int minutes = 0;
   int seconds = 0;
+  bool notify = true;
 
   final double itemHeight = 50;
 
   @override
   void initState() {
     super.initState();
-    timer = Timer(
-      label: widget.timer?.label ?? "New Timer",
-      hours: widget.timer?.hours ?? 0,
-      minutes: widget.timer?.minutes ?? 0,
-      seconds: widget.timer?.seconds ?? 0,
-    );
-    hours = timer.hours;
-    minutes = timer.minutes;
-    seconds = timer.seconds;
+    setState(() {
+      timer = Timer(
+        label: widget.timer?.label ?? "New Timer",
+        hours: widget.timer?.hours ?? 0,
+        minutes: widget.timer?.minutes ?? 0,
+        seconds: widget.timer?.seconds ?? 0,
+        notify: widget.timer?.notify ?? false,
+      );
+      hours = timer.hours;
+      minutes = timer.minutes;
+      seconds = timer.seconds;
 
-    timerNameController = TextEditingController(
-      text: timer.label,
-    );
+      notify = timer.notify;
 
-    hoursController = FixedExtentScrollController(
-      initialItem: hours,
-    );
-    minutesController = FixedExtentScrollController(
-      initialItem: minutes,
-    );
-    secondsController = FixedExtentScrollController(
-      initialItem: seconds,
-    );
+      timerNameController = TextEditingController(
+        text: timer.label,
+      );
+
+      hoursController = FixedExtentScrollController(
+        initialItem: hours,
+      );
+      minutesController = FixedExtentScrollController(
+        initialItem: minutes,
+      );
+      secondsController = FixedExtentScrollController(
+        initialItem: seconds,
+      );
+    });
+    _onChanged();
   }
 
   /*  @override
@@ -111,6 +119,7 @@ class _EditTimerListWheelState
       hours,
       minutes,
       seconds,
+      notify,
     );
   }
 
@@ -123,15 +132,34 @@ class _EditTimerListWheelState
       columnSizes: [1.fr],
       rowSizes: [25.px, 1.fr],
       children: [
-        TextField(
-          controller: timerNameController,
-          onChanged: (value) {
-            _onChanged();
-          },
-          decoration: InputDecoration.collapsed(
-            hintText: "Edit Timer Name",
-            border: UnderlineInputBorder(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: timerNameController,
+                onChanged: (value) {
+                  _onChanged();
+                },
+                decoration: InputDecoration.collapsed(
+                  hintText: "Edit Timer Name",
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+            ),
+            Switch(
+              value: notify,
+              onChanged: (value) {
+                setState(() {
+                  notify = value;
+                });
+                _onChanged();
+              },
+              thumbIcon: WidgetStateProperty.resolveWith(
+                (states) =>
+                    const Icon(Icons.notifications_active),
+              ),
+            ),
+          ],
         ),
         Stack(
           alignment: Alignment.center,
@@ -141,7 +169,7 @@ class _EditTimerListWheelState
                 height: 30,
                 width: mediaQuery.width,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainer,
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.all(
                     Radius.circular(50),
                   ),

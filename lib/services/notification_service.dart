@@ -10,7 +10,8 @@ enum NotificationIds {
 }
 
 abstract class NotificationService {
-  static final notificationPlugin = FlutterLocalNotificationsPlugin();
+  static final notificationPlugin =
+      FlutterLocalNotificationsPlugin();
 
   static bool isInitialized = false;
 
@@ -30,8 +31,8 @@ abstract class NotificationService {
     "timer-ended",
     "Timer Ended",
     channelDescription: "Alerts when any timer ends it's run",
-    importance: Importance.low,
-    priority: Priority.low,
+    importance: Importance.high,
+    priority: Priority.high,
     actions: actions,
   );
   static AndroidNotificationDetails androidAppRunningDetails() =>
@@ -43,29 +44,34 @@ abstract class NotificationService {
         importance: Importance.min,
         priority: Priority.min,
       );
-  static AndroidNotificationDetails androidCollectionEndedDetails({
+  static AndroidNotificationDetails
+  androidCollectionEndedDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
     "collection-ended",
     "Collection Ended",
-    channelDescription: "Alerts when any collection ends it's run",
+    channelDescription:
+        "Alerts when any collection ends it's run",
     importance: Importance.high,
     priority: Priority.high,
     actions: actions,
   );
 
-  static AndroidNotificationDetails androidCollectionStartedDetails({
+  static AndroidNotificationDetails
+  androidCollectionStartedDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
     "collection-started",
     "Collection Started",
-    channelDescription: "Alerts when any collection start it's run",
+    channelDescription:
+        "Alerts when any collection start it's run",
     importance: Importance.high,
     priority: Priority.high,
     actions: actions,
     playSound: true,
   );
-  static AndroidNotificationDetails androidCollectionProgressDetails({
+  static AndroidNotificationDetails
+  androidCollectionProgressDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
     "collection-progress",
@@ -154,7 +160,9 @@ abstract class NotificationService {
       "Start!",
       "${collection.label} started",
       NotificationDetails(
-        android: androidCollectionStartedDetails(actions: actions),
+        android: androidCollectionStartedDetails(
+          actions: actions,
+        ),
       ),
     );
   }
@@ -177,7 +185,9 @@ abstract class NotificationService {
         android:
             displayCollectionEnded
                 ? androidCollectionEndedDetails(actions: actions)
-                : androidCollectionProgressDetails(actions: actions),
+                : androidCollectionProgressDetails(
+                  actions: actions,
+                ),
       ),
     );
   }
