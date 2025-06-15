@@ -248,20 +248,47 @@ class _TimerCollectionControlState
         ),
         SizedBox(height: Spacing.lg),
         CollectionTotalProgress(globalStopWatch),
-        Row(
+        LayoutGrid(
+          columnSizes: [1.fr, 40.px],
+          rowSizes: [40.px],
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  currentTimer.label,
+                  style: theme.textTheme.bodyLarge,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+            CollectionDropDownButton(widget.collection),
+          ],
+        ),
+        /*  Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              currentTimer.label,
-              style: theme.textTheme.bodyLarge,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            Expanded(
+              flex: 1,
+              child: Text(
+                currentTimer.label,
+                style: theme.textTheme.bodyLarge,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             if (widget.showMore)
-              CollectionDropDownButton(widget.collection),
+              Expanded(
+                flex: 1,
+                child: CollectionDropDownButton(
+                  widget.collection,
+                ),
+              ),
           ],
-        ),
+        ), */
       ],
     );
   }
