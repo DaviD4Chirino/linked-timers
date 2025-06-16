@@ -75,6 +75,8 @@ abstract final class AppTheme {
       error: Color(0xFFEA1D11),
       errorContainer: Color(0xFFB81D28),
     ),
+    // Surface color adjustments.
+    surfaceTint: const Color(0xFF081400),
     // Component theme configurations for dark mode.
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
@@ -82,6 +84,7 @@ abstract final class AppTheme {
       blendOnColors: true,
       scaffoldBackgroundBaseColor:
           FlexScaffoldBaseColor.surfaceContainer,
+      scaffoldBackgroundSchemeColor: SchemeColor.surface,
       useM2StyleDividerInM3: true,
       splashType: FlexSplashType.inkSplash,
       outlinedButtonOutlineSchemeColor: SchemeColor.primary,
