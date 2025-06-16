@@ -166,10 +166,10 @@ class _EditTimerListWheelState
           children: [
             Positioned(
               child: Container(
-                height: 30,
+                height: 35,
                 width: mediaQuery.width,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
+                  color: theme.colorScheme.surfaceContainer,
                   borderRadius: BorderRadius.all(
                     Radius.circular(50),
                   ),

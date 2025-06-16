@@ -1,7 +1,9 @@
+import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/config/theme.dart';
+import 'package:linked_timers/models/abstracts/permissions_handler.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/local_storage.dart';
 import 'package:linked_timers/screens/home_screen.dart';
@@ -22,6 +24,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.init();
   await NotificationService.initialize();
+  await Alarm.init();
+  await PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
 
   bool success = await FlutterBackground.initialize(
     androidConfig: androidConfig,
