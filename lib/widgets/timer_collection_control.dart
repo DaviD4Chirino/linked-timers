@@ -119,6 +119,7 @@ class _TimerCollectionControlState
       currentTimer = widget.collection.timers.first;
       globalStopWatch.onResetTimer();
       maybeScrollToIndex(0);
+      resetAllTimers();
       stopAlarm();
     });
   }
@@ -145,9 +146,7 @@ class _TimerCollectionControlState
         }
         if (finished) {
           currentStopWatch = stopWatches[currentTimerIndex];
-          for (var timer in stopWatches) {
-            timer.onResetTimer();
-          }
+          resetAllTimers();
           if (!widget.collection.alert) {
             NotificationService.showCollectionProgressNotification(
               widget.collection,
@@ -173,6 +172,12 @@ class _TimerCollectionControlState
 
     if (widget.onTimerEnd != null) {
       widget.onTimerEnd!(currentTimerIndex);
+    }
+  }
+
+  void resetAllTimers() {
+    for (var timer in stopWatches) {
+      timer.onResetTimer();
     }
   }
 
@@ -381,7 +386,9 @@ class _TimerCollectionControlState
 
             return Center(
               child: IconButton.filled(
+                enableFeedback: true,
                 onPressed: onPressed,
+                onLongPress: reset,
                 icon: Icon(getIcon()),
                 iconSize: Spacing.iconXXl,
               ),
