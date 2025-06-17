@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 abstract class Utils {
@@ -51,5 +52,11 @@ abstract class Utils {
 
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     return "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}";
+  }
+
+  void log(Object? element) {
+    if (kDebugMode) {
+      print(element);
+    }
   }
 }

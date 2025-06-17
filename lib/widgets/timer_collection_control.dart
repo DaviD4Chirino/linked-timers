@@ -343,7 +343,9 @@ class _TimerCollectionControlState
         reset();
         currentStopWatch.onStartTimer();
         globalStopWatch.onStartTimer();
-        setAlarm();
+        if (!isInfinite) {
+          setAlarm();
+        }
         return;
       }
       if (laps >= widget.collection.laps) {
@@ -352,8 +354,10 @@ class _TimerCollectionControlState
         });
       }
       globalStopWatch.onStartTimer();
-      setAlarm();
       currentStopWatch.onStartTimer();
+      if (!isInfinite) {
+        setAlarm();
+      }
     }
 
     IconData getIcon() {
