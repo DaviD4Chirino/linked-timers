@@ -54,7 +54,8 @@ class _TimerCollectionControlState
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
 
-  bool isInfinite = false;
+  bool _isInfinite = false;
+
   bool schedulingAlarm = false;
   int laps = 0;
   int currentTimerIndex = 0;
@@ -69,6 +70,20 @@ class _TimerCollectionControlState
   ThemeData get theme => Theme.of(context);
   int get maxLaps => widget.collection.laps;
   List<StopWatchTimer> stopWatches = [];
+
+  bool get isInfinite => _isInfinite;
+
+  set isInfinite(bool value) {
+    if (value) {
+      stopAlarm();
+    } else {
+      if (currentStopWatch.isRunning) {
+        setAlarm();
+      }
+    }
+    _isInfinite = value;
+  }
+
   bool get finished => laps >= maxLaps && isInfinite == false;
 
   int remainingTime = 0;
