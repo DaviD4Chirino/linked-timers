@@ -14,12 +14,12 @@ abstract class AlarmService {
   }) => AlarmSettings(
     id: id,
     dateTime: dateTime ?? DateTime.now(),
-    assetAudioPath: 'assets/alarm-default-short.mp3',
+    assetAudioPath: 'assets/alarms/alarm-default-short.mp3',
     loopAudio: true,
     vibrate: true,
     warningNotificationOnKill: Platform.isIOS,
     androidFullScreenIntent: true,
-    volumeSettings: VolumeSettings.fixed(volume: 0.0),
+    volumeSettings: VolumeSettings.fixed(volume: 1.0),
     notificationSettings: NotificationSettings(
       title: title,
       body: body,
