@@ -54,9 +54,11 @@ abstract class Utils {
     return "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}";
   }
 
-  void log(Object? element) {
+  static void log(List<Object?> elements) {
     if (kDebugMode) {
-      print(element);
+      // ignore: avoid_print
+      elements.forEach(print);
+      print("At: ${DateTime.now().toIso8601String()}");
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/services/alarm_service.dart';
 import 'package:linked_timers/widgets/collection_total_progress.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -392,6 +393,11 @@ class _TimerCollectionControlState
   Future<void> stopAlarm() async {
     if (!widget.collection.alert) return;
     AlarmService.stopCollectionAlarm(widget.collection.id);
+    Utils.log([
+      "Alert of id:",
+      "${widget.collection.id}-alarm".hashCode,
+      "Stopped",
+    ]);
   }
 
   Future<void> setAlarm() async {
@@ -402,6 +408,10 @@ class _TimerCollectionControlState
         Duration(milliseconds: remainingTime),
       ),
     );
+
+    Utils.log([
+      "Alert Set for: ${(DateTime.now().add(Duration(milliseconds: remainingTime)).toIso8601String())}",
+    ]);
   }
 
   Widget topPart() {
