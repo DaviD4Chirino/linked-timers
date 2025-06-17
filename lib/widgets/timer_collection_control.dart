@@ -139,14 +139,18 @@ class _TimerCollectionControlState
 
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
+
       if (currentTimerIndex == 0) {
-        globalStopWatch.onResetTimer();
+        // globalStopWatch.onResetTimer();
+
         if (isInfinite == false) {
           laps++;
         }
         if (finished) {
           currentStopWatch = stopWatches[currentTimerIndex];
+
           resetAllTimers();
+
           if (!widget.collection.alert) {
             NotificationService.showCollectionProgressNotification(
               widget.collection,
@@ -154,12 +158,12 @@ class _TimerCollectionControlState
               displayCollectionEnded: true,
             );
           }
+
           return;
         }
-        for (var timer in stopWatches) {
-          timer.onResetTimer();
-        }
-        globalStopWatch.onStartTimer();
+        resetAllTimers();
+
+        // globalStopWatch.onStartTimer();
       }
       currentStopWatch =
           stopWatches[currentTimerIndex]
@@ -201,9 +205,11 @@ class _TimerCollectionControlState
         onTimerEnded(timer);
       });
     }
-    int totalMillis = stopWatches
-        .map((sw) => sw.initialPresetTime)
-        .reduce((a, b) => a + b);
+    int totalMillis =
+        (stopWatches
+            .map((sw) => sw.initialPresetTime)
+            .reduce((a, b) => a + b)) *
+        maxLaps;
 
     globalStopWatch = StopWatchTimer(
       mode: StopWatchMode.countDown,

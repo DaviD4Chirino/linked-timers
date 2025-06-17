@@ -19,7 +19,7 @@ abstract class AlarmService {
     vibrate: true,
     warningNotificationOnKill: Platform.isIOS,
     androidFullScreenIntent: true,
-    volumeSettings: VolumeSettings.fixed(volume: 1.0),
+    volumeSettings: VolumeSettings.fixed(volume: 0.0),
     notificationSettings: NotificationSettings(
       title: title,
       body: body,

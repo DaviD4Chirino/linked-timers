@@ -13,7 +13,7 @@ Todo:
       ✔ Make an indicator for the progress of the whole collection @started(25-06-07 15:52) @done(25-06-07 19:24) @lasted(3h32m47s)
       ☐ Make bulk timer editing
       ✔ Timer edit allows for individual "alert when finish" @started(25-06-13 17:14) @done(25-06-14 20:29) @lasted(1d3h15m46s)
-      ✔ Collection edit allows for individual "alert when finish" @started(25-06-15 21:15) @done(25-06-17 17:21) @lasted(1d20h6m39s)
+      ✔ Collection edit allows for individual "alert when finish" @started(25-06-15 21:15) @done(25-06-17 18:05) @lasted(1d20h50m57s)
       ✔ Make it impossible for a timer to be add if theres less than a second on it @started(25-06-05 17:21) @done(25-06-05 17:29) @lasted(8m52s)
       ✔ The timer should be able to be deleted when the user long press on the timer @started(25-06-08 18:38) @done(25-06-13 17:13) @lasted(4d22h35m33s)
     timer_collection_control:
