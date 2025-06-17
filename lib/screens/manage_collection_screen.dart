@@ -202,7 +202,8 @@ class _NewCollectionScreenState
             editing ? "Apply changes" : "Add Collection",
           ),
           onPressed: editing ? editCollection : addCollection,
-          icon: Icon(Icons.alarm_on_rounded),
+          icon: Icon(Icons.check_circle),
+
           // color: theme.colorScheme.onTertiary,
           /*  style: ButtonStyle(
               backgroundColor: WidgetStatePropertyAll(
@@ -309,6 +310,19 @@ class _NewCollectionScreenState
             ? "Editing ${collection.label}"
             : "Add a new Collection",
       ),
+      actions: [
+        Switch(
+          value: collection.alert,
+          thumbIcon: WidgetStatePropertyAll(
+            Icon(Icons.notifications_active),
+          ),
+          onChanged: (value) {
+            setState(() {
+              collection = collection.copyWith(alert: value);
+            });
+          },
+        ),
+      ],
       /* actions: [
         IconButton.filled(
           tooltip: editing ? "Apply changes" : "Add Collection",

@@ -15,16 +15,6 @@ abstract class NotificationService {
 
   static bool isInitialized = false;
 
-  static AndroidNotificationDetails
-  androidCollectionRunningDetails() => AndroidNotificationDetails(
-    "linked-timers-bg-service",
-    "Linked Timers running in the background",
-    channelDescription:
-        "Shows when a collection is running in the background",
-    importance: Importance.min,
-    priority: Priority.min,
-  );
-
   static AndroidNotificationDetails androidTimerEndedDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
@@ -55,6 +45,7 @@ abstract class NotificationService {
     importance: Importance.high,
     priority: Priority.high,
     actions: actions,
+    playSound: true,
   );
 
   static AndroidNotificationDetails
@@ -70,19 +61,24 @@ abstract class NotificationService {
     actions: actions,
     playSound: true,
   );
+
   static AndroidNotificationDetails
   androidCollectionProgressDetails({
     List<AndroidNotificationAction>? actions,
+    int progress = 0,
+    int maxProgress = 100,
   }) => AndroidNotificationDetails(
     "collection-progress",
     "Progress of a Collection",
     channelDescription:
         "Tells you the current progress of a Collection",
-    importance: Importance.min, // <-- change to min
-    priority: Priority.min, // <-- change to min
-    playSound: false, // <-- explicitly disable sound
-    enableVibration: false, // <-- explicitly disable vibration
+    importance: Importance.min,
+    priority: Priority.min,
+    playSound: false,
+    enableVibration: false,
     actions: actions,
+    progress: progress,
+    maxProgress: maxProgress,
   );
 
   static Future<void> initialize() async {

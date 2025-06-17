@@ -55,6 +55,7 @@ class _TimerCollectionControlState
       ItemPositionsListener.create();
 
   bool isInfinite = false;
+  bool schedulingAlarm = false;
   int laps = 0;
   int currentTimerIndex = 0;
   double currentTimerVisibleFraction = 1.0;
@@ -102,7 +103,7 @@ class _TimerCollectionControlState
       currentTimer = widget.collection.timers.first;
       globalStopWatch.onResetTimer();
       maybeScrollToIndex(0);
-      AlarmService.stopCollectionAlarm(widget.collection.id);
+      stopAlarm();
     });
   }
 
@@ -126,23 +127,24 @@ class _TimerCollectionControlState
         if (isInfinite == false) {
           laps++;
         }
-        if (laps >= maxLaps && isInfinite == false) {
+        if (finished) {
           currentStopWatch = stopWatches[currentTimerIndex];
           for (var timer in stopWatches) {
             timer.onResetTimer();
           }
-          NotificationService.showCollectionProgressNotification(
-            widget.collection,
-            milliSeconds: 0,
-            displayCollectionEnded: true,
-          );
+          if (!widget.collection.alert) {
+            NotificationService.showCollectionProgressNotification(
+              widget.collection,
+              milliSeconds: 0,
+              displayCollectionEnded: true,
+            );
+          }
           return;
         }
         for (var timer in stopWatches) {
           timer.onResetTimer();
         }
         globalStopWatch.onStartTimer();
-        setAlarm();
       }
       currentStopWatch =
           stopWatches[currentTimerIndex]
@@ -188,14 +190,11 @@ class _TimerCollectionControlState
       onChangeRawSecond: onGlobalSecondTimer,
       onChange: (int millis) {
         remainingTime = millis;
-        print(remainingTime);
-      },
-      onEnded: () {
-        print("${widget.collection.label} ended");
+        // print(remainingTime);
       },
     );
-    // globalStopWatch.secondTime.listen(onGlobalSecondTimer);
-    // ..fetchEnded.listen(onGlobalStopWatchEnded);
+
+    remainingTime = totalMillis;
 
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -222,6 +221,7 @@ class _TimerCollectionControlState
   @override
   void dispose() async {
     super.dispose();
+    stopAlarm();
     globalStopWatch.dispose();
     for (var timer in stopWatches) {
       await timer.dispose();
@@ -370,11 +370,13 @@ class _TimerCollectionControlState
         );
   }
 
-  void stopAlarm() {
+  Future<void> stopAlarm() async {
+    if (!widget.collection.alert) return;
     AlarmService.stopCollectionAlarm(widget.collection.id);
   }
 
-  void setAlarm() {
+  Future<void> setAlarm() async {
+    if (!widget.collection.alert) return;
     AlarmService.startCollectionAlarm(
       widget.collection,
       dateTime: DateTime.now().add(
@@ -400,6 +402,9 @@ class _TimerCollectionControlState
               maxLines: 1,
             ),
           ),
+        if (widget.collection.alert)
+          Icon(Icons.notifications_active, size: 20),
+        if (widget.collection.alert) SizedBox(width: Spacing.sm),
         if (widget.lapsWidget != null)
           SizedBox(width: Spacing.lg),
         widget.lapsWidget ??

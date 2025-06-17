@@ -9,7 +9,7 @@ class TimerCollection {
     required this.label,
     this.laps = 1,
     this.isInfinite = false,
-    this.alert = false,
+    this.alert = true,
   });
 
   List<Timer> timers = [];
@@ -17,7 +17,7 @@ class TimerCollection {
   bool isInfinite = false;
 
   /// A flag that starts an alert when this collection ends
-  bool alert = false;
+  bool alert = true;
 
   /// The title works as its id
   String label;
@@ -38,6 +38,7 @@ class TimerCollection {
     List<Timer>? timers,
     int? laps,
     bool? isInfinite,
+    bool? alert,
     String? label,
   }) {
     return TimerCollection(
@@ -48,6 +49,7 @@ class TimerCollection {
       laps: laps ?? this.laps,
       isInfinite: isInfinite ?? this.isInfinite,
       label: label ?? this.label,
+      alert: alert ?? this.alert,
     );
   }
 

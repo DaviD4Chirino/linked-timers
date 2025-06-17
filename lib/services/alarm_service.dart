@@ -13,11 +13,7 @@ abstract class AlarmService {
         vibrate: true,
         warningNotificationOnKill: Platform.isIOS,
         androidFullScreenIntent: true,
-        volumeSettings: VolumeSettings.fade(
-          volume: 1.0,
-          fadeDuration: Duration(seconds: 3),
-          volumeEnforced: true,
-        ),
+        volumeSettings: VolumeSettings.fixed(volume: 1.0),
         notificationSettings: const NotificationSettings(
           title: 'This is the title',
           body: 'This is the body',
@@ -33,7 +29,7 @@ abstract class AlarmService {
   }) async {
     return Alarm.set(
       alarmSettings: alarmSettings(
-        collection.id.hashCode,
+        "${collection.id}-alarm".hashCode,
         dateTime: dateTime,
       ),
     );
@@ -42,6 +38,6 @@ abstract class AlarmService {
   static Future<bool> stopCollectionAlarm(
     String collectionId,
   ) async {
-    return Alarm.stop(collectionId.hashCode);
+    return Alarm.stop("$collectionId-alarm".hashCode);
   }
 }
