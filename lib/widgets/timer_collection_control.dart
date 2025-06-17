@@ -374,12 +374,12 @@ class _TimerCollectionControlState
 
     IconData getIcon() {
       if (currentStopWatch.isRunning) {
-        return Icons.pause;
+        return Icons.pause_rounded;
       }
       if (finished) {
-        return Icons.restore;
+        return Icons.restore_rounded;
       }
-      return Icons.play_arrow;
+      return Icons.play_arrow_rounded;
     }
 
     return widget.buttonWidget ??
@@ -445,7 +445,7 @@ class _TimerCollectionControlState
             ),
           ),
         if (widget.collection.alert)
-          Icon(Icons.notifications_active, size: 20),
+          Icon(Icons.notifications_active_rounded, size: 20),
         if (widget.collection.alert) SizedBox(width: Spacing.sm),
         if (widget.lapsWidget != null)
           SizedBox(width: Spacing.lg),
@@ -461,7 +461,7 @@ class _TimerCollectionControlState
         if (widget.lapsWidget == null)
           Switch(
             thumbIcon: WidgetStateProperty.resolveWith(
-              (states) => const Icon(Icons.loop),
+              (states) => const Icon(Icons.loop_rounded),
             ),
             value: isInfinite,
             onChanged: (val) {

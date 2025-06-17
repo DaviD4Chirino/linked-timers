@@ -202,7 +202,7 @@ class _NewCollectionScreenState
             editing ? "Apply changes" : "Add Collection",
           ),
           onPressed: editing ? editCollection : addCollection,
-          icon: Icon(Icons.check_circle),
+          icon: Icon(Icons.check_circle_rounded),
 
           // color: theme.colorScheme.onTertiary,
           /*  style: ButtonStyle(
@@ -314,7 +314,7 @@ class _NewCollectionScreenState
         Switch(
           value: collection.alert,
           thumbIcon: WidgetStatePropertyAll(
-            Icon(Icons.notifications_active),
+            Icon(Icons.notifications_active_rounded),
           ),
           onChanged: (value) {
             setState(() {
@@ -360,8 +360,8 @@ class _NewCollectionScreenState
             child: TextIcon(
               icon: Icon(
                 timer.notify
-                    ? Icons.notifications_off_sharp
-                    : Icons.notification_add,
+                    ? Icons.notifications_off_rounded
+                    : Icons.notification_add_rounded,
               ),
               text: Text(
                 timer.notify
@@ -374,7 +374,7 @@ class _NewCollectionScreenState
             themeStyle: ThemedPopupMenuStyle.error,
             value: "remove",
             child: TextIcon(
-              icon: Icon(Icons.remove_circle_outline),
+              icon: Icon(Icons.remove_circle_rounded),
               text: Text("Remove this timer"),
             ),
           ),
@@ -447,24 +447,15 @@ class _NewCollectionScreenState
     );
   }
 
-  Widget buttonWidget() {
-    return Center(
-      child: IconButton.filled(
-        onPressed:
-            collection.timers.isEmpty ? null : addCollection,
-        icon: Icon(Icons.send),
-        iconSize: Spacing.iconXl,
-      ),
-    );
-  }
-
   Expanded lapsWidgets() {
     return Expanded(
       child: TextFormField(
         inputFormatters: [
           FilteringTextInputFormatter.digitsOnly,
-          MinValueInputFormatter(0),
+          MinValueInputFormatter(1),
         ],
+        keyboardType: TextInputType.numberWithOptions(),
+
         onChanged: (value) {
           setState(() {
             collectionLaps = value.toInt(fallback: 1);
