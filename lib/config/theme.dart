@@ -93,6 +93,7 @@ abstract final class AppTheme {
       inputDecoratorBorderType: FlexInputBorderType.outline,
       fabSchemeColor: SchemeColor.tertiary,
       alignedDropdown: true,
+      appBarBackgroundSchemeColor: SchemeColor.surfaceContainer,
       navigationRailUseIndicator: true,
     ),
     // Direct ThemeData properties.

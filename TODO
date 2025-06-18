@@ -8,8 +8,8 @@ Todo:
     ☐ Make a proper icon
     ✔ Instead of each timer notifying individually, the collection notifies that X timer ends, taking 1 notification slot @done(25-06-07 23:49)
     ☐ Add a configuration "page" @started(25-06-18 17:35)
-      ☐ Make a theme switcher
-      ☐ Make a "Clear all timers"
+      ☐ Make a theme switcher @started(25-06-18 19:33)
+      ☐ Make a "Clear all timers" @started(25-06-18 19:34)
 
   Individual:
     manage_collection_screen.dart:

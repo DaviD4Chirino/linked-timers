@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
-import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
@@ -23,11 +22,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.watch(timerDatabaseProvider);
   late final verticalScrollController =
       VerticalScrollController();
+  late final scrollController = ScrollController();
+
+  late final ThemeData theme = Theme.of(context);
 
   bool scrollingDown = false;
 
   listenVerticalScroll() {
-    Utils.log([]);
     setState(() {
       scrollingDown = verticalScrollController.scrollingDown;
     });
@@ -48,12 +49,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       listenVerticalScroll,
     );
     verticalScrollController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: appBar(),
+      drawer: drawer(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Spacing.xxl),
         child: SafeArea(
@@ -110,6 +114,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       floatingActionButton: floatingActionButton(context),
     );
+  }
+
+  Drawer drawer() {
+    return Drawer(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              SizedBox(height: Spacing.xl),
+              ListTile(
+                leading: Icon(Icons.light_mode_rounded),
+                title: Text("Switch To Light Mode"),
+                trailing: Switch(
+                  value: true,
+                  onChanged: (value) {},
+                ),
+                dense: true,
+              ),
+              Divider(),
+            ],
+          ),
+
+          SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.base,
+              ),
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: Icon(Icons.delete_forever_rounded),
+                label: Text("Delete ALL Timers?"),
+                /* style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(
+                    theme.colorScheme.error,
+                  ),
+                ), */
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(title: Text("Linked Timers"));
   }
 
   Widget floatingActionButton(BuildContext context) {
