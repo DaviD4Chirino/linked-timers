@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
@@ -20,6 +21,9 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<TimerCollection> get database =>
       ref.watch(timerDatabaseProvider);
+  TimerDatabase get timerDatabaseNotifier =>
+      ref.read(timerDatabaseProvider.notifier);
+
   late final verticalScrollController =
       VerticalScrollController();
   late final scrollController = ScrollController();
@@ -37,6 +41,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((duration) {
+      if (!mounted) return;
       ref.read(timerDatabaseProvider.notifier).fetchDatabase();
     });
     verticalScrollController.addListener(listenVerticalScroll);
@@ -117,6 +122,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Drawer drawer() {
+    void onAccept() {
+      timerDatabaseNotifier.flushDatabase();
+      Navigator.pop(context);
+    }
+
+    Future deleteDatabase() async {
+      if (await Utils.consentAlert(
+        context,
+        titleText: "You will delete all your Timers",
+        contentText: "This action is irreversible",
+      )) {
+        onAccept();
+      }
+    }
+
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,7 +164,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 horizontal: Spacing.base,
               ),
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: deleteDatabase,
                 icon: Icon(Icons.delete_forever_rounded),
                 label: Text("Delete ALL Timers?"),
                 /* style: ButtonStyle(

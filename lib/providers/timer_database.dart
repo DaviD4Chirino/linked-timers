@@ -36,7 +36,8 @@ class TimerDatabase extends _$TimerDatabase {
     final collectionIndex = list.indexWhere(
       (c) => c.id == collectionId,
     );
-    if (collectionIndex == -1) return false; // Collection not found
+    if (collectionIndex == -1)
+      return false; // Collection not found
 
     final collection = list[collectionIndex];
 
@@ -46,7 +47,9 @@ class TimerDatabase extends _$TimerDatabase {
 
     timers[timerIndex] = newTimer;
 
-    final updatedCollection = collection.copyWith(timers: timers);
+    final updatedCollection = collection.copyWith(
+      timers: timers,
+    );
     list[collectionIndex] = updatedCollection;
     state = list;
     saveDatabase();
@@ -80,17 +83,19 @@ class TimerDatabase extends _$TimerDatabase {
     return state[collectionIndex];
   }
 
-  void fetchDatabase() async {
-    List<String>? existingDatabase = await LocalStorage.getStringList(
-      LocalStorageRoutes.database,
-    );
+  Future<void> fetchDatabase() async {
+    List<String>? existingDatabase =
+        await LocalStorage.getStringList(
+          LocalStorageRoutes.database,
+        );
     if (existingDatabase == null) {
       return;
     }
     state =
         existingDatabase
             .map(
-              (e) => TimerCollection.fromMap(JsonCodec().decode(e)),
+              (e) =>
+                  TimerCollection.fromMap(JsonCodec().decode(e)),
             )
             .toList();
   }
@@ -102,19 +107,28 @@ class TimerDatabase extends _$TimerDatabase {
     );
   }
 
+  /// Deletes all timers, permanently
+  void flushDatabase() {
+    state = [];
+    saveDatabase();
+  }
+
   @override
   List<TimerCollection> build() {
     return [];
   }
 
-  List<TimerCollection> generateListDebug() => List.generate(15, (i) {
-    return TimerCollection(
-      label: "Timer collection Nro: ${i + 1}",
-      timers: List.generate(
-        Random().nextInt(10) + 1,
-        (j) => Timer(label: "Timer Nro: ${j + 1}", seconds: 2),
-      ),
-      laps: 2,
-    );
-  });
+  List<TimerCollection> generateListDebug() => List.generate(
+    15,
+    (i) {
+      return TimerCollection(
+        label: "Timer collection Nro: ${i + 1}",
+        timers: List.generate(
+          Random().nextInt(10) + 1,
+          (j) => Timer(label: "Timer Nro: ${j + 1}", seconds: 2),
+        ),
+        laps: 2,
+      );
+    },
+  );
 }
