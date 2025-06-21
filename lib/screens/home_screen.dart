@@ -6,6 +6,7 @@ import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/providers/theme_mode.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
@@ -19,7 +20,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  List<TimerCollection> get database =>
+  List<TimerCollection> get timerDatabase =>
       ref.watch(timerDatabaseProvider);
   TimerDatabase get timerDatabaseNotifier =>
       ref.read(timerDatabaseProvider.notifier);
@@ -69,7 +70,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: VerticalScrollListener(
             controller: verticalScrollController,
             child: ImplicitlyAnimatedList(
-              items: database,
+              items: timerDatabase,
               itemBuilder: (context, animation, item, i) {
                 return SizeFadeTransition(
                   key: Key(item.id),
@@ -144,15 +145,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Column(
             children: [
               SizedBox(height: Spacing.xl),
-              ListTile(
-                leading: Icon(Icons.light_mode_rounded),
-                title: Text("Switch To Light Mode"),
-                trailing: Switch(
-                  value: true,
-                  onChanged: (value) {},
-                ),
-                dense: true,
-              ),
+              ThemeModeSwitch(),
               Divider(),
             ],
           ),
@@ -205,6 +198,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Icon(Icons.add_rounded, size: Spacing.iconXXl),
         ),
       ),
+    );
+  }
+}
+
+class ThemeModeSwitch extends ConsumerWidget {
+  const ThemeModeSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ThemeModeNotifier themeModeNotifier = ref.read(
+      themeModeNotifierProvider.notifier,
+    );
+
+    return ListTile(
+      leading: Icon(Icons.light_mode_rounded),
+      title: Text("Switch To Light Mode"),
+      trailing: Switch(
+        value: themeModeNotifier.isLightMode,
+        onChanged: themeModeNotifier.setThemeMode,
+      ),
+      dense: true,
     );
   }
 }

@@ -8,7 +8,10 @@ class LocalStorage {
   }
 
   static void assertBeenInitialized() {
-    assert(pref != null, "You need to intialize shared preferences");
+    assert(
+      pref != null,
+      "You need to intialize shared preferences",
+    );
   }
 
   static Future<void> setString(String key, String value) async {
@@ -26,7 +29,7 @@ class LocalStorage {
     await pref!.setBool(key, value);
   }
 
-  static Future<bool?> getBool(String key) async {
+  static bool? getBool(String key) {
     assertBeenInitialized();
     return pref!.getBool(key);
   }

@@ -6,6 +6,7 @@ import 'package:linked_timers/config/theme.dart';
 import 'package:linked_timers/models/abstracts/permissions_handler.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/local_storage.dart';
+import 'package:linked_timers/providers/theme_mode.dart';
 import 'package:linked_timers/screens/home_screen.dart';
 import 'package:linked_timers/screens/manage_collection_screen.dart';
 import 'package:linked_timers/services/notification_service.dart';
@@ -37,17 +38,35 @@ void main() async {
   runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  ThemeMode get themeModeProvider =>
+      ref.watch(themeModeNotifierProvider);
+  ThemeModeNotifier get themeModeNotifier =>
+      ref.read(themeModeNotifierProvider.notifier);
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      themeModeNotifier.fetchThemeMode();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Linked Timers",
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.dark,
+      themeMode: themeModeProvider,
       routes: {
         Routes.home: (context) => const HomeScreen(),
         Routes.manageCollection:
