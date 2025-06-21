@@ -52,15 +52,6 @@ class _MyAppState extends ConsumerState<MyApp> {
       ref.read(themeModeNotifierProvider.notifier);
 
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      themeModeNotifier.fetchThemeMode();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Linked Timers",

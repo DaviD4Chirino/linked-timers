@@ -10,12 +10,22 @@ class ThemeModeSwitch extends ConsumerWidget {
     ThemeModeNotifier themeModeNotifier = ref.read(
       themeModeNotifierProvider.notifier,
     );
+    ThemeMode themeModeProvider = ref.watch(
+      themeModeNotifierProvider,
+    );
+    bool isLightMode = themeModeProvider == ThemeMode.light;
 
     return ListTile(
-      leading: Icon(Icons.light_mode_rounded),
-      title: Text("Switch To Light Mode"),
+      leading: Icon(
+        isLightMode
+            ? Icons.dark_mode_rounded
+            : Icons.light_mode_rounded,
+      ),
+      title: Text(
+        "Switch To ${isLightMode ? "Dark" : "Light"} Mode",
+      ),
       trailing: Switch(
-        value: themeModeNotifier.isLightMode,
+        value: isLightMode,
         onChanged: themeModeNotifier.setThemeMode,
       ),
       dense: true,

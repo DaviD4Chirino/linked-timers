@@ -144,7 +144,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Column(
             children: [
-              SizedBox(height: Spacing.xl),
+              SizedBox(height: Spacing.xxxl),
               ThemeModeSwitch(),
               Divider(),
             ],

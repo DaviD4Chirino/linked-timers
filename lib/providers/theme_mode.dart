@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:linked_timers/models/abstracts/local_storage.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
@@ -11,18 +12,18 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
   @override
   ThemeMode build() {
     if (LocalStorage.getBool("theme-mode") == null) {
-      return ThemeMode.system;
+      return SchedulerBinding
+                  .instance
+                  .platformDispatcher
+                  .platformBrightness ==
+              Brightness.dark
+          ? ThemeMode.dark
+          : ThemeMode.light;
     } else {
       return LocalStorage.getBool("theme-mode")!
           ? ThemeMode.light
           : ThemeMode.dark;
     }
-  }
-
-  void fetchThemeMode() {
-    bool? mode = LocalStorage.getBool("theme-mode");
-    if (mode == null) return;
-    state = mode ? ThemeMode.light : ThemeMode.dark;
   }
 
   void setThemeMode(bool lightMode) {
