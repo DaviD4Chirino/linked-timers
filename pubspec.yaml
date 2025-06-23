@@ -44,4 +44,4 @@ flutter:
 
   assets:
     - assets/alarms/alarm-default-short.mp3
-    - assets/images/overhead.svg
+    - assets/images/overhead.png
