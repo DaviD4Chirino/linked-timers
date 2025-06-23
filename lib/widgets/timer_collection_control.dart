@@ -38,8 +38,7 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   final Widget? buttonWidget;
 
-  final Function(StopWatchTimer timer, String label)?
-  onTimerTapped;
+  final Function(StopWatchTimer timer, String label)? onTimerTapped;
 
   final void Function(int timerIndex)? onTimerEnd;
 
@@ -236,9 +235,7 @@ class _TimerCollectionControlState
   }
 
   @override
-  void didUpdateWidget(
-    covariant TimerCollectionControl oldWidget,
-  ) {
+  void didUpdateWidget(covariant TimerCollectionControl oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.collection != widget.collection) {
       buildStopWatches();
@@ -432,8 +429,7 @@ class _TimerCollectionControlState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       children: [
-        if (widget.titleWidget != null)
-          widget.titleWidget as Widget,
+        if (widget.titleWidget != null) widget.titleWidget as Widget,
 
         if (widget.titleWidget == null)
           Expanded(
@@ -447,8 +443,7 @@ class _TimerCollectionControlState
         if (widget.collection.alert)
           Icon(Icons.notifications_active_rounded, size: 20),
         if (widget.collection.alert) SizedBox(width: Spacing.sm),
-        if (widget.lapsWidget != null)
-          SizedBox(width: Spacing.lg),
+        if (widget.lapsWidget != null) SizedBox(width: Spacing.lg),
         widget.lapsWidget ??
             Text(
               isInfinite ? "∞" : "$laps/$maxLaps",

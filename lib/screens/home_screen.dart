@@ -25,11 +25,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   TimerDatabase get timerDatabaseNotifier =>
       ref.read(timerDatabaseProvider.notifier);
 
-  late final verticalScrollController =
-      VerticalScrollController();
+  late final verticalScrollController = VerticalScrollController();
   late final scrollController = ScrollController();
-
-  late final ThemeData theme = Theme.of(context);
 
   bool scrollingDown = false;
 
@@ -51,9 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
-    verticalScrollController.removeListener(
-      listenVerticalScroll,
-    );
+    verticalScrollController.removeListener(listenVerticalScroll);
     verticalScrollController.dispose();
     scrollController.dispose();
     super.dispose();
@@ -61,11 +56,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: appBar(),
       drawer: drawer(),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: Spacing.xxl),
+        padding: EdgeInsets.symmetric(horizontal: 0),
         child: SafeArea(
           child: VerticalScrollListener(
             controller: verticalScrollController,
@@ -77,16 +73,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   sizeFraction: 0.1,
                   curve: Curves.easeInOut,
                   animation: animation,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TimerCollectionControl(
-                        item,
-                        key: Key(item.id),
-                      ),
-                      Divider(height: Spacing.xl),
-                    ],
+                  child: Container(
+                    color: theme.colorScheme.surfaceBright,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Spacing.xxl,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TimerCollectionControl(
+                          item,
+                          key: Key(item.id),
+                        ),
+                        if ((i + 1) != timerDatabase.length)
+                          Divider(height: Spacing.xl),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -153,9 +156,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SizedBox(
             width: double.infinity,
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Spacing.base,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: Spacing.base),
               child: OutlinedButton.icon(
                 onPressed: deleteDatabase,
                 icon: Icon(Icons.delete_forever_rounded),
@@ -191,9 +192,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: FloatingActionButton(
           tooltip: "Create new collection",
           onPressed: () {
-            Navigator.of(
-              context,
-            ).pushNamed(Routes.manageCollection);
+            Navigator.of(context).pushNamed(Routes.manageCollection);
           },
           child: Icon(Icons.add_rounded, size: Spacing.iconXXl),
         ),
