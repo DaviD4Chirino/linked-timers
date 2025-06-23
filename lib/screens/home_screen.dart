@@ -56,7 +56,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: appBar(),
       drawer: drawer(),
@@ -73,23 +72,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   sizeFraction: 0.1,
                   curve: Curves.easeInOut,
                   animation: animation,
-                  child: Container(
-                    color: theme.colorScheme.surfaceBright,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Spacing.xxl,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TimerCollectionControl(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Spacing.xxl,
+                        ),
+                        child: TimerCollectionControl(
                           item,
                           key: Key(item.id),
                         ),
-                        if ((i + 1) != timerDatabase.length)
-                          Divider(height: Spacing.xl),
-                      ],
-                    ),
+                      ),
+                      if ((i + 1) != timerDatabase.length)
+                        Divider(height: Spacing.xl),
+                    ],
                   ),
                 );
               },

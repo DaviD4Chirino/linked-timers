@@ -24,10 +24,10 @@ abstract final class AppTheme {
       primary: Color(0xFF33691E),
       primaryContainer: Color(0xFF8BC34A),
       secondary: Color(0xFFE64A19),
-      secondaryContainer: Color(0xFFFF8B6A),
+      secondaryContainer: Color(0xFFA5D6A7),
       tertiary: Color(0xFF006875),
       tertiaryContainer: Color(0xFF95F0FF),
-      appBarColor: Color(0xFFFF8B6A),
+      appBarColor: Color(0xFFA5D6A7),
       error: Color(0xFFBA1A1A),
       errorContainer: Color(0xFFFFDAD6),
     ),
@@ -46,7 +46,6 @@ abstract final class AppTheme {
       defaultRadius: 5.0,
       inputDecoratorIsFilled: true,
       inputDecoratorBorderType: FlexInputBorderType.outline,
-      listTileTileSchemeColor: SchemeColor.surfaceContainerLow,
       fabUseShape: true,
       alignedDropdown: true,
       bottomAppBarHeight: 59,
@@ -80,7 +79,7 @@ abstract final class AppTheme {
         0xFF33691E,
       ), // The color of light mode primary
       secondary: Color(0xFFF4511E),
-      secondaryContainer: Color(0xFFD4451C),
+      secondaryContainer: Color(0xFF003909),
       secondaryLightRef: Color(
         0xFFE64A19,
       ), // The color of light mode secondary
@@ -89,7 +88,7 @@ abstract final class AppTheme {
       tertiaryLightRef: Color(
         0xFF006875,
       ), // The color of light mode tertiary
-      appBarColor: Color(0xFFFF8B6A),
+      appBarColor: Color(0xFFA5D6A7),
       error: Color(0xFFEA1D11),
       errorContainer: Color(0xFFB81D28),
     ),
@@ -110,7 +109,6 @@ abstract final class AppTheme {
       inputDecoratorIsFilled: true,
       inputDecoratorBackgroundAlpha: 25,
       inputDecoratorBorderType: FlexInputBorderType.outline,
-      listTileTileSchemeColor: SchemeColor.surfaceContainerLow,
       fabUseShape: true,
       alignedDropdown: true,
       bottomAppBarHeight: 59,
