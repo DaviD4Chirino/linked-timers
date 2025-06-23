@@ -7,6 +7,7 @@ import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
+import 'package:linked_timers/widgets/home_screen/instructions.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
 import 'package:linked_timers/widgets/theme_mode_switch.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
@@ -64,59 +65,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: SafeArea(
           child: VerticalScrollListener(
             controller: verticalScrollController,
-            child: ImplicitlyAnimatedList(
-              items: timerDatabase,
-              itemBuilder: (context, animation, item, i) {
-                return SizeFadeTransition(
-                  key: Key(item.id),
-                  sizeFraction: 0.1,
-                  curve: Curves.easeInOut,
-                  animation: animation,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Spacing.xxl,
-                        ),
-                        child: TimerCollectionControl(
-                          item,
-                          key: Key(item.id),
-                        ),
-                      ),
-                      if ((i + 1) != timerDatabase.length)
-                        Divider(height: Spacing.xl),
-                    ],
-                  ),
-                );
-              },
-              areItemsTheSame:
-                  (oldItem, newItem) => oldItem == newItem,
-            ),
+            child:
+                timerDatabase.isEmpty
+                    ? Instructions()
+                    : TimerListDisplay(timerDatabase: timerDatabase),
           ),
         ),
-
-        /* AnimatedList.separated(
-          initialItemCount: database.length,
-          removedSeparatorBuilder:
-              (context, i, animation) =>
-                  Divider(height: Spacing.xxxl),
-          itemBuilder: (context, i, animation) {
-            return SlideTransition(
-              position: animation.drive(
-                Tween(begin: Offset(5, 5), end: Offset(10, 10)),
-              ),
-              child: TimerCollectionControl(
-                database[i],
-                key: Key(database[i].id),
-              ),
-            );
-          },
-          separatorBuilder:
-              (context, i, animation) =>
-                  Divider(height: Spacing.xxxl),
-        ), */
       ),
 
       floatingActionButton: floatingActionButton(context),
@@ -195,6 +149,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Icon(Icons.add_rounded, size: Spacing.iconXXl),
         ),
       ),
+    );
+  }
+}
+
+class TimerListDisplay extends StatelessWidget {
+  const TimerListDisplay({super.key, required this.timerDatabase});
+
+  final List<TimerCollection> timerDatabase;
+
+  @override
+  Widget build(BuildContext context) {
+    return ImplicitlyAnimatedList(
+      items: timerDatabase,
+      itemBuilder: (context, animation, item, i) {
+        return SizeFadeTransition(
+          key: Key(item.id),
+          sizeFraction: 0.1,
+          curve: Curves.easeInOut,
+          animation: animation,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Spacing.xxl,
+                ),
+                child: TimerCollectionControl(
+                  item,
+                  key: Key(item.id),
+                ),
+              ),
+              if ((i + 1) != timerDatabase.length)
+                Divider(height: Spacing.xl),
+            ],
+          ),
+        );
+      },
+      areItemsTheSame: (oldItem, newItem) => oldItem == newItem,
     );
   }
 }
