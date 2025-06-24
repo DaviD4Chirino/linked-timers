@@ -195,13 +195,6 @@ class _NewCollectionScreenState
           label: Text("Add Timer"),
           onPressed: addTimer,
           icon: Icon(Icons.timer),
-
-          // color: theme.colorScheme.onTertiary,
-          /*  style: ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll(
-                theme.colorScheme.tertiary,
-              ),
-            ), */
         ),
       ),
     ];
@@ -245,7 +238,11 @@ class _NewCollectionScreenState
                                 editing
                                     ? editCollection
                                     : addCollection,
-                            icon: Icon(Icons.add_alarm_rounded),
+                            icon: Icon(
+                              editing
+                                  ? Icons.alarm_on_rounded
+                                  : Icons.add_alarm_rounded,
+                            ),
                             iconSize: Spacing.iconXl,
                             style: ButtonStyle(
                               shape: WidgetStateProperty.all(
@@ -262,7 +259,9 @@ class _NewCollectionScreenState
                         ),
                         SizedBox(height: Spacing.sm),
                         Text(
-                          "Add Collection",
+                          editing
+                              ? "Modify Collection"
+                              : "Add Collection",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           textAlign: TextAlign.center,
@@ -326,20 +325,6 @@ class _NewCollectionScreenState
           },
         ),
       ],
-      /* actions: [
-        IconButton.filled(
-          tooltip: editing ? "Apply changes" : "Add Collection",
-          onPressed: editing ? editCollection : addCollection,
-          icon: Icon(Icons.alarm_on_rounded),
-          color: theme.colorScheme.onTertiary,
-          style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(
-              theme.colorScheme.tertiary,
-            ),
-          ),
-        ),
-        SizedBox(width: 5),
-      ], */
     );
   }
 
@@ -440,9 +425,7 @@ class _NewCollectionScreenState
     return TextFormField(
       controller: timerLabelController,
       onChanged: (value) {
-        setState(() {
-          timerLabel = value;
-        });
+        timerLabel = value;
       },
       decoration: InputDecoration(
         label: Text("Insert a Timer Name"),
@@ -460,10 +443,8 @@ class _NewCollectionScreenState
         keyboardType: TextInputType.numberWithOptions(),
 
         onChanged: (value) {
-          setState(() {
-            collectionLaps = value.toInt(fallback: 1);
-            collection.laps = value.toInt(fallback: 1);
-          });
+          collectionLaps = value.toInt(fallback: 1);
+          collection.laps = value.toInt(fallback: 1);
         },
         decoration: InputDecoration.collapsed(
           border: UnderlineInputBorder(),
@@ -478,11 +459,8 @@ class _NewCollectionScreenState
       flex: 2,
       child: TextFormField(
         onChanged: (value) {
-          setState(() {
-            collectionName = value;
-            collection.label =
-                collectionName ?? "New Collection";
-          });
+          collectionName = value;
+          collection.label = collectionName ?? "New Collection";
         },
         decoration: InputDecoration.collapsed(
           border: UnderlineInputBorder(),
@@ -501,9 +479,7 @@ class _NewCollectionScreenState
           child: NumberTextField(
             controller: hoursController,
             onChanged: (value) {
-              setState(() {
-                hours = value.toInt(fallback: 0);
-              });
+              hours = value.toInt(fallback: 0);
             },
             maxChars: 24,
           ), //* Hours
@@ -519,9 +495,7 @@ class _NewCollectionScreenState
           child: NumberTextField(
             controller: minutesController,
             onChanged: (value) {
-              setState(() {
-                minutes = value.toInt(fallback: 0);
-              });
+              minutes = value.toInt(fallback: 0);
             },
           ), //* Minutes
         ),
@@ -536,9 +510,7 @@ class _NewCollectionScreenState
           child: NumberTextField(
             controller: secondsController,
             onChanged: (value) {
-              setState(() {
-                seconds = value.toInt(fallback: 0);
-              });
+              seconds = value.toInt(fallback: 0);
             },
           ),
         ), //* Seconds
@@ -626,5 +598,38 @@ class MinValueInputFormatter extends TextInputFormatter {
       );
     }
     return newValue;
+  }
+}
+
+class CollectionNameInput extends StatefulWidget {
+  const CollectionNameInput({
+    super.key,
+    required this.collection,
+    this.onChanged,
+  });
+
+  final TimerCollection collection;
+  final void Function(String)? onChanged;
+
+  @override
+  State<CollectionNameInput> createState() =>
+      _CollectionNameInputState();
+}
+
+class _CollectionNameInputState
+    extends State<CollectionNameInput> {
+  /* setState(() {
+          collectionName = value;
+          collection.label = collectionName ?? "New Collection";
+        }); */
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      onChanged: widget.onChanged,
+      decoration: InputDecoration.collapsed(
+        border: UnderlineInputBorder(),
+        hintText: widget.collection.label,
+      ),
+    );
   }
 }
