@@ -10,7 +10,7 @@ class LocalStorage {
   static void assertBeenInitialized() {
     assert(
       pref != null,
-      "You need to intialize shared preferences",
+      "You need to initialize shared preferences",
     );
   }
 

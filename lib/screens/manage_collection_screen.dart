@@ -109,19 +109,6 @@ class _NewCollectionScreenState
                 newTimer.seconds = seconds;
                 newTimer.notify = notify;
               },
-              /* onSubmit: (timer_) {
-                setState(() {
-                  List<Timer> timers = [...collection.timers];
-                  int index = timers.indexWhere(
-                    (element) => element.id == timer.id,
-                  );
-                  if (index == -1) return;
-                  timers[index] = timer_;
-
-                  collection = collection.copyWith(timers: timers);
-                });
-                Navigator.pop(context);
-              }, */
             ),
           ),
 
@@ -134,7 +121,7 @@ class _NewCollectionScreenState
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          "Make sure the timer is longer than 1 second",
+                          "Make sure the timer is at least 1 second long",
                         ),
                       ),
                     );
@@ -164,7 +151,14 @@ class _NewCollectionScreenState
     );
   }
 
-  void addTimer(Timer newTimer) {
+  void addTimer() {
+    Timer newTimer = Timer(
+      label: timerLabel,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+      notify: notify,
+    );
     if (newTimer.timeAsMilliseconds < 1000) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -198,11 +192,9 @@ class _NewCollectionScreenState
       SizedBox(
         width: double.infinity,
         child: FilledButton.icon(
-          label: Text(
-            editing ? "Apply changes" : "Add Collection",
-          ),
-          onPressed: editing ? editCollection : addCollection,
-          icon: Icon(Icons.check_circle_rounded),
+          label: Text("Add Timer"),
+          onPressed: addTimer,
+          icon: Icon(Icons.timer),
 
           // color: theme.colorScheme.onTertiary,
           /*  style: ButtonStyle(
@@ -228,47 +220,58 @@ class _NewCollectionScreenState
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            Row(
-              spacing: Spacing.base,
-              children: [titleWidget(), lapsWidgets()],
-            ),
-            SizedBox(height: Spacing.lg),
-            SizedBox(
-              height: 100,
-              child: Row(
-                children: [
-                  Expanded(child: timersDisplay(context)),
-                  SizedBox(width: Spacing.lg),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton.filled(
-                        onPressed: () {
-                          addTimer(
-                            Timer(
-                              label: timerLabel,
-                              hours: hours,
-                              minutes: minutes,
-                              seconds: seconds,
-                              notify: notify,
-                            ),
-                          );
-                        },
-                        icon: Icon(Icons.add_alarm_rounded),
-                        iconSize: Spacing.iconXXl,
-                      ),
-                      SizedBox(height: Spacing.sm),
-                      Text(
-                        "Add Timer",
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ],
+            if (collection.timers.isNotEmpty)
+              Row(
+                spacing: Spacing.base,
+                children: [titleWidget(), lapsWidgets()],
               ),
-            ),
+            if (collection.timers.isNotEmpty)
+              SizedBox(height: Spacing.lg),
+            if (collection.timers.isNotEmpty)
+              SizedBox(
+                height: 100,
+                child: Row(
+                  children: [
+                    Expanded(child: timersDisplay(context)),
+                    SizedBox(width: Spacing.lg),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: Spacing.iconXl + 16,
+                          height: Spacing.iconXl + 16,
+                          child: IconButton.filled(
+                            onPressed:
+                                editing
+                                    ? editCollection
+                                    : addCollection,
+                            icon: Icon(Icons.add_alarm_rounded),
+                            iconSize: Spacing.iconXl,
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(8),
+                                ),
+                              ),
+                              padding: WidgetStateProperty.all(
+                                EdgeInsets.zero,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: Spacing.sm),
+                        Text(
+                          "Add Collection",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             Expanded(
               child: EditTimerListWheel(
                 onChanged: (
