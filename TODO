@@ -21,4 +21,5 @@ Todo:
       ☐ Make the inputs open a new dialog to prevent screen cramping
 
     timer_collection_control:
-      ☐ Move the creation of stopwatches to the database
+      ✘ Move the creation of stopwatches to the database @cancelled(25-06-24 14:51)
+      ☐ Move the creation of stopwatches to an owner widget @started(25-06-24 14:51)
