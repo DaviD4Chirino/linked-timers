@@ -26,12 +26,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   TimerDatabase get timerDatabaseNotifier =>
       ref.read(timerDatabaseProvider.notifier);
 
-  late final verticalScrollController = VerticalScrollController();
+  late final verticalScrollController =
+      VerticalScrollController();
   late final scrollController = ScrollController();
 
   bool scrollingDown = false;
 
-  listenVerticalScroll() {
+  void listenVerticalScroll() {
     setState(() {
       scrollingDown = verticalScrollController.scrollingDown;
     });
@@ -49,7 +50,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
-    verticalScrollController.removeListener(listenVerticalScroll);
+    verticalScrollController.removeListener(
+      listenVerticalScroll,
+    );
     verticalScrollController.dispose();
     scrollController.dispose();
     super.dispose();
@@ -68,7 +71,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child:
                 timerDatabase.isEmpty
                     ? Instructions()
-                    : TimerListDisplay(timerDatabase: timerDatabase),
+                    : TimerListDisplay(
+                      timerDatabase: timerDatabase,
+                    ),
           ),
         ),
       ),
@@ -108,7 +113,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SizedBox(
             width: double.infinity,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: Spacing.base),
+              padding: EdgeInsets.symmetric(
+                horizontal: Spacing.base,
+              ),
               child: OutlinedButton.icon(
                 onPressed: deleteDatabase,
                 icon: Icon(Icons.delete_forever_rounded),
@@ -144,7 +151,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: FloatingActionButton(
           tooltip: "Create new collection",
           onPressed: () {
-            Navigator.of(context).pushNamed(Routes.manageCollection);
+            Navigator.of(
+              context,
+            ).pushNamed(Routes.manageCollection);
           },
           child: Icon(Icons.add_rounded, size: Spacing.iconXXl),
         ),
@@ -154,7 +163,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 }
 
 class TimerListDisplay extends StatelessWidget {
-  const TimerListDisplay({super.key, required this.timerDatabase});
+  const TimerListDisplay({
+    super.key,
+    required this.timerDatabase,
+  });
 
   final List<TimerCollection> timerDatabase;
 

@@ -29,22 +29,16 @@ final class ThemeModeNotifierProvider
   @override
   ThemeModeNotifier create() => ThemeModeNotifier();
 
-  @$internal
-  @override
-  $NotifierProviderElement<ThemeModeNotifier, ThemeMode> $createElement(
-    $ProviderPointer pointer,
-  ) => $NotifierProviderElement(pointer);
-
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ThemeMode value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $ValueProvider<ThemeMode>(value),
+      providerOverride: $SyncValueProvider<ThemeMode>(value),
     );
   }
 }
 
-String _$themeModeNotifierHash() => r'b7268f010bb28895f0569614052d698ffeb925e5';
+String _$themeModeNotifierHash() => r'b548e1a131a0342038785e1fab53244f3ac14330';
 
 abstract class _$ThemeModeNotifier extends $Notifier<ThemeMode> {
   ThemeMode build();
@@ -52,11 +46,11 @@ abstract class _$ThemeModeNotifier extends $Notifier<ThemeMode> {
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<ThemeMode>;
+    final ref = this.ref as $Ref<ThemeMode, ThemeMode>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ThemeMode>,
+              AnyNotifier<ThemeMode, ThemeMode>,
               ThemeMode,
               Object?,
               Object?

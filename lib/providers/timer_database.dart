@@ -36,8 +36,9 @@ class TimerDatabase extends _$TimerDatabase {
     final collectionIndex = list.indexWhere(
       (c) => c.id == collectionId,
     );
-    if (collectionIndex == -1)
+    if (collectionIndex == -1) {
       return false; // Collection not found
+    }
 
     final collection = list[collectionIndex];
 

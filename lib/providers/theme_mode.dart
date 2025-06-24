@@ -8,7 +8,6 @@ part 'theme_mode.g.dart';
 
 @riverpod
 class ThemeModeNotifier extends _$ThemeModeNotifier {
-  bool get isLightMode => state == ThemeMode.light;
   @override
   ThemeMode build() {
     if (LocalStorage.getBool("theme-mode") == null) {

@@ -29,22 +29,16 @@ final class TimerDatabaseProvider
   @override
   TimerDatabase create() => TimerDatabase();
 
-  @$internal
-  @override
-  $NotifierProviderElement<TimerDatabase, List<TimerCollection>> $createElement(
-    $ProviderPointer pointer,
-  ) => $NotifierProviderElement(pointer);
-
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<TimerCollection> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $ValueProvider<List<TimerCollection>>(value),
+      providerOverride: $SyncValueProvider<List<TimerCollection>>(value),
     );
   }
 }
 
-String _$timerDatabaseHash() => r'aa7ac35e03db5d671376aa4b82457b0854bbe112';
+String _$timerDatabaseHash() => r'bca2d39f32553d505602afc4e181a272d95aa405';
 
 abstract class _$TimerDatabase extends $Notifier<List<TimerCollection>> {
   List<TimerCollection> build();
@@ -52,11 +46,11 @@ abstract class _$TimerDatabase extends $Notifier<List<TimerCollection>> {
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<List<TimerCollection>>;
+    final ref = this.ref as $Ref<List<TimerCollection>, List<TimerCollection>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<List<TimerCollection>>,
+              AnyNotifier<List<TimerCollection>, List<TimerCollection>>,
               List<TimerCollection>,
               Object?,
               Object?
