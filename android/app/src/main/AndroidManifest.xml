@@ -18,7 +18,7 @@
     <application
         android:label="Linked Timers"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <service android:name="com.gdelataillade.alarm.services.NotificationOnKillService" />
         <service
             android:name="de.julianassmann.flutter_background.IsolateHolderService"
