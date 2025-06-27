@@ -85,7 +85,7 @@ abstract class NotificationService {
     if (isInitialized) return;
 
     final initSettingsAndroid = AndroidInitializationSettings(
-      "@mipmap/ic_launcher",
+      "@drawable/ic_stat_icon",
     );
 
     final initSettings = InitializationSettings(
