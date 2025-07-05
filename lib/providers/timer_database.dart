@@ -11,6 +11,8 @@ part 'timer_database.g.dart';
 
 @Riverpod(keepAlive: true)
 class TimerDatabase extends _$TimerDatabase {
+  final jsonCodec = JsonCodec();
+
   void setCollection(TimerCollection newCollection) {
     List<TimerCollection> list = [...state];
     int index = list.indexWhere(
@@ -93,18 +95,15 @@ class TimerDatabase extends _$TimerDatabase {
       return;
     }
     state =
-        existingDatabase
-            .map(
-              (e) =>
-                  TimerCollection.fromMap(JsonCodec().decode(e)),
-            )
-            .toList();
+        existingDatabase.map((e) {
+          return TimerCollection.fromMap(jsonCodec.decode(e));
+        }).toList();
   }
 
   void saveDatabase() {
     LocalStorage.setStringList(
       LocalStorageRoutes.database,
-      state.map((e) => JsonCodec().encode(e.toMap())).toList(),
+      state.map((e) => jsonCodec.encode(e.toMap())).toList(),
     );
   }
 
