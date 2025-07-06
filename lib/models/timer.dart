@@ -78,10 +78,21 @@ class Timer {
     );
   }
 
-  StopWatchTimer toStopWatchTimer() {
+  StopWatchTimer toStopWatchTimer({
+    void Function(int)? onChange,
+    void Function(int)? onChangeRawSecond,
+    void Function(int)? onChangeRawMinute,
+    void Function()? onStopped,
+    void Function()? onEnded,
+  }) {
     return StopWatchTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: timeAsMilliseconds,
+      onChange: onChange,
+      onChangeRawSecond: onChangeRawSecond,
+      onChangeRawMinute: onChangeRawMinute,
+      onStopped: onStopped,
+      onEnded: onEnded,
     );
   }
 

@@ -38,7 +38,7 @@ final class TimerDatabaseProvider
   }
 }
 
-String _$timerDatabaseHash() => r'bca2d39f32553d505602afc4e181a272d95aa405';
+String _$timerDatabaseHash() => r'eec170e309309f53aeb69b713a04977a32a72ff4';
 
 abstract class _$TimerDatabase extends $Notifier<List<TimerCollection>> {
   List<TimerCollection> build();
