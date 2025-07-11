@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
+import 'package:linked_timers/models/count_down_timer.dart';
 import 'package:linked_timers/services/alarm_service.dart';
 import 'package:linked_timers/widgets/collection_total_progress.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -27,7 +28,7 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final List<StopWatchTimer> stopWatches;
+  final List<CountDownTimer> stopWatches;
 
   final bool showMore;
 
@@ -41,7 +42,7 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   final Widget? buttonWidget;
 
-  final Function(StopWatchTimer timer, String label)?
+  final Function(CountDownTimer timer, String label)?
   onTimerTapped;
 
   final void Function(int timerIndex)? onTimerEnd;
@@ -65,7 +66,7 @@ class _TimerCollectionControlState
   int currentTimerIndex = 0;
   double currentTimerVisibleFraction = 1.0;
 
-  StopWatchTimer currentStopWatch = StopWatchTimer();
+  CountDownTimer currentStopWatch = CountDownTimer();
   StopWatchTimer globalStopWatch = StopWatchTimer();
   Timer currentTimer = Timer(label: "");
 
@@ -124,7 +125,7 @@ class _TimerCollectionControlState
     });
   }
 
-  void onTimerEnded(StopWatchTimer timer) {
+  void onTimerEnded(CountDownTimer timer) {
     timer.onStopTimer();
     setState(() {
       if (widget.stopWatches.isEmpty) return;
@@ -200,7 +201,7 @@ class _TimerCollectionControlState
       currentTimer = widget.collection.timers.first;
     });
 
-    for (StopWatchTimer timer in widget.stopWatches) {
+    for (CountDownTimer timer in widget.stopWatches) {
       if (widget.stopWatches.isEmpty) return;
       timer.fetchEnded.listen((data) {
         onTimerEnded(timer);

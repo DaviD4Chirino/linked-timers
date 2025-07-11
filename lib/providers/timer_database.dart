@@ -129,7 +129,11 @@ class TimerDatabase extends _$TimerDatabase {
         }).toList();
     ref
         .read(stopWatchesNotifierProvider.notifier)
-        .buildStopWatches(state);
+        .buildStopWatches(
+          existingDatabase.map((e) {
+            return TimerCollection.fromMap(jsonCodec.decode(e));
+          }).toList(),
+        );
   }
 
   void saveDatabase() {

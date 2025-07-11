@@ -399,7 +399,7 @@ class _NewCollectionScreenState
                 onLongPress(details, timer);
               },
               child: TimerCircularPercentIndicator(
-                collection.timers[index].toStopWatchTimer(),
+                collection.timers[index].toCountDownTimer(),
                 notify: collection.timers[index].notify,
                 onTap: () {
                   onTimerTapped(timer);

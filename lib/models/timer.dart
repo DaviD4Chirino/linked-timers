@@ -1,3 +1,4 @@
+import 'package:linked_timers/models/count_down_timer.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -78,14 +79,14 @@ class Timer {
     );
   }
 
-  StopWatchTimer toStopWatchTimer({
+  CountDownTimer toCountDownTimer({
     void Function(int)? onChange,
     void Function(int)? onChangeRawSecond,
     void Function(int)? onChangeRawMinute,
     void Function()? onStopped,
     void Function()? onEnded,
   }) {
-    return StopWatchTimer(
+    return CountDownTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: timeAsMilliseconds,
       onChange: onChange,
@@ -93,6 +94,7 @@ class Timer {
       onChangeRawMinute: onChangeRawMinute,
       onStopped: onStopped,
       onEnded: onEnded,
+      id: id,
     );
   }
 

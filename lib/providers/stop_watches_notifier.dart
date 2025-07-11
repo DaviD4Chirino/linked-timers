@@ -1,6 +1,6 @@
+import 'package:linked_timers/models/count_down_timer.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
-import 'package:linked_timers/providers/timer_database.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -9,45 +9,62 @@ part "stop_watches_notifier.g.dart";
 @Riverpod(keepAlive: true)
 class StopWatchesNotifier extends _$StopWatchesNotifier {
   @override
-  Map<String, List<StopWatchTimer>> build() {
+  Map<String, List<CountDownTimer>> build() {
     return {};
   }
 
-  List<StopWatchTimer> convertToStopWatches(List<Timer> timers) {
-    return timers
-        .map((timer) => timer.toStopWatchTimer())
-        .toList();
+  List<CountDownTimer> convertToCountDownTimer(
+    List<Timer> timers,
+  ) {
+    return timers.map((timer) {
+      for (var collection in state.values) {
+        for (var stopWatch in collection) {
+          if (stopWatch.id == timer.id) {
+            return stopWatch;
+          }
+        }
+      }
+      return timer.toCountDownTimer();
+    }).toList();
   }
 
-  Map<String, List<StopWatchTimer>> buildStopWatches(
+  Map<String, List<CountDownTimer>> buildStopWatches(
     List<TimerCollection> timerCollections,
   ) {
-    final map = Map<String, List<StopWatchTimer>>.fromEntries(
+    final map = Map<String, List<CountDownTimer>>.fromEntries(
       timerCollections.map((collection) {
         return MapEntry(
           collection.id,
-          convertToStopWatches(collection.timers),
+          convertToCountDownTimer(collection.timers),
         );
       }),
     );
     return map;
   }
 
-  List<StopWatchTimer>? deleteStopWatches(String id) {
+  void deleteStopWatches(String id) {
     List<StopWatchTimer>? element = state.remove(id);
+    element?.forEach((timer) => timer.dispose());
     state = state;
-    return element;
   }
 
   void addStopWatches(TimerCollection collection) {
-    state[collection.id] = convertToStopWatches(
+    state[collection.id] = convertToCountDownTimer(
       collection.timers,
     );
     state = state;
   }
 
-  /// The same as addStopWatches, but it doesn't delete the old StopWatchTimers
   void modifyStopWatches(TimerCollection collection) {
-    addStopWatches(collection);
+    state[collection.id] = convertToCountDownTimer(
+      collection.timers,
+    );
+    state = state;
+  }
+
+  void disposeStopWatches(List<StopWatchTimer> stopWatches) {
+    for (var timer in stopWatches) {
+      timer.dispose();
+    }
   }
 }

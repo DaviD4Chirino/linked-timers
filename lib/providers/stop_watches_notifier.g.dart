@@ -13,7 +13,7 @@ final class StopWatchesNotifierProvider
     extends
         $NotifierProvider<
           StopWatchesNotifier,
-          Map<String, List<StopWatchTimer>>
+          Map<String, List<CountDownTimer>>
         > {
   const StopWatchesNotifierProvider._()
     : super(
@@ -34,10 +34,10 @@ final class StopWatchesNotifierProvider
   StopWatchesNotifier create() => StopWatchesNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Map<String, List<StopWatchTimer>> value) {
+  Override overrideWithValue(Map<String, List<CountDownTimer>> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<Map<String, List<StopWatchTimer>>>(
+      providerOverride: $SyncValueProvider<Map<String, List<CountDownTimer>>>(
         value,
       ),
     );
@@ -45,11 +45,11 @@ final class StopWatchesNotifierProvider
 }
 
 String _$stopWatchesNotifierHash() =>
-    r'40c93c500efe2a80c00bb8775a804de48e3ca51a';
+    r'f42f118391a36330ce1158ff95637fc7e2793133';
 
 abstract class _$StopWatchesNotifier
-    extends $Notifier<Map<String, List<StopWatchTimer>>> {
-  Map<String, List<StopWatchTimer>> build();
+    extends $Notifier<Map<String, List<CountDownTimer>>> {
+  Map<String, List<CountDownTimer>> build();
   @$mustCallSuper
   @override
   void runBuild() {
@@ -57,17 +57,17 @@ abstract class _$StopWatchesNotifier
     final ref =
         this.ref
             as $Ref<
-              Map<String, List<StopWatchTimer>>,
-              Map<String, List<StopWatchTimer>>
+              Map<String, List<CountDownTimer>>,
+              Map<String, List<CountDownTimer>>
             >;
     final element =
         ref.element
             as $ClassProviderElement<
               AnyNotifier<
-                Map<String, List<StopWatchTimer>>,
-                Map<String, List<StopWatchTimer>>
+                Map<String, List<CountDownTimer>>,
+                Map<String, List<CountDownTimer>>
               >,
-              Map<String, List<StopWatchTimer>>,
+              Map<String, List<CountDownTimer>>,
               Object?,
               Object?
             >;
