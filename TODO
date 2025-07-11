@@ -1,6 +1,8 @@
 
 Todo:
   General:
+    ☐ Try to unify Timer and StopWatchTimer again
+      * The idea is to have a factory so when modify it, it gives the diferent properties with the same id
     ✔ Make sure notifications and alerts play when selected timers or the collection ends @started(25-06-06 23:19) @done(25-06-07 19:34) @lasted(20h15m52s)
     ✔ Make the app run continuously @started(25-06-05 10:36) @done(25-06-07 15:18) @lasted(8s)
     ✔ Save locally the timer Database @started(25-06-05 17:08) @done(25-06-05 17:15) @lasted(7m46s)

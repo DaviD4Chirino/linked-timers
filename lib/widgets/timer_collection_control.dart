@@ -17,6 +17,7 @@ import 'package:linked_timers/widgets/timers_list.dart';
 class TimerCollectionControl extends ConsumerStatefulWidget {
   const TimerCollectionControl(
     this.collection, {
+    required this.stopWatches,
     this.showMore = true,
     this.titleWidget,
     this.lapsWidget,
@@ -25,6 +26,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
     this.onTimerEnd,
     super.key,
   });
+
+  final List<StopWatchTimer> stopWatches;
 
   final bool showMore;
 
@@ -38,7 +41,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   final Widget? buttonWidget;
 
-  final Function(StopWatchTimer timer, String label)? onTimerTapped;
+  final Function(StopWatchTimer timer, String label)?
+  onTimerTapped;
 
   final void Function(int timerIndex)? onTimerEnd;
 
@@ -69,7 +73,6 @@ class _TimerCollectionControlState
 
   ThemeData get theme => Theme.of(context);
   int get maxLaps => widget.collection.laps;
-  List<StopWatchTimer> stopWatches = [];
 
   bool get isInfinite => _isInfinite;
 
@@ -88,8 +91,6 @@ class _TimerCollectionControlState
 
   int remainingTime = 0;
 
-  void startNotificationUpdates() {}
-
   void maybeScrollToIndex(int index) {
     // Get the currently visible indexes
     final visibleIndexes =
@@ -99,8 +100,8 @@ class _TimerCollectionControlState
 
     final bool invisible = !visibleIndexes.contains(index);
 
-    // Only scroll if the index is not visible
-    if (invisible) {
+    // Only scroll if the index is not visible and controller is attached
+    if (invisible && itemScrollController.isAttached) {
       itemScrollController.scrollTo(
         alignment: 0.1,
         index: index,
@@ -111,10 +112,10 @@ class _TimerCollectionControlState
   }
 
   void reset() {
-    if (stopWatches.isEmpty) return;
+    if (widget.stopWatches.isEmpty) return;
     setState(() {
       laps = 0;
-      currentStopWatch = stopWatches.first;
+      currentStopWatch = widget.stopWatches.first;
       currentTimer = widget.collection.timers.first;
       globalStopWatch.onResetTimer();
       maybeScrollToIndex(0);
@@ -126,7 +127,7 @@ class _TimerCollectionControlState
   void onTimerEnded(StopWatchTimer timer) {
     timer.onStopTimer();
     setState(() {
-      if (stopWatches.isEmpty) return;
+      if (widget.stopWatches.isEmpty) return;
       currentTimer;
 
       if (widget.collection.timers[currentTimerIndex].notify) {
@@ -137,7 +138,7 @@ class _TimerCollectionControlState
       }
 
       currentTimerIndex =
-          (currentTimerIndex + 1) % stopWatches.length;
+          (currentTimerIndex + 1) % widget.stopWatches.length;
 
       if (currentTimerIndex == 0) {
         // globalStopWatch.onResetTimer();
@@ -146,7 +147,8 @@ class _TimerCollectionControlState
           laps++;
         }
         if (finished) {
-          currentStopWatch = stopWatches[currentTimerIndex];
+          currentStopWatch =
+              widget.stopWatches[currentTimerIndex];
 
           resetAllTimers();
 
@@ -165,7 +167,7 @@ class _TimerCollectionControlState
         // globalStopWatch.onStartTimer();
       }
       currentStopWatch =
-          stopWatches[currentTimerIndex]
+          widget.stopWatches[currentTimerIndex]
             ..onResetTimer()
             ..onStartTimer();
       maybeScrollToIndex(currentTimerIndex);
@@ -179,7 +181,7 @@ class _TimerCollectionControlState
   }
 
   void resetAllTimers() {
-    for (var timer in stopWatches) {
+    for (var timer in widget.stopWatches) {
       timer.onResetTimer();
     }
   }
@@ -188,24 +190,24 @@ class _TimerCollectionControlState
     reset();
     setState(() {
       if (widget.collection.timers.isEmpty) return;
-      stopWatches =
+      /* widget.stopWatches =
           widget.collection.timers.map((e) {
             return StopWatchTimer(
               mode: StopWatchMode.countDown,
               presetMillisecond: e.timeAsMilliseconds,
             );
-          }).toList();
+          }).toList(); */
       currentTimer = widget.collection.timers.first;
     });
 
-    for (StopWatchTimer timer in stopWatches) {
-      if (stopWatches.isEmpty) return;
+    for (StopWatchTimer timer in widget.stopWatches) {
+      if (widget.stopWatches.isEmpty) return;
       timer.fetchEnded.listen((data) {
         onTimerEnded(timer);
       });
     }
     int totalMillis =
-        (stopWatches
+        (widget.stopWatches
             .map((sw) => sw.initialPresetTime)
             .reduce((a, b) => a + b)) *
         maxLaps;
@@ -223,34 +225,38 @@ class _TimerCollectionControlState
     remainingTime = totalMillis;
 
     setState(() {
-      if (stopWatches.isEmpty) return;
-      currentStopWatch = stopWatches.first;
+      if (widget.stopWatches.isEmpty) return;
+      currentStopWatch = widget.stopWatches.first;
     });
   }
 
   @override
   void initState() {
     super.initState();
+    // currentTimer = widget.collection.timers.first;
+    // currentStopWatch = widget.stopWatches.first;
     buildStopWatches();
   }
 
-  @override
-  void didUpdateWidget(covariant TimerCollectionControl oldWidget) {
+  /* @override
+  void didUpdateWidget(
+    covariant TimerCollectionControl oldWidget,
+  ) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.collection != widget.collection) {
       buildStopWatches();
     }
-  }
+  } */
 
-  @override
+  /* @override
   void dispose() async {
     super.dispose();
     stopAlarm();
     globalStopWatch.dispose();
-    for (var timer in stopWatches) {
+    for (var timer in widget.stopWatches) {
       await timer.dispose();
     }
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +275,7 @@ class _TimerCollectionControlState
             children: [
               Center(
                 child: TimersList(
-                  stopWatches,
+                  widget.stopWatches,
                   timers: widget.collection.timers,
                   itemScrollController: itemScrollController,
                   onTimerTapped: (stopWatch) {
@@ -337,7 +343,7 @@ class _TimerCollectionControlState
 
   Widget controlButton() {
     void onPressed() {
-      if (stopWatches.isEmpty) {
+      if (widget.stopWatches.isEmpty) {
         return;
       }
 
@@ -429,7 +435,8 @@ class _TimerCollectionControlState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       children: [
-        if (widget.titleWidget != null) widget.titleWidget as Widget,
+        if (widget.titleWidget != null)
+          widget.titleWidget as Widget,
 
         if (widget.titleWidget == null)
           Expanded(
@@ -443,7 +450,8 @@ class _TimerCollectionControlState
         if (widget.collection.alert)
           Icon(Icons.notifications_active_rounded, size: 20),
         if (widget.collection.alert) SizedBox(width: Spacing.sm),
-        if (widget.lapsWidget != null) SizedBox(width: Spacing.lg),
+        if (widget.lapsWidget != null)
+          SizedBox(width: Spacing.lg),
         widget.lapsWidget ??
             Text(
               isInfinite ? "∞" : "$laps/$maxLaps",

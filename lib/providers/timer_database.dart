@@ -5,6 +5,7 @@ import 'package:linked_timers/models/abstracts/local_storage.dart';
 import 'package:linked_timers/models/abstracts/local_storage_routes.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/providers/stop_watches_notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'timer_database.g.dart';
@@ -14,21 +15,31 @@ class TimerDatabase extends _$TimerDatabase {
   final jsonCodec = JsonCodec();
 
   void setCollection(TimerCollection newCollection) {
+    final stopWatchesNotifier = ref.read(
+      stopWatchesNotifierProvider.notifier,
+    );
     List<TimerCollection> list = [...state];
     int index = list.indexWhere(
       (element) => element.id == newCollection.id,
     );
     list[index] = newCollection;
     state = list;
+    stopWatchesNotifier.addStopWatches(newCollection);
     saveDatabase();
   }
 
   void addCollection(TimerCollection newCollection) {
+    var stopWatchesNotifier = ref.read(
+      stopWatchesNotifierProvider.notifier,
+    );
+
     state = [newCollection, ...state];
+    stopWatchesNotifier.addStopWatches(newCollection);
     saveDatabase();
   }
 
   /// Returns whether or it it suceded to edit the timer
+  /// Also it updates StopWatchesProvider
   bool editTimer({
     required String collectionId,
     required String timerId,
@@ -50,12 +61,20 @@ class TimerDatabase extends _$TimerDatabase {
 
     timers[timerIndex] = newTimer;
 
+    final stopWatchesNotifier = ref.read(
+      stopWatchesNotifierProvider.notifier,
+    );
+
     final updatedCollection = collection.copyWith(
       timers: timers,
     );
     list[collectionIndex] = updatedCollection;
     state = list;
+
+    stopWatchesNotifier.modifyStopWatches(updatedCollection);
+
     saveDatabase();
+
     return true;
   }
 
@@ -67,15 +86,25 @@ class TimerDatabase extends _$TimerDatabase {
     final index = list.indexWhere((c) => c.id == collectionId);
     if (index == -1) return false; // Collection not found
 
+    final stopWatchesNotifier = ref.read(
+      stopWatchesNotifierProvider.notifier,
+    );
+
     list[index] = newCollection;
     state = list;
     saveDatabase();
+    stopWatchesNotifier.addStopWatches(newCollection);
     return true;
   }
 
   void deleteCollection(String collectionId) {
+    final stopWatchesNotifier = ref.read(
+      stopWatchesNotifierProvider.notifier,
+    );
     state = state.where((c) => c.id != collectionId).toList();
     saveDatabase();
+
+    stopWatchesNotifier.deleteStopWatches(collectionId);
   }
 
   TimerCollection? getCollection(String collectionId) {

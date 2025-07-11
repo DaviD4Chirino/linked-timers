@@ -6,6 +6,7 @@ import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
+import 'package:linked_timers/providers/stop_watches_notifier.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/home_screen/instructions.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
@@ -71,9 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child:
                 timerDatabase.isEmpty
                     ? Instructions()
-                    : TimerListDisplay(
-                      timerDatabase: timerDatabase,
-                    ),
+                    : TimerListDisplay(),
           ),
         ),
       ),
@@ -162,16 +161,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class TimerListDisplay extends StatelessWidget {
-  const TimerListDisplay({
-    super.key,
-    required this.timerDatabase,
-  });
-
-  final List<TimerCollection> timerDatabase;
+class TimerListDisplay extends ConsumerWidget {
+  const TimerListDisplay({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<TimerCollection> timerDatabase = ref.watch(
+      timerDatabaseProvider,
+    );
+    var stopWatchesProvider = ref.watch(
+      stopWatchesNotifierProvider,
+    );
     return ImplicitlyAnimatedList(
       items: timerDatabase,
       itemBuilder: (context, animation, item, i) {
@@ -190,6 +190,8 @@ class TimerListDisplay extends StatelessWidget {
                 ),
                 child: TimerCollectionControl(
                   item,
+                  stopWatches:
+                      stopWatchesProvider[item.id] ?? [],
                   key: Key(item.id),
                 ),
               ),
