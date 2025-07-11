@@ -127,6 +127,9 @@ class TimerDatabase extends _$TimerDatabase {
         existingDatabase.map((e) {
           return TimerCollection.fromMap(jsonCodec.decode(e));
         }).toList();
+    ref
+        .read(stopWatchesNotifierProvider.notifier)
+        .buildStopWatches(state);
   }
 
   void saveDatabase() {
@@ -140,6 +143,9 @@ class TimerDatabase extends _$TimerDatabase {
   void flushDatabase() {
     state = [];
     saveDatabase();
+    ref
+        .read(stopWatchesNotifierProvider.notifier)
+        .buildStopWatches(state);
   }
 
   @override

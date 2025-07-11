@@ -175,6 +175,7 @@ class TimerListDisplay extends ConsumerWidget {
     return ImplicitlyAnimatedList(
       items: timerDatabase,
       itemBuilder: (context, animation, item, i) {
+        var stopWatches = stopWatchesProvider[item.id];
         return SizeFadeTransition(
           key: Key(item.id),
           sizeFraction: 0.1,
@@ -188,12 +189,14 @@ class TimerListDisplay extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(
                   horizontal: Spacing.xxl,
                 ),
-                child: TimerCollectionControl(
-                  item,
-                  stopWatches:
-                      stopWatchesProvider[item.id] ?? [],
-                  key: Key(item.id),
-                ),
+                child:
+                    stopWatches != null
+                        ? TimerCollectionControl(
+                          item,
+                          stopWatches: stopWatches,
+                          key: Key(item.id),
+                        )
+                        : null,
               ),
               if ((i + 1) != timerDatabase.length)
                 Divider(height: Spacing.xl),

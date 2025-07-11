@@ -6,18 +6,15 @@ part of 'stop_watches_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-/// Despite being a keep a live, a manual dispose could be beneficial
 @ProviderFor(StopWatchesNotifier)
 const stopWatchesNotifierProvider = StopWatchesNotifierProvider._();
 
-/// Despite being a keep a live, a manual dispose could be beneficial
 final class StopWatchesNotifierProvider
     extends
         $NotifierProvider<
           StopWatchesNotifier,
           Map<String, List<StopWatchTimer>>
         > {
-  /// Despite being a keep a live, a manual dispose could be beneficial
   const StopWatchesNotifierProvider._()
     : super(
         from: null,
@@ -48,7 +45,7 @@ final class StopWatchesNotifierProvider
 }
 
 String _$stopWatchesNotifierHash() =>
-    r'5acfc8883a1cf3451c4e69cdb083faa2ff956d9a';
+    r'40c93c500efe2a80c00bb8775a804de48e3ca51a';
 
 abstract class _$StopWatchesNotifier
     extends $Notifier<Map<String, List<StopWatchTimer>>> {

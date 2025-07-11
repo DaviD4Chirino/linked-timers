@@ -7,13 +7,10 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 part "stop_watches_notifier.g.dart";
 
 @Riverpod(keepAlive: true)
-/// Despite being a keep a live, a manual dispose could be beneficial
 class StopWatchesNotifier extends _$StopWatchesNotifier {
   @override
   Map<String, List<StopWatchTimer>> build() {
-    final timerCollections = ref.watch(timerDatabaseProvider);
-
-    return buildStopWatches(timerCollections);
+    return {};
   }
 
   List<StopWatchTimer> convertToStopWatches(List<Timer> timers) {
