@@ -1,7 +1,9 @@
 import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:animated_list_plus/transitions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/localization/app_locale.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
@@ -134,7 +136,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   AppBar appBar() {
-    return AppBar(title: Text("Linked Timers"));
+    return AppBar(
+      title: Text(AppLocale.title.getString(context)),
+      actions: [
+        IconButton(
+          onPressed: () {
+            FlutterLocalization.instance.translate("es");
+          },
+          icon: Icon(Icons.settings),
+        ),
+      ],
+    );
   }
 
   Widget floatingActionButton(BuildContext context) {

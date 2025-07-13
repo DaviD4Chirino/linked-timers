@@ -1,8 +1,10 @@
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/config/theme.dart';
+import 'package:linked_timers/localization/app_locale.dart';
 import 'package:linked_timers/models/abstracts/permissions_handler.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/local_storage.dart';
@@ -23,10 +25,7 @@ final androidConfig = FlutterBackgroundAndroidConfig(
 );
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalStorage.init();
-  await NotificationService.initialize();
-  await Alarm.init();
-  await PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
+  await appInitializations();
 
   bool success = await FlutterBackground.initialize(
     androidConfig: androidConfig,
@@ -46,10 +45,30 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
+  var localization = FlutterLocalization.instance;
   ThemeMode get themeModeProvider =>
       ref.watch(themeModeNotifierProvider);
   ThemeModeNotifier get themeModeNotifier =>
       ref.read(themeModeNotifierProvider.notifier);
+
+  // the setState function here is a must to add
+  void _onTranslatedLanguage(Locale? locale) {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    localization.init(
+      mapLocales: [
+        const MapLocale("en", AppLocale.en),
+        const MapLocale("es", AppLocale.es),
+      ],
+      initLanguageCode: "es",
+    );
+    localization.onTranslatedLanguage = _onTranslatedLanguage;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +77,10 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeModeProvider,
+
+      supportedLocales: localization.supportedLocales,
+      localizationsDelegates:
+          localization.localizationsDelegates,
       routes: {
         Routes.home: (context) => const HomeScreen(),
         Routes.manageCollection:
@@ -66,4 +89,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       initialRoute: Routes.home,
     );
   }
+}
+
+Future<void> appInitializations() async {
+  LocalStorage.init();
+  NotificationService.initialize();
+  Alarm.init();
+  PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
+  FlutterLocalization.instance.ensureInitialized();
 }
