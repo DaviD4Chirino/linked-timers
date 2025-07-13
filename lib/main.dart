@@ -2,8 +2,10 @@ import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/config/theme.dart';
+import 'package:linked_timers/l10n/l10n.dart';
 import 'package:linked_timers/localization/app_locale.dart';
 import 'package:linked_timers/models/abstracts/permissions_handler.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
@@ -78,9 +80,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       darkTheme: AppTheme.dark,
       themeMode: themeModeProvider,
 
-      supportedLocales: localization.supportedLocales,
-      localizationsDelegates:
-          localization.localizationsDelegates,
+      supportedLocales: L10n.all,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       routes: {
         Routes.home: (context) => const HomeScreen(),
         Routes.manageCollection:
