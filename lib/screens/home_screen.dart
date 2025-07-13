@@ -10,6 +10,7 @@ import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/home_screen/instructions.dart';
+import 'package:linked_timers/widgets/language_switcher.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
 import 'package:linked_timers/widgets/theme_mode_switch.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
@@ -109,6 +110,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               SizedBox(height: Spacing.xxxl),
               ThemeModeSwitch(),
               Divider(),
+              LanguageSwitcher(),
+              Divider(),
             ],
           ),
 
@@ -137,7 +140,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   AppBar appBar() {
     return AppBar(
-      title: Text(AppLocale.title.getString(context)),
+      title: Text("Linked Timers"),
       actions: [
         IconButton(
           onPressed: () {
