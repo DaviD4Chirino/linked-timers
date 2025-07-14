@@ -10,7 +10,14 @@ class Timer {
     this.notify = false,
     this.nextTimer,
     String? id,
-  }) : id = id ?? Uuid().v4();
+  }) : id = id ?? Uuid().v4(),
+       stopWatch = StopWatchTimer(
+         mode: StopWatchMode.countDown,
+         presetMillisecond:
+             StopWatchTimer.getMilliSecFromHour(hours) +
+             StopWatchTimer.getMilliSecFromMinute(minutes) +
+             StopWatchTimer.getMilliSecFromSecond(seconds),
+       );
 
   /// A flag that shows a notification when this timer specifically ends
   bool notify = false;
@@ -22,6 +29,8 @@ class Timer {
   Timer? nextTimer;
   String label;
   String id;
+
+  late StopWatchTimer stopWatch;
 
   int get timeAsMilliseconds =>
       ((hours * 60 * 60) + (minutes * 60) + seconds) * 1000;
@@ -40,6 +49,8 @@ class Timer {
   String toString() {
     return "$hours:$minutes:$seconds";
   }
+
+  Future<void> dispose() async => stopWatch.dispose();
 
   Map<String, dynamic> toMap() => {
     "id": id,

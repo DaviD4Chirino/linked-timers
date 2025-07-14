@@ -72,7 +72,13 @@ class TimerDatabase extends _$TimerDatabase {
   }
 
   void deleteCollection(String collectionId) {
-    state = state.where((c) => c.id != collectionId).toList();
+    var collectionIndex = state.indexWhere(
+      (c) => c.id == collectionId,
+    );
+    if (collectionIndex == -1) return;
+    var removedCollection = state.removeAt(collectionIndex);
+    removedCollection.dispose();
+    state = state;
     saveDatabase();
   }
 

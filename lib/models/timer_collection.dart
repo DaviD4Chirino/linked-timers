@@ -53,8 +53,17 @@ class TimerCollection {
     );
   }
 
-  void removeTimer(Timer timer) {
-    timers = timers.where((timer_) => timer_ != timer).toList();
+  void removeTimer(String timerId) {
+    var timerIndex = timers.indexWhere((t) => t.id == timerId);
+    if (timerIndex == -1) return;
+    var removedTimer = timers.removeAt(timerIndex);
+    removedTimer.dispose();
+  }
+
+  Future<void> dispose() async {
+    for (var timer in timers) {
+      timer.dispose();
+    }
   }
 
   Map<String, dynamic> toMap() => {

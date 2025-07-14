@@ -370,7 +370,7 @@ class _NewCollectionScreenState
       );
 
       if (selected == "remove") {
-        collection.removeTimer(timer);
+        collection.removeTimer(timer.id);
       }
       if (selected == "toggle-notify") {
         var timers = collection.timers;
