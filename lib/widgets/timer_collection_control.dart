@@ -38,7 +38,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
   final Widget? buttonWidget;
 
-  final Function(StopWatchTimer timer, String label)? onTimerTapped;
+  final Function(StopWatchTimer timer, String label)?
+  onTimerTapped;
 
   final void Function(int timerIndex)? onTimerEnd;
 
@@ -116,7 +117,7 @@ class _TimerCollectionControlState
       laps = 0;
       currentStopWatch = stopWatches.first;
       currentTimer = widget.collection.timers.first;
-      globalStopWatch.onResetTimer();
+      widget.collection.globalStopWatch.onResetTimer();
       maybeScrollToIndex(0);
       resetAllTimers();
       stopAlarm();
@@ -190,10 +191,7 @@ class _TimerCollectionControlState
       if (widget.collection.timers.isEmpty) return;
       stopWatches =
           widget.collection.timers.map((e) {
-            return StopWatchTimer(
-              mode: StopWatchMode.countDown,
-              presetMillisecond: e.timeAsMilliseconds,
-            );
+            return e.stopWatch;
           }).toList();
       currentTimer = widget.collection.timers.first;
     });
@@ -204,13 +202,20 @@ class _TimerCollectionControlState
         onTimerEnded(timer);
       });
     }
-    int totalMillis =
+    /* int totalMillis =
         (stopWatches
             .map((sw) => sw.initialPresetTime)
             .reduce((a, b) => a + b)) *
-        maxLaps;
+        maxLaps; */
 
-    globalStopWatch = StopWatchTimer(
+    widget.collection.globalStopWatch.secondTime.listen(
+      onGlobalSecondTimer,
+    );
+    widget.collection.globalStopWatch.rawTime.listen((millis) {
+      remainingTime = millis;
+    });
+
+    /* globalStopWatch = StopWatchTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: totalMillis,
       onChangeRawSecond: onGlobalSecondTimer,
@@ -218,9 +223,9 @@ class _TimerCollectionControlState
         remainingTime = millis;
         // print(remainingTime);
       },
-    );
+    ); */
 
-    remainingTime = totalMillis;
+    // remainingTime = totalMillis;
 
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -234,22 +239,24 @@ class _TimerCollectionControlState
     buildStopWatches();
   }
 
-  @override
-  void didUpdateWidget(covariant TimerCollectionControl oldWidget) {
+  /*  @override
+  void didUpdateWidget(
+    covariant TimerCollectionControl oldWidget,
+  ) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.collection != widget.collection) {
       buildStopWatches();
     }
-  }
+  } */
 
   @override
   void dispose() async {
     super.dispose();
     stopAlarm();
-    globalStopWatch.dispose();
-    for (var timer in stopWatches) {
+    // globalStopWatch.dispose();
+    /* for (var timer in stopWatches) {
       await timer.dispose();
-    }
+    } */
   }
 
   @override
@@ -289,7 +296,9 @@ class _TimerCollectionControlState
           ),
         ),
         SizedBox(height: Spacing.lg),
-        CollectionTotalProgress(globalStopWatch),
+        CollectionTotalProgress(
+          widget.collection.globalStopWatch,
+        ),
         LayoutGrid(
           columnSizes: [1.fr, 40.px],
           rowSizes: [40.px],
@@ -342,7 +351,7 @@ class _TimerCollectionControlState
       }
 
       if (currentStopWatch.isRunning) {
-        globalStopWatch.onStopTimer();
+        widget.collection.globalStopWatch.onStopTimer();
         currentStopWatch.onStopTimer();
         stopAlarm();
         return;
@@ -351,7 +360,7 @@ class _TimerCollectionControlState
       if (finished) {
         reset();
         currentStopWatch.onStartTimer();
-        globalStopWatch.onStartTimer();
+        widget.collection.globalStopWatch.onStartTimer();
         if (!isInfinite) {
           setAlarm();
         }
@@ -362,7 +371,7 @@ class _TimerCollectionControlState
           laps = 0;
         });
       }
-      globalStopWatch.onStartTimer();
+      widget.collection.globalStopWatch.onStartTimer();
       currentStopWatch.onStartTimer();
       if (!isInfinite) {
         setAlarm();
@@ -429,7 +438,8 @@ class _TimerCollectionControlState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       children: [
-        if (widget.titleWidget != null) widget.titleWidget as Widget,
+        if (widget.titleWidget != null)
+          widget.titleWidget as Widget,
 
         if (widget.titleWidget == null)
           Expanded(
@@ -443,7 +453,8 @@ class _TimerCollectionControlState
         if (widget.collection.alert)
           Icon(Icons.notifications_active_rounded, size: 20),
         if (widget.collection.alert) SizedBox(width: Spacing.sm),
-        if (widget.lapsWidget != null) SizedBox(width: Spacing.lg),
+        if (widget.lapsWidget != null)
+          SizedBox(width: Spacing.lg),
         widget.lapsWidget ??
             Text(
               isInfinite ? "∞" : "$laps/$maxLaps",

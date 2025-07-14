@@ -1,6 +1,7 @@
 // I might as well track the isInfinite bool here
 import 'package:flutter/foundation.dart';
 import 'package:linked_timers/models/timer.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:uuid/uuid.dart';
 
 class TimerCollection {
@@ -10,7 +11,12 @@ class TimerCollection {
     this.laps = 1,
     this.isInfinite = false,
     this.alert = true,
-  });
+  }) /*  : globalStopWatch = StopWatchTimer(
+         mode: StopWatchMode.countDown,
+         presetMillisecond: timers
+             .map((e) => e.timeAsMilliseconds)
+             .reduce((a, b) => a + b),
+       ) */;
 
   List<Timer> timers = [];
   int laps = 5;
@@ -22,6 +28,13 @@ class TimerCollection {
   /// The title works as its id
   String label;
   String id = Uuid().v4();
+
+  late StopWatchTimer globalStopWatch = StopWatchTimer(
+    mode: StopWatchMode.countDown,
+    presetMillisecond: timers
+        .map((e) => e.timeAsMilliseconds)
+        .reduce((a, b) => a + b),
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -64,6 +77,7 @@ class TimerCollection {
     for (var timer in timers) {
       timer.dispose();
     }
+    globalStopWatch.dispose();
   }
 
   Map<String, dynamic> toMap() => {

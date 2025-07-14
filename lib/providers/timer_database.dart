@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:linked_timers/models/abstracts/local_storage.dart';
 import 'package:linked_timers/models/abstracts/local_storage_routes.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -75,10 +76,14 @@ class TimerDatabase extends _$TimerDatabase {
     var collectionIndex = state.indexWhere(
       (c) => c.id == collectionId,
     );
-    if (collectionIndex == -1) return;
+    if (collectionIndex == -1) {
+      Utils.log(["Collection not found"]);
+      return;
+    }
+
     var removedCollection = state.removeAt(collectionIndex);
     removedCollection.dispose();
-    state = state;
+    state = state.toList();
     saveDatabase();
   }
 
