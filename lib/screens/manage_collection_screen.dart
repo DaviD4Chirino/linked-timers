@@ -10,6 +10,7 @@ import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
 import 'package:linked_timers/widgets/reusables/text_icon.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class ManageCollectionScreen extends ConsumerStatefulWidget {
   const ManageCollectionScreen({super.key});
@@ -217,7 +218,19 @@ class _NewCollectionScreenState
               spacing: Spacing.base,
               children: [titleWidget(), lapsWidgets()],
             ),
-            Row(children: [manageCollectionButton()]),
+            SizedBox(height: Spacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "Total time: ${StopWatchTimer.getDisplayTime(collection.totalTime, milliSecond: false)}",
+                  ),
+                ),
+                sendCollectionButton(),
+              ],
+            ),
+            SizedBox(height: Spacing.sm),
+            LinearProgressIndicator(value: 1.0),
 
             /*  if (collection.timers.isNotEmpty)
               Row(
@@ -311,11 +324,34 @@ class _NewCollectionScreenState
     );
   }
 
-  Widget manageCollectionButton() {
+  Widget sendCollectionButton() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        sendCollectionButton(),
+        IconButton.filled(
+          onPressed:
+              collection.timers.isNotEmpty
+                  ? editing
+                      ? editCollection
+                      : addCollection
+                  : null,
+          icon: Icon(
+            editing
+                ? Icons.send_rounded
+                : Icons.add_alarm_rounded,
+          ),
+          iconSize: Spacing.iconXXl,
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+
+            /* padding: WidgetStateProperty.all(
+                EdgeInsets.all(Spacing.base),
+              ), */
+          ),
+        ),
         SizedBox(height: Spacing.sm),
         Text(
           editing ? "Apply Changes" : "Add Collection",
@@ -324,31 +360,6 @@ class _NewCollectionScreenState
           textAlign: TextAlign.center,
         ),
       ],
-    );
-  }
-
-  IconButton sendCollectionButton() {
-    return IconButton.filled(
-      onPressed:
-          collection.timers.isNotEmpty
-              ? editing
-                  ? editCollection
-                  : addCollection
-              : null,
-      icon: Icon(
-        editing ? Icons.send_rounded : Icons.add_alarm_rounded,
-      ),
-      iconSize: Spacing.iconXXl,
-      style: ButtonStyle(
-        shape: WidgetStateProperty.all(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        /* padding: WidgetStateProperty.all(
-            EdgeInsets.all(Spacing.base),
-          ), */
-      ),
     );
   }
 

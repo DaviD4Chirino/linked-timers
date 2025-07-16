@@ -47,6 +47,13 @@ class TimerCollection {
   @override
   int get hashCode => id.hashCode;
 
+  int get totalTime =>
+      timers.isEmpty
+          ? 0
+          : timers
+              .map((e) => e.timeAsMilliseconds)
+              .reduce((a, b) => a + b);
+
   TimerCollection copyWith({
     List<Timer>? timers,
     int? laps,
