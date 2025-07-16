@@ -64,6 +64,10 @@ class _NewCollectionScreenState
   TimerDatabase get timerNotifier =>
       ref.watch(timerDatabaseProvider.notifier);
 
+  List<Widget> get collectionTimers => [
+    ...collection.timers.map((e) => Text(e.label)),
+    addTimerButton(),
+  ];
   void addCollection() {
     if (collection.timers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -152,8 +156,65 @@ class _NewCollectionScreenState
     );
   }
 
-  void addTimer() {
-    Timer newTimer = Timer(
+  void addTimer() async {
+    Timer newTimer = Timer();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Edit timer"),
+          content: Container(
+            constraints: BoxConstraints(maxHeight: 500),
+            child: EditTimerListWheel(
+              timer: newTimer,
+              onChanged: (
+                label,
+                hours,
+                minutes,
+                seconds,
+                notify,
+              ) {
+                newTimer.label = label;
+                newTimer.hours = hours;
+                newTimer.minutes = minutes;
+                newTimer.seconds = seconds;
+                newTimer.notify = notify;
+              },
+            ),
+          ),
+
+          actions: [
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () {
+                  if (newTimer.timeAsMilliseconds < 1000) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Make sure the timer is at least 1 second long",
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  setState(() {
+                    collection.timers.add(newTimer);
+                    timersAdded++;
+                  });
+
+                  Navigator.pop(context);
+                },
+                child: Text("Accept"),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    /* Timer newTimer = Timer(
       label: timerLabel,
       hours: hours,
       minutes: minutes,
@@ -174,7 +235,7 @@ class _NewCollectionScreenState
     setState(() {
       collection.timers.add(newTimer);
       timersAdded++;
-    });
+    }); */
   }
 
   @override
@@ -189,20 +250,10 @@ class _NewCollectionScreenState
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    List<Widget> persistentFooterButtons = [
-      SizedBox(
-        width: double.infinity,
-        child: FilledButton.icon(
-          label: Text("Add Timer"),
-          onPressed: addTimer,
-          icon: Icon(Icons.timer),
-        ),
-      ),
-    ];
 
     return Scaffold(
       appBar: appBar(theme),
-      persistentFooterButtons: persistentFooterButtons,
+      // persistentFooterButtons: persistentFooterButtons,
       body: Padding(
         padding: EdgeInsets.only(
           right: Spacing.xl,
@@ -231,6 +282,15 @@ class _NewCollectionScreenState
             ),
             SizedBox(height: Spacing.sm),
             LinearProgressIndicator(value: 1.0),
+            SizedBox(height: Spacing.lg),
+            Expanded(
+              child: ListView.builder(
+                itemCount: collectionTimers.length,
+                itemBuilder: (context, index) {
+                  return collectionTimers[index];
+                },
+              ),
+            ),
 
             /*  if (collection.timers.isNotEmpty)
               Row(
@@ -321,6 +381,17 @@ class _NewCollectionScreenState
           ],
         ),
       ), */
+    );
+  }
+
+  SizedBox addTimerButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        label: Text("Add Timer"),
+        onPressed: addTimer,
+        icon: Icon(Icons.timer),
+      ),
     );
   }
 
