@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/extensions/string_extensions.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
@@ -425,7 +426,17 @@ class _NewCollectionScreenState
       width: double.infinity,
       child: FilledButton.icon(
         label: Text("Add Timer"),
-        onPressed: addTimer,
+        onPressed: () async {
+          Timer? timer = await Utils.timerAlert(
+            context: context,
+          );
+          if (timer != null) {
+            setState(() {
+              collection.timers.add(timer);
+              timersAdded++;
+            });
+          }
+        },
         icon: Icon(Icons.timer),
       ),
     );
