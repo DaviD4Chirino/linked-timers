@@ -209,11 +209,17 @@ class _NewCollectionScreenState
           top: Spacing.xxxl,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            if (collection.timers.isNotEmpty)
+            Row(
+              spacing: Spacing.base,
+              children: [titleWidget(), lapsWidgets()],
+            ),
+            Row(children: [manageCollectionButton()]),
+
+            /*  if (collection.timers.isNotEmpty)
               Row(
                 spacing: Spacing.base,
                 children: [titleWidget(), lapsWidgets()],
@@ -287,7 +293,7 @@ class _NewCollectionScreenState
                   this.notify = notify;
                 },
               ),
-            ),
+            ), */
           ],
         ),
       ),
@@ -302,6 +308,47 @@ class _NewCollectionScreenState
           ],
         ),
       ), */
+    );
+  }
+
+  Widget manageCollectionButton() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        sendCollectionButton(),
+        SizedBox(height: Spacing.sm),
+        Text(
+          editing ? "Apply Changes" : "Add Collection",
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  IconButton sendCollectionButton() {
+    return IconButton.filled(
+      onPressed:
+          collection.timers.isNotEmpty
+              ? editing
+                  ? editCollection
+                  : addCollection
+              : null,
+      icon: Icon(
+        editing ? Icons.send_rounded : Icons.add_alarm_rounded,
+      ),
+      iconSize: Spacing.iconXXl,
+      style: ButtonStyle(
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        /* padding: WidgetStateProperty.all(
+            EdgeInsets.all(Spacing.base),
+          ), */
+      ),
     );
   }
 
