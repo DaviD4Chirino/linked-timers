@@ -1,3 +1,4 @@
+import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,10 +66,6 @@ class _NewCollectionScreenState
   TimerDatabase get timerNotifier =>
       ref.watch(timerDatabaseProvider.notifier);
 
-  List<Widget> get collectionTimers => [
-    ...collection.timers.map((timer) => TimerDisplayTile(timer)),
-    addTimerButton(),
-  ];
   void addCollection() {
     if (collection.timers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -254,7 +251,7 @@ class _NewCollectionScreenState
 
     return Scaffold(
       appBar: appBar(theme),
-      // persistentFooterButtons: persistentFooterButtons,
+      persistentFooterButtons: [addTimerButton()],
       body: Padding(
         padding: EdgeInsets.only(
           right: Spacing.xl,
@@ -281,20 +278,54 @@ class _NewCollectionScreenState
                 sendCollectionButton(),
               ],
             ),
-            SizedBox(height: Spacing.sm),
-            LinearProgressIndicator(value: 1.0),
-            SizedBox(height: Spacing.lg),
+            Divider(),
+            SizedBox(height: Spacing.xxl),
             Expanded(
-              child: ListView.separated(
-                itemCount: collectionTimers.length,
-                itemBuilder: (context, index) {
-                  return collectionTimers[index];
+              child: ImplicitlyAnimatedReorderableList.separated(
+                areItemsTheSame: (a, b) => a == b,
+                items: collection.timers,
+                separatorBuilder:
+                    (context, index) =>
+                        Divider(height: Spacing.xxxl),
+                itemBuilder: (context, animation, item, i) {
+                  return Reorderable(
+                    key: Key(item.id),
+                    child: TimerDisplayTile(item, index: i),
+                  );
                 },
-                separatorBuilder: (context, index) {
-                  return Divider();
+                onReorderFinished: (item, from, to, newItems) {
+                  setState(() {
+                    collection.timers.removeAt(from);
+                    collection.timers.insert(to, item);
+                  });
                 },
               ),
             ),
+
+            /* ReorderableList(
+                itemBuilder: (context, index) {
+                  var timer = collection.timers[index];
+                  return TimerDisplayTile(
+                    timer,
+                    key: Key(timer.id),
+                    index: index,
+                  );
+                },
+                itemCount: collection.timers.length,
+                onReorder: (oldIndex, newIndex) {
+                  setState(() {
+                    collection.timers.insert(
+                      newIndex,
+                      collection.timers.removeAt(oldIndex),
+                    );
+                  });
+                },
+                prototypeItem: TimerDisplayTile(
+                  Timer(),
+                  index: 0,
+                ),
+              ),
+            ), */
 
             /*  if (collection.timers.isNotEmpty)
               Row(
@@ -390,6 +421,7 @@ class _NewCollectionScreenState
 
   SizedBox addTimerButton() {
     return SizedBox(
+      key: Key("addTimerButton"),
       width: double.infinity,
       child: FilledButton.icon(
         label: Text("Add Timer"),
@@ -649,6 +681,42 @@ class _NewCollectionScreenState
         ), //* Seconds
       ],
     );
+  }
+}
+
+class TimersListDisplay extends StatelessWidget {
+  const TimersListDisplay({
+    super.key,
+    required this.collectionTimers,
+    required this.onReorder,
+  });
+  final Function(int, int) onReorder;
+  final List<Timer> collectionTimers;
+
+  @override
+  Widget build(BuildContext context) {
+    return ReorderableList(
+      itemBuilder: (context, index) {
+        var timer = collectionTimers[index];
+        return TimerDisplayTile(
+          timer,
+          key: Key(timer.id),
+          index: index,
+        );
+      },
+      itemCount: collectionTimers.length,
+      onReorder: onReorder,
+    );
+
+    /*  ListView.separated(
+      itemCount: collectionTimers.length,
+      itemBuilder: (context, index) {
+        return collectionTimers[index];
+      },
+      separatorBuilder: (context, index) {
+        return Divider(height: Spacing.xxxl);
+      },
+    ); */
   }
 }
 

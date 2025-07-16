@@ -1,3 +1,4 @@
+import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
@@ -10,9 +11,11 @@ class TimerDisplayTile extends StatefulWidget {
     this.timer, {
     super.key,
     this.editable = false,
+    required this.index,
   });
   final bool editable;
   final Timer timer;
+  final int index;
 
   @override
   State<TimerDisplayTile> createState() =>
@@ -22,47 +25,52 @@ class TimerDisplayTile extends StatefulWidget {
 class _TimerDisplayTileState extends State<TimerDisplayTile> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 70,
-      child: LayoutGrid(
-        areas: """
+    final ThemeData theme = Theme.of(context);
+    return Container(
+      color: theme.colorScheme.surface,
+      child: SizedBox(
+        height: 70,
+        child: LayoutGrid(
+          areas: """
       leading title trailing
       leading switch trailing
       """,
-        columnSizes: [80.px, 1.fr, 70.px],
-        rowSizes: [1.fr, 1.fr],
-        children: [
-          TimerCircularPercentIndicator(
-            widget.timer.stopWatch,
-          ).inGridArea("leading"),
-          TextFormField(
-            onChanged: (value) {
-              widget.timer.label = value;
-            },
-            decoration: InputDecoration.collapsed(
-              border: UnderlineInputBorder(),
-              hintText: widget.timer.label,
-            ),
-          ).inGridArea("title"),
-          Switch(
-            value: widget.timer.notify,
-            onChanged: (value) {
-              setState(() {
-                widget.timer.notify = value;
-              });
-            },
-            thumbIcon: WidgetStatePropertyAll(
-              Icon(Icons.notifications_active_rounded),
-            ),
-          ).inGridArea("switch"),
-          Center(
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.menu_rounded),
-              iconSize: Spacing.iconXl,
-            ),
-          ).inGridArea("trailing"),
-        ],
+          columnSizes: [80.px, 1.fr, 70.px],
+          rowSizes: [1.fr, 1.fr],
+          children: [
+            TimerCircularPercentIndicator(
+              widget.timer.stopWatch,
+            ).inGridArea("leading"),
+            TextField(
+              onChanged: (value) {
+                widget.timer.label = value;
+              },
+              decoration: InputDecoration.collapsed(
+                border: UnderlineInputBorder(),
+                hintText: widget.timer.label,
+              ),
+            ).inGridArea("title"),
+            Switch(
+              value: widget.timer.notify,
+              onChanged: (value) {
+                setState(() {
+                  widget.timer.notify = value;
+                });
+              },
+              thumbIcon: WidgetStatePropertyAll(
+                Icon(Icons.notifications_active_rounded),
+              ),
+            ).inGridArea("switch"),
+            Center(
+              child: Handle(
+                child: Icon(
+                  Icons.drag_handle_rounded,
+                  size: Spacing.iconXXl,
+                ),
+              ),
+            ).inGridArea("trailing"),
+          ],
+        ),
       ),
     );
 
