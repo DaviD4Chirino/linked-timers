@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
 
@@ -17,7 +18,7 @@ abstract class Utils {
     String buttonText = "Accept",
   }) async {
     Timer? timer = timerToEdit ?? Timer();
-    bool canceled = false;
+    bool canceled = true;
 
     await showDialog(
       context: context,
@@ -50,16 +51,14 @@ abstract class Utils {
               child: FilledButton(
                 onPressed: () {
                   if (timer.timeAsMilliseconds < 1000) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
+                    Fluttertoast.showToast(
+                      msg:
                           "Make sure the timer is at least 1 second long",
-                        ),
-                      ),
                     );
-                    canceled = true;
+
                     return;
                   }
+                  canceled = false;
                   Navigator.pop(context);
                 },
                 child: Text(buttonText),
@@ -69,7 +68,6 @@ abstract class Utils {
         );
       },
     );
-
     return canceled ? null : timer;
   }
 

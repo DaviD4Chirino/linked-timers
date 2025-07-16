@@ -34,6 +34,10 @@ class _NewCollectionScreenState
 
   bool notify = false;
 
+  /// If the user exits the edit screen without entering the collection
+  /// to the database, this will be set to true
+  bool collectionAdded = false;
+
   int timersAdded = 0;
 
   TextEditingController minutesController =
@@ -79,6 +83,7 @@ class _NewCollectionScreenState
       return;
     }
     timerNotifier.addCollection(collection);
+    collectionAdded = true;
     Navigator.pop(context);
   }
 
@@ -243,6 +248,11 @@ class _NewCollectionScreenState
     minutesController.dispose();
     secondsController.dispose();
     timerLabelController.dispose();
+
+    // If the user exits the edit screen with a new collection, dispose it
+    if (!editing && collectionAdded) {
+      collection.dispose();
+    }
     super.dispose();
   }
 
