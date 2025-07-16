@@ -10,6 +10,7 @@ import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
 import 'package:linked_timers/widgets/reusables/text_icon.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
+import 'package:linked_timers/widgets/timer_display_tile.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class ManageCollectionScreen extends ConsumerStatefulWidget {
@@ -65,7 +66,7 @@ class _NewCollectionScreenState
       ref.watch(timerDatabaseProvider.notifier);
 
   List<Widget> get collectionTimers => [
-    ...collection.timers.map((e) => Text(e.label)),
+    ...collection.timers.map((timer) => TimerDisplayTile(timer)),
     addTimerButton(),
   ];
   void addCollection() {
@@ -284,10 +285,13 @@ class _NewCollectionScreenState
             LinearProgressIndicator(value: 1.0),
             SizedBox(height: Spacing.lg),
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: collectionTimers.length,
                 itemBuilder: (context, index) {
                   return collectionTimers[index];
+                },
+                separatorBuilder: (context, index) {
+                  return Divider();
                 },
               ),
             ),

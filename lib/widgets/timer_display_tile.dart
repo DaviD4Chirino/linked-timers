@@ -1,0 +1,96 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:linked_timers/models/abstracts/spacing.dart';
+import 'package:linked_timers/models/timer.dart';
+import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
+
+/// Not actually a ListTile
+class TimerDisplayTile extends StatefulWidget {
+  const TimerDisplayTile(
+    this.timer, {
+    super.key,
+    this.editable = false,
+  });
+  final bool editable;
+  final Timer timer;
+
+  @override
+  State<TimerDisplayTile> createState() =>
+      _TimerDisplayTileState();
+}
+
+class _TimerDisplayTileState extends State<TimerDisplayTile> {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 70,
+      child: LayoutGrid(
+        areas: """
+      leading title trailing
+      leading switch trailing
+      """,
+        columnSizes: [80.px, 1.fr, 70.px],
+        rowSizes: [1.fr, 1.fr],
+        children: [
+          TimerCircularPercentIndicator(
+            widget.timer.stopWatch,
+          ).inGridArea("leading"),
+          TextFormField(
+            onChanged: (value) {
+              widget.timer.label = value;
+            },
+            decoration: InputDecoration.collapsed(
+              border: UnderlineInputBorder(),
+              hintText: widget.timer.label,
+            ),
+          ).inGridArea("title"),
+          Switch(
+            value: widget.timer.notify,
+            onChanged: (value) {
+              setState(() {
+                widget.timer.notify = value;
+              });
+            },
+            thumbIcon: WidgetStatePropertyAll(
+              Icon(Icons.notifications_active_rounded),
+            ),
+          ).inGridArea("switch"),
+          Center(
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.menu_rounded),
+              iconSize: Spacing.iconXl,
+            ),
+          ).inGridArea("trailing"),
+        ],
+      ),
+    );
+
+    /* SizedBox(
+      height: 80,
+      child: Row(
+        children: [
+          TimerCircularPercentIndicator(widget.timer.stopWatch),
+          SizedBox(width: Spacing.base),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.timer.label,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+              Switch(value: false, onChanged: (value) {}),
+            ],
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.menu_rounded),
+          ),
+        ],
+      ),
+    ); */
+  }
+}

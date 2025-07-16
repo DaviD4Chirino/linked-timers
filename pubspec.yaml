@@ -31,6 +31,7 @@ dependencies:
   scroll_to_hide: ^2.2.1
   riverpod_lint: ^3.0.0-dev.16
   flutter_launcher_icons: ^0.14.4
+  layout_grids: ^0.2.0
 
 dev_dependencies:
   flutter_test:
