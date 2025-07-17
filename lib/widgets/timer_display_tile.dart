@@ -2,7 +2,6 @@ import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
-import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
