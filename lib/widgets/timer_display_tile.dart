@@ -13,10 +13,12 @@ class TimerDisplayTile extends StatefulWidget {
     super.key,
     this.editable = false,
     this.onTap,
+    this.onLabelChanged,
   });
   final bool editable;
   final Timer timer;
   final void Function(Timer timer)? onTap;
+  final void Function(String text)? onLabelChanged;
 
   @override
   State<TimerDisplayTile> createState() =>
@@ -24,14 +26,13 @@ class TimerDisplayTile extends StatefulWidget {
 }
 
 class _TimerDisplayTileState extends State<TimerDisplayTile> {
+  late TextEditingController labelController =
+      TextEditingController(text: widget.timer.label);
+
   @override
-  void didUpdateWidget(covariant TimerDisplayTile oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Compare the old and new timer's timeAsMilliseconds
-    if (oldWidget.timer.timeAsMilliseconds !=
-        widget.timer.timeAsMilliseconds) {
-      setState(() {});
-    }
+  void dispose() {
+    labelController.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,44 +50,10 @@ class _TimerDisplayTileState extends State<TimerDisplayTile> {
           columnSizes: [80.px, 1.fr, 70.px],
           rowSizes: [1.fr, 1.fr],
           children: [
-            TimerCircularPercentIndicator(
-              widget.timer.stopWatch,
-              onTap:
-                  widget.onTap != null
-                      ? () {
-                        widget.onTap!(widget.timer);
-                        setState(() {});
-                      }
-                      : null,
-            ).inGridArea("leading"),
-            TextField(
-              onChanged: (value) {
-                widget.timer.label = value;
-              },
-              decoration: InputDecoration.collapsed(
-                border: UnderlineInputBorder(),
-                hintText: widget.timer.label,
-              ),
-            ).inGridArea("title"),
-            Switch(
-              value: widget.timer.notify,
-              onChanged: (value) {
-                setState(() {
-                  widget.timer.notify = value;
-                });
-              },
-              thumbIcon: WidgetStatePropertyAll(
-                Icon(Icons.notifications_active_rounded),
-              ),
-            ).inGridArea("switch"),
-            Center(
-              child: Handle(
-                child: Icon(
-                  Icons.drag_handle_rounded,
-                  size: Spacing.iconXXl,
-                ),
-              ),
-            ).inGridArea("trailing"),
+            stopWatchClock().inGridArea("leading"),
+            labelTextField().inGridArea("title"),
+            notifySwitch().inGridArea("switch"),
+            dragHandle().inGridArea("trailing"),
           ],
         ),
       ),
@@ -118,5 +85,57 @@ class _TimerDisplayTileState extends State<TimerDisplayTile> {
         ],
       ),
     ); */
+  }
+
+  TimerCircularPercentIndicator stopWatchClock() {
+    return TimerCircularPercentIndicator(
+      widget.timer.stopWatch,
+      onTap:
+          widget.onTap != null
+              ? () {
+                widget.onTap!(widget.timer);
+                setState(() {});
+              }
+              : null,
+    );
+  }
+
+  Center dragHandle() {
+    return Center(
+      child: Handle(
+        child: Icon(
+          Icons.drag_handle_rounded,
+          size: Spacing.iconXXl,
+        ),
+      ),
+    );
+  }
+
+  Switch notifySwitch() {
+    return Switch(
+      value: widget.timer.notify,
+      onChanged: (value) {
+        setState(() {
+          widget.timer.notify = value;
+        });
+      },
+      thumbIcon: WidgetStatePropertyAll(
+        Icon(Icons.notifications_active_rounded),
+      ),
+    );
+  }
+
+  TextField labelTextField() {
+    return TextField(
+      onChanged: (value) {
+        widget.timer.label = value;
+        widget.onLabelChanged?.call(value);
+      },
+      controller: labelController,
+      decoration: InputDecoration.collapsed(
+        border: UnderlineInputBorder(),
+        hintText: widget.timer.label,
+      ),
+    );
   }
 }
