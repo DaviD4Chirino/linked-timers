@@ -14,6 +14,7 @@ import 'package:linked_timers/widgets/reusables/text_icon.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 import 'package:linked_timers/widgets/timer_display_tile.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:uuid/uuid.dart';
 
 class ManageCollectionScreen extends ConsumerStatefulWidget {
   const ManageCollectionScreen({super.key});
@@ -125,7 +126,7 @@ class _NewCollectionScreenState
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () {
+                onPressed: () async {
                   if (newTimer.timeAsMilliseconds < 1000) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -137,19 +138,21 @@ class _NewCollectionScreenState
                     return;
                   }
 
-                  setState(() {
-                    List<Timer> timers = [...collection.timers];
-                    int index = timers.indexWhere(
-                      (element) => element.id == timer.id,
-                    );
-                    if (index == -1) return;
-                    timers[index] = newTimer;
+                  Navigator.pop(context);
 
+                  List<Timer> timers = [...collection.timers];
+                  int index = timers.indexWhere(
+                    (element) => element.id == timer.id,
+                  );
+                  if (index == -1) return;
+                  await timers[index].dispose();
+
+                  setState(() {
+                    timers[index] = newTimer;
                     collection = collection.copyWith(
                       timers: timers,
                     );
                   });
-                  Navigator.pop(context);
                 },
                 child: Text("Accept"),
               ),
@@ -293,7 +296,11 @@ class _NewCollectionScreenState
             SizedBox(height: Spacing.xxl),
             Expanded(
               child: ImplicitlyAnimatedReorderableList.separated(
-                areItemsTheSame: (a, b) => a == b,
+                areItemsTheSame:
+                    (a, b) =>
+                        a == b &&
+                        a.stopWatch.initialPresetTime ==
+                            b.stopWatch.initialPresetTime,
                 items: collection.timers,
                 separatorBuilder:
                     (context, index) =>
@@ -301,7 +308,22 @@ class _NewCollectionScreenState
                 itemBuilder: (context, animation, item, i) {
                   return Reorderable(
                     key: Key(item.id),
-                    child: TimerDisplayTile(item, index: i),
+                    child: TimerDisplayTile(
+                      item,
+                      onTap: (timer) async {
+                        Timer? editedTimer =
+                            await Utils.timerAlert(
+                              timerToEdit: item,
+                              context: context,
+                              titleText: "Edit timer",
+                            );
+                        setState(() {
+                          if (editedTimer == null) return;
+                          collection.timers[i] =
+                              editedTimer..id = Uuid().v4();
+                        });
+                      },
+                    ),
                   );
                 },
                 onReorderFinished: (item, from, to, newItems) {
@@ -312,121 +334,9 @@ class _NewCollectionScreenState
                 },
               ),
             ),
-
-            /* ReorderableList(
-                itemBuilder: (context, index) {
-                  var timer = collection.timers[index];
-                  return TimerDisplayTile(
-                    timer,
-                    key: Key(timer.id),
-                    index: index,
-                  );
-                },
-                itemCount: collection.timers.length,
-                onReorder: (oldIndex, newIndex) {
-                  setState(() {
-                    collection.timers.insert(
-                      newIndex,
-                      collection.timers.removeAt(oldIndex),
-                    );
-                  });
-                },
-                prototypeItem: TimerDisplayTile(
-                  Timer(),
-                  index: 0,
-                ),
-              ),
-            ), */
-
-            /*  if (collection.timers.isNotEmpty)
-              Row(
-                spacing: Spacing.base,
-                children: [titleWidget(), lapsWidgets()],
-              ),
-            if (collection.timers.isNotEmpty)
-              SizedBox(height: Spacing.lg),
-            if (collection.timers.isNotEmpty)
-              SizedBox(
-                height: 100,
-                child: Row(
-                  children: [
-                    Expanded(child: timersDisplay(context)),
-                    SizedBox(width: Spacing.lg),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: Spacing.iconXl + 16,
-                          height: Spacing.iconXl + 16,
-                          child: IconButton.filled(
-                            onPressed:
-                                editing
-                                    ? editCollection
-                                    : addCollection,
-                            icon: Icon(
-                              editing
-                                  ? Icons.alarm_on_rounded
-                                  : Icons.add_alarm_rounded,
-                            ),
-                            iconSize: Spacing.iconXl,
-                            style: ButtonStyle(
-                              shape: WidgetStateProperty.all(
-                                RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(8),
-                                ),
-                              ),
-                              padding: WidgetStateProperty.all(
-                                EdgeInsets.zero,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: Spacing.sm),
-                        Text(
-                          editing
-                              ? "Modify Collection"
-                              : "Add Collection",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            Expanded(
-              child: EditTimerListWheel(
-                onChanged: (
-                  label,
-                  hours,
-                  minutes,
-                  seconds,
-                  notify,
-                ) {
-                  timerLabel = label;
-                  this.hours = hours;
-                  this.minutes = minutes;
-                  this.seconds = seconds;
-                  this.notify = notify;
-                },
-              ),
-            ), */
           ],
         ),
       ),
-      /* floatingActionButton: FloatingActionButton.extended(
-        onPressed: editing ? editCollection : addCollection,
-        label: Row(
-          children: [
-            Icon(Icons.add),
-            Text(
-              editing ? "Modify Collection" : "Add Collection",
-            ),
-          ],
-        ),
-      ), */
     );
   }
 
@@ -702,42 +612,6 @@ class _NewCollectionScreenState
         ), //* Seconds
       ],
     );
-  }
-}
-
-class TimersListDisplay extends StatelessWidget {
-  const TimersListDisplay({
-    super.key,
-    required this.collectionTimers,
-    required this.onReorder,
-  });
-  final Function(int, int) onReorder;
-  final List<Timer> collectionTimers;
-
-  @override
-  Widget build(BuildContext context) {
-    return ReorderableList(
-      itemBuilder: (context, index) {
-        var timer = collectionTimers[index];
-        return TimerDisplayTile(
-          timer,
-          key: Key(timer.id),
-          index: index,
-        );
-      },
-      itemCount: collectionTimers.length,
-      onReorder: onReorder,
-    );
-
-    /*  ListView.separated(
-      itemCount: collectionTimers.length,
-      itemBuilder: (context, index) {
-        return collectionTimers[index];
-      },
-      separatorBuilder: (context, index) {
-        return Divider(height: Spacing.xxxl);
-      },
-    ); */
   }
 }
 

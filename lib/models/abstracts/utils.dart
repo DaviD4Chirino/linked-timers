@@ -17,7 +17,10 @@ abstract class Utils {
     String titleText = "Add timer",
     String buttonText = "Accept",
   }) async {
-    Timer? timer = timerToEdit ?? Timer();
+    Timer? timer =
+        timerToEdit != null
+            ? timerToEdit.copyWith(id: timerToEdit.id)
+            : Timer();
     bool canceled = true;
 
     await showDialog(

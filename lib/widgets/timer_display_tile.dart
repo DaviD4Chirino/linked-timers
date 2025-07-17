@@ -2,6 +2,7 @@ import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
 
@@ -11,11 +12,11 @@ class TimerDisplayTile extends StatefulWidget {
     this.timer, {
     super.key,
     this.editable = false,
-    required this.index,
+    this.onTap,
   });
   final bool editable;
   final Timer timer;
-  final int index;
+  final void Function(Timer timer)? onTap;
 
   @override
   State<TimerDisplayTile> createState() =>
@@ -23,6 +24,16 @@ class TimerDisplayTile extends StatefulWidget {
 }
 
 class _TimerDisplayTileState extends State<TimerDisplayTile> {
+  @override
+  void didUpdateWidget(covariant TimerDisplayTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Compare the old and new timer's timeAsMilliseconds
+    if (oldWidget.timer.timeAsMilliseconds !=
+        widget.timer.timeAsMilliseconds) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -40,6 +51,13 @@ class _TimerDisplayTileState extends State<TimerDisplayTile> {
           children: [
             TimerCircularPercentIndicator(
               widget.timer.stopWatch,
+              onTap:
+                  widget.onTap != null
+                      ? () {
+                        widget.onTap!(widget.timer);
+                        setState(() {});
+                      }
+                      : null,
             ).inGridArea("leading"),
             TextField(
               onChanged: (value) {
