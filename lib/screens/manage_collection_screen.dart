@@ -2,6 +2,7 @@ import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:linked_timers/extensions/string_extensions.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
@@ -294,49 +295,71 @@ class _NewCollectionScreenState
             ),
             Divider(),
             SizedBox(height: Spacing.xxl),
-            Expanded(
-              child: ImplicitlyAnimatedReorderableList.separated(
-                areItemsTheSame:
-                    (a, b) =>
-                        a == b &&
-                        a.stopWatch.initialPresetTime ==
-                            b.stopWatch.initialPresetTime,
-                items: collection.timers,
-                separatorBuilder:
-                    (context, index) =>
-                        Divider(height: Spacing.xxxl),
-                itemBuilder: (context, animation, item, i) {
-                  return Reorderable(
-                    key: Key(item.id),
-                    child: TimerDisplayTile(
-                      item,
-                      onTap: (timer) async {
-                        Timer? editedTimer =
-                            await Utils.timerAlert(
-                              timerToEdit: item,
-                              context: context,
-                              titleText: "Edit timer",
-                            );
-                        setState(() {
-                          if (editedTimer == null) return;
-                          collection.timers[i] =
-                              editedTimer..id = Uuid().v4();
-                        });
-                      },
-                    ),
-                  );
-                },
-                onReorderFinished: (item, from, to, newItems) {
-                  setState(() {
-                    collection.timers.removeAt(from);
-                    collection.timers.insert(to, item);
-                  });
-                },
-              ),
-            ),
+            Expanded(child: timersReorderableList()),
           ],
         ),
       ),
+    );
+  }
+
+  ImplicitlyAnimatedReorderableList<Timer>
+  timersReorderableList() {
+    return ImplicitlyAnimatedReorderableList.separated(
+      areItemsTheSame:
+          (a, b) =>
+              a == b &&
+              a.stopWatch.initialPresetTime ==
+                  b.stopWatch.initialPresetTime,
+      items: collection.timers,
+      separatorBuilder:
+          (context, index) => Divider(height: Spacing.xxxl),
+      itemBuilder: (context, animation, item, i) {
+        final ThemeData theme = Theme.of(context);
+        return Reorderable(
+          key: Key(item.id),
+          child: Slidable(
+            startActionPane: ActionPane(
+              extentRatio: 0.3,
+              motion: DrawerMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (context) {
+                    setState(() {
+                      collection.timers.removeAt(i).dispose();
+                    });
+                  },
+
+                  backgroundColor: theme.colorScheme.error,
+                  foregroundColor: theme.colorScheme.onError,
+                  icon: Icons.delete,
+                  label: "Delete",
+                ),
+              ],
+            ),
+            child: TimerDisplayTile(
+              item,
+              onTap: (timer) async {
+                Timer? editedTimer = await Utils.timerAlert(
+                  timerToEdit: item,
+                  context: context,
+                  titleText: "Edit timer",
+                );
+                setState(() {
+                  if (editedTimer == null) return;
+                  collection.timers[i] =
+                      editedTimer..id = Uuid().v4();
+                });
+              },
+            ),
+          ),
+        );
+      },
+      onReorderFinished: (item, from, to, newItems) {
+        setState(() {
+          collection.timers.removeAt(from);
+          collection.timers.insert(to, item);
+        });
+      },
     );
   }
 

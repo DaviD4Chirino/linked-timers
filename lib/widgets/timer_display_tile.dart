@@ -99,9 +99,10 @@ class _TimerDisplayTileState extends State<TimerDisplayTile> {
     );
   }
 
-  Center dragHandle() {
-    return Center(
-      child: Handle(
+  Widget dragHandle() {
+    return Handle(
+      vibrate: true,
+      child: Center(
         child: Icon(
           Icons.drag_handle_rounded,
           size: Spacing.iconXXl,
