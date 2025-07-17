@@ -1,6 +1,7 @@
 // I might as well track the isInfinite bool here
 import 'package:flutter/foundation.dart';
 import 'package:linked_timers/models/timer.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:uuid/uuid.dart';
 
 class TimerCollection {
@@ -10,7 +11,12 @@ class TimerCollection {
     this.laps = 1,
     this.isInfinite = false,
     this.alert = true,
-  });
+  }) /*  : globalStopWatch = StopWatchTimer(
+         mode: StopWatchMode.countDown,
+         presetMillisecond: timers
+             .map((e) => e.timeAsMilliseconds)
+             .reduce((a, b) => a + b),
+       ) */;
 
   List<Timer> timers = [];
   int laps = 5;
@@ -23,6 +29,13 @@ class TimerCollection {
   String label;
   String id = Uuid().v4();
 
+  late StopWatchTimer globalStopWatch = StopWatchTimer(
+    mode: StopWatchMode.countDown,
+    presetMillisecond: timers
+        .map((e) => e.timeAsMilliseconds)
+        .reduce((a, b) => a + b),
+  );
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -33,6 +46,13 @@ class TimerCollection {
 
   @override
   int get hashCode => id.hashCode;
+
+  int get totalTime =>
+      timers.isEmpty
+          ? 0
+          : timers
+              .map((e) => e.timeAsMilliseconds)
+              .reduce((a, b) => a + b);
 
   TimerCollection copyWith({
     List<Timer>? timers,
@@ -53,8 +73,18 @@ class TimerCollection {
     );
   }
 
-  void removeTimer(Timer timer) {
-    timers = timers.where((timer_) => timer_ != timer).toList();
+  void removeTimer(String timerId) {
+    var timerIndex = timers.indexWhere((t) => t.id == timerId);
+    if (timerIndex == -1) return;
+    var removedTimer = timers.removeAt(timerIndex);
+    removedTimer.dispose();
+  }
+
+  Future<void> dispose() async {
+    for (var timer in timers) {
+      timer.dispose();
+    }
+    globalStopWatch.dispose();
   }
 
   Map<String, dynamic> toMap() => {

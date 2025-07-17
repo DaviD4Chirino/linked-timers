@@ -1,6 +1,9 @@
 
 Todo:
   General:
+    ☐ Make a way to differentiate between hours and minutes
+        * Maybe add a total timer time string below the timer
+        * eg: 01:03:15 - 1h 3m 15s
     ✔ Make sure notifications and alerts play when selected timers or the collection ends @started(25-06-06 23:19) @done(25-06-07 19:34) @lasted(20h15m52s)
     ✔ Make the app run continuously @started(25-06-05 10:36) @done(25-06-07 15:18) @lasted(8s)
     ✔ Save locally the timer Database @started(25-06-05 17:08) @done(25-06-05 17:15) @lasted(7m46s)
@@ -13,12 +16,12 @@ Todo:
   Individual:
     manage_collection_screen.dart:
       ✔ Make an indicator for the progress of the whole collection @started(25-06-07 15:52) @done(25-06-07 19:24) @lasted(3h32m47s)
-      ☐ Make bulk timer editing
+      ✘ Make bulk timer editing @cancelled(25-07-17 12:48)
       ✔ Timer edit allows for individual "alert when finish" @started(25-06-13 17:14) @done(25-06-14 20:29) @lasted(1d3h15m46s)
       ✔ Collection edit allows for individual "alert when finish" @started(25-06-15 21:15) @done(25-06-17 18:05) @lasted(1d20h50m57s)
       ✔ Make it impossible for a timer to be add if theres less than a second on it @started(25-06-05 17:21) @done(25-06-05 17:29) @lasted(8m52s)
       ✔ The timer should be able to be deleted when the user long press on the timer @started(25-06-08 18:38) @done(25-06-13 17:13) @lasted(4d22h35m33s)
-      ☐ Make the inputs open a new dialog to prevent screen cramping
+      ✔ Make the inputs open a new dialog to prevent screen cramping @done(25-07-17 12:48)
 
     timer_collection_control:
       ✘ Move the creation of stopwatches to the database @cancelled(25-06-24 14:51)

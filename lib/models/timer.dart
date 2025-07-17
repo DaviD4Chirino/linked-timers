@@ -23,6 +23,14 @@ class Timer {
   String label;
   String id;
 
+  late StopWatchTimer stopWatch = StopWatchTimer(
+    mode: StopWatchMode.countDown,
+    presetMillisecond:
+        StopWatchTimer.getMilliSecFromHour(hours) +
+        StopWatchTimer.getMilliSecFromMinute(minutes) +
+        StopWatchTimer.getMilliSecFromSecond(seconds),
+  );
+
   int get timeAsMilliseconds =>
       ((hours * 60 * 60) + (minutes * 60) + seconds) * 1000;
 
@@ -40,6 +48,8 @@ class Timer {
   String toString() {
     return "$hours:$minutes:$seconds";
   }
+
+  Future<void> dispose() async => stopWatch.dispose();
 
   Map<String, dynamic> toMap() => {
     "id": id,

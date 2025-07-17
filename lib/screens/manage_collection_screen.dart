@@ -1,8 +1,11 @@
+import 'package:animated_list_plus/animated_list_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:linked_timers/extensions/string_extensions.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
@@ -10,6 +13,9 @@ import 'package:linked_timers/widgets/collection_drop_down_button.dart';
 import 'package:linked_timers/widgets/edit_timer_list_wheel.dart';
 import 'package:linked_timers/widgets/reusables/text_icon.dart';
 import 'package:linked_timers/widgets/timer_circular_percent_indicator.dart';
+import 'package:linked_timers/widgets/timer_display_tile.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:uuid/uuid.dart';
 
 class ManageCollectionScreen extends ConsumerStatefulWidget {
   const ManageCollectionScreen({super.key});
@@ -29,6 +35,10 @@ class _NewCollectionScreenState
   int seconds = 0;
 
   bool notify = false;
+
+  /// If the user exits the edit screen without entering the collection
+  /// to the database, this will be set to true
+  bool collectionAdded = false;
 
   int timersAdded = 0;
 
@@ -75,6 +85,7 @@ class _NewCollectionScreenState
       return;
     }
     timerNotifier.addCollection(collection);
+    collectionAdded = true;
     Navigator.pop(context);
   }
 
@@ -116,6 +127,75 @@ class _NewCollectionScreenState
             SizedBox(
               width: double.infinity,
               child: FilledButton(
+                onPressed: () async {
+                  if (newTimer.timeAsMilliseconds < 1000) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          "Make sure the timer is at least 1 second long",
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  Navigator.pop(context);
+
+                  List<Timer> timers = [...collection.timers];
+                  int index = timers.indexWhere(
+                    (element) => element.id == timer.id,
+                  );
+                  if (index == -1) return;
+                  await timers[index].dispose();
+
+                  setState(() {
+                    timers[index] = newTimer;
+                    collection = collection.copyWith(
+                      timers: timers,
+                    );
+                  });
+                },
+                child: Text("Accept"),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void addTimer() async {
+    Timer newTimer = Timer();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Edit timer"),
+          content: Container(
+            constraints: BoxConstraints(maxHeight: 500),
+            child: EditTimerListWheel(
+              timer: newTimer,
+              onChanged: (
+                label,
+                hours,
+                minutes,
+                seconds,
+                notify,
+              ) {
+                newTimer.label = label;
+                newTimer.hours = hours;
+                newTimer.minutes = minutes;
+                newTimer.seconds = seconds;
+                newTimer.notify = notify;
+              },
+            ),
+          ),
+
+          actions: [
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
                 onPressed: () {
                   if (newTimer.timeAsMilliseconds < 1000) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -129,17 +209,10 @@ class _NewCollectionScreenState
                   }
 
                   setState(() {
-                    List<Timer> timers = [...collection.timers];
-                    int index = timers.indexWhere(
-                      (element) => element.id == timer.id,
-                    );
-                    if (index == -1) return;
-                    timers[index] = newTimer;
-
-                    collection = collection.copyWith(
-                      timers: timers,
-                    );
+                    collection.timers.add(newTimer);
+                    timersAdded++;
                   });
+
                   Navigator.pop(context);
                 },
                 child: Text("Accept"),
@@ -149,10 +222,7 @@ class _NewCollectionScreenState
         );
       },
     );
-  }
-
-  void addTimer() {
-    Timer newTimer = Timer(
+    /* Timer newTimer = Timer(
       label: timerLabel,
       hours: hours,
       minutes: minutes,
@@ -173,7 +243,7 @@ class _NewCollectionScreenState
     setState(() {
       collection.timers.add(newTimer);
       timersAdded++;
-    });
+    }); */
   }
 
   @override
@@ -182,26 +252,21 @@ class _NewCollectionScreenState
     minutesController.dispose();
     secondsController.dispose();
     timerLabelController.dispose();
+
+    // If the user exits the edit screen with a new collection, dispose it
+    if (!editing && collectionAdded) {
+      collection.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    List<Widget> persistentFooterButtons = [
-      SizedBox(
-        width: double.infinity,
-        child: FilledButton.icon(
-          label: Text("Add Timer"),
-          onPressed: addTimer,
-          icon: Icon(Icons.timer),
-        ),
-      ),
-    ];
 
     return Scaffold(
       appBar: appBar(theme),
-      persistentFooterButtons: persistentFooterButtons,
+      persistentFooterButtons: [addTimerButton()],
       body: Padding(
         padding: EdgeInsets.only(
           right: Spacing.xl,
@@ -209,99 +274,153 @@ class _NewCollectionScreenState
           top: Spacing.xxxl,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            if (collection.timers.isNotEmpty)
-              Row(
-                spacing: Spacing.base,
-                children: [titleWidget(), lapsWidgets()],
-              ),
-            if (collection.timers.isNotEmpty)
-              SizedBox(height: Spacing.lg),
-            if (collection.timers.isNotEmpty)
-              SizedBox(
-                height: 100,
-                child: Row(
-                  children: [
-                    Expanded(child: timersDisplay(context)),
-                    SizedBox(width: Spacing.lg),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: Spacing.iconXl + 16,
-                          height: Spacing.iconXl + 16,
-                          child: IconButton.filled(
-                            onPressed:
-                                editing
-                                    ? editCollection
-                                    : addCollection,
-                            icon: Icon(
-                              editing
-                                  ? Icons.alarm_on_rounded
-                                  : Icons.add_alarm_rounded,
-                            ),
-                            iconSize: Spacing.iconXl,
-                            style: ButtonStyle(
-                              shape: WidgetStateProperty.all(
-                                RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(8),
-                                ),
-                              ),
-                              padding: WidgetStateProperty.all(
-                                EdgeInsets.zero,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: Spacing.sm),
-                        Text(
-                          editing
-                              ? "Modify Collection"
-                              : "Add Collection",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            Expanded(
-              child: EditTimerListWheel(
-                onChanged: (
-                  label,
-                  hours,
-                  minutes,
-                  seconds,
-                  notify,
-                ) {
-                  timerLabel = label;
-                  this.hours = hours;
-                  this.minutes = minutes;
-                  this.seconds = seconds;
-                  this.notify = notify;
-                },
-              ),
+            Row(
+              spacing: Spacing.base,
+              children: [titleWidget(), lapsWidgets()],
             ),
+            SizedBox(height: Spacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "Total time: ${StopWatchTimer.getDisplayTime(collection.totalTime, milliSecond: false)}",
+                  ),
+                ),
+                sendCollectionButton(),
+              ],
+            ),
+            Divider(),
+            SizedBox(height: Spacing.xxl),
+            Expanded(child: timersReorderableList()),
           ],
         ),
       ),
-      /* floatingActionButton: FloatingActionButton.extended(
-        onPressed: editing ? editCollection : addCollection,
-        label: Row(
-          children: [
-            Icon(Icons.add),
-            Text(
-              editing ? "Modify Collection" : "Add Collection",
+    );
+  }
+
+  ImplicitlyAnimatedReorderableList<Timer>
+  timersReorderableList() {
+    return ImplicitlyAnimatedReorderableList.separated(
+      areItemsTheSame:
+          (a, b) =>
+              a == b &&
+              a.stopWatch.initialPresetTime ==
+                  b.stopWatch.initialPresetTime,
+      items: collection.timers,
+      separatorBuilder:
+          (context, index) => Divider(height: Spacing.xxxl),
+      itemBuilder: (context, animation, item, i) {
+        final ThemeData theme = Theme.of(context);
+        return Reorderable(
+          key: Key(item.id),
+          child: Slidable(
+            startActionPane: ActionPane(
+              extentRatio: 0.3,
+              motion: DrawerMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (context) {
+                    setState(() {
+                      collection.timers.removeAt(i).dispose();
+                    });
+                  },
+
+                  backgroundColor: theme.colorScheme.error,
+                  foregroundColor: theme.colorScheme.onError,
+                  icon: Icons.delete,
+                  label: "Delete",
+                ),
+              ],
             ),
-          ],
+            child: TimerDisplayTile(
+              item,
+              onTap: (timer) async {
+                Timer? editedTimer = await Utils.timerAlert(
+                  timerToEdit: item,
+                  context: context,
+                  titleText: "Edit timer",
+                );
+                setState(() {
+                  if (editedTimer == null) return;
+                  collection.timers[i] =
+                      editedTimer..id = Uuid().v4();
+                });
+              },
+            ),
+          ),
+        );
+      },
+      onReorderFinished: (item, from, to, newItems) {
+        setState(() {
+          collection.timers.removeAt(from);
+          collection.timers.insert(to, item);
+        });
+      },
+    );
+  }
+
+  SizedBox addTimerButton() {
+    return SizedBox(
+      key: Key("addTimerButton"),
+      width: double.infinity,
+      child: FilledButton.icon(
+        label: Text("Add Timer"),
+        onPressed: () async {
+          Timer? timer = await Utils.timerAlert(
+            context: context,
+          );
+          if (timer != null) {
+            setState(() {
+              collection.timers.add(timer);
+              timersAdded++;
+            });
+          }
+        },
+        icon: Icon(Icons.timer),
+      ),
+    );
+  }
+
+  Widget sendCollectionButton() {
+    return Column(
+      children: [
+        IconButton.filled(
+          onPressed:
+              collection.timers.isNotEmpty
+                  ? editing
+                      ? editCollection
+                      : addCollection
+                  : null,
+          icon: Icon(
+            editing
+                ? Icons.send_rounded
+                : Icons.add_alarm_rounded,
+          ),
+          iconSize: Spacing.iconXXl,
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+
+            /* padding: WidgetStateProperty.all(
+                EdgeInsets.all(Spacing.base),
+              ), */
+          ),
         ),
-      ), */
+        SizedBox(height: Spacing.sm),
+        Text(
+          editing ? "Apply Changes" : "Add Collection",
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 
@@ -370,7 +489,7 @@ class _NewCollectionScreenState
       );
 
       if (selected == "remove") {
-        collection.removeTimer(timer);
+        collection.removeTimer(timer.id);
       }
       if (selected == "toggle-notify") {
         var timers = collection.timers;
