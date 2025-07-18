@@ -86,6 +86,11 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           files: |
-            "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
-          automatic_release_tag: v${{ env.VERSION }}
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+            build/ios_build.tar.gz
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Release ${{ env.VERSION }}"
           repo_token: ${{ secrets.TOKEN }}
+
