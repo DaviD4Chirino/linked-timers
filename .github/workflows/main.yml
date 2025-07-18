@@ -75,13 +75,11 @@ jobs:
 
           mv build/app/outputs/bundle/release/app-release.aab build/app/outputs/bundle/release/${{ env.NAME }}-v${{ env.VERSION }}.aab
 
-          mv build/ios_build.tar.gz build/ios_build-v${{ env.VERSION }}.tar.gz
 
       - name: Delete files
         run: |
           rm -rf build/app/outputs/flutter-apk/app-release.apk
           rm -rf build/app/outputs/bundle/release/app-release.aab
-          rm -rf build/ios_build.tar.gz
 
 
 
@@ -106,7 +104,6 @@ jobs:
           files: |
             build/app/outputs/flutter-apk/${{ env.NAME }}-v${{ env.VERSION }}.apk
             build/app/outputs/bundle/release/${{ env.NAME }}-v${{ env.VERSION }}.aab
-            build/ios_build-v${{ env.VERSION }}.tar.gz
           automatic_release_tag: "v${{ env.VERSION }}"
           prerelease: true
           title: "Release v${{ env.VERSION }}"
