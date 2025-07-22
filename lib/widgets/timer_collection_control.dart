@@ -125,6 +125,9 @@ class _TimerCollectionControlState
       resetAllTimers();
       // stopAlarm();
     });
+    NotificationService.cancelCollectionNotification(
+      widget.collection,
+    );
   }
 
   void onTimerEnded(StopWatchTimer timer) {

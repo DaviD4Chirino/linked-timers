@@ -39,6 +39,20 @@ abstract class NotificationService {
     );
   }
 
+  static collectionPausedDetails() {
+    return AndroidNotificationDetails(
+      "collection-paused",
+      "Collection Paused",
+      channelDescription:
+          "Alerts when any collection has paused it's run",
+      importance: Importance.low,
+      priority: Priority.low,
+      playSound: false,
+      enableVibration: false,
+      // icon: "@drawable/ic_collection_play_icon",
+    );
+  }
+
   static collectionEndedDetails() {
     return AndroidNotificationDetails(
       "collection-ended",
@@ -144,10 +158,11 @@ abstract class NotificationService {
       progress * 1000,
       milliSecond: false,
     );
+    bool isRunning = collection.globalStopWatch.isRunning;
 
     return notificationPlugin.show(
       collection.id.hashCode,
-      "${collection.label} is running",
+      "${collection.label} is ${isRunning ? "running" : "paused"}",
       "$remainingTime left",
       NotificationDetails(
         android: collectionInProgressDetails(
@@ -157,6 +172,17 @@ abstract class NotificationService {
               1000,
         ),
       ),
+    );
+  }
+
+  static Future<void> collectionPausedNotification(
+    TimerCollection collection,
+  ) {
+    return notificationPlugin.show(
+      collection.id.hashCode,
+      "${collection.label} paused",
+      "",
+      NotificationDetails(android: collectionPausedDetails()),
     );
   }
 
