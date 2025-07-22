@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/services/alarm_service.dart';
+import 'package:linked_timers/services/notification_service.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -32,16 +33,17 @@ class TimerCollection {
 
   late StopWatchTimer globalStopWatch = StopWatchTimer(
     mode: StopWatchMode.countDown,
-    presetMillisecond: timers
-        .map((e) => e.timeAsMilliseconds)
-        .reduce((a, b) => a + b),
-    onChangeRawSecond: (int millis) {
-      print("Remaining Time: $millis");
-    },
+    presetMillisecond:
+        (timers
+            .map((e) => e.timeAsMilliseconds)
+            .reduce((a, b) => a + b)) *
+        laps,
+    onChangeRawSecond: (int millis) {},
     // finished
     onEnded: () {
       print("Timer Ended");
       if (isInfinite) return;
+      if (!alert) return;
       AlarmService.startCollectionAlarm(
         this,
         dateTime: DateTime.now(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/widgets/collection_total_progress.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -48,8 +49,8 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
 class _TimerCollectionControlState
     extends ConsumerState<TimerCollectionControl> {
-  late final ItemScrollController itemScrollController =
-      ItemScrollController();
+  late final AutoScrollController itemScrollController =
+      AutoScrollController();
   late final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
 
@@ -89,25 +90,28 @@ class _TimerCollectionControlState
 
   void startNotificationUpdates() {}
 
-  void maybeScrollToIndex(int index) {
+  void scrollToIndex(int index) {
     // Get the currently visible indexes
-    final visibleIndexes = itemPositionsListener
+    /* final visibleIndexes = itemPositionsListener
         .itemPositions
         .value
         .map((item) => item.index)
         .toSet();
 
-    final bool invisible = !visibleIndexes.contains(index);
+    final bool invisible = !visibleIndexes.contains(index); */
 
     // Only scroll if the index is not visible
-    if (invisible) {
-      itemScrollController.scrollTo(
-        alignment: 0.1,
-        index: index,
-        duration: const Duration(seconds: 1),
-        curve: Curves.easeOut,
+    /*  if (invisible) {
+      itemScrollController.scrollToIndex(
+        index,
+        preferPosition: AutoScrollPosition.begin,
       );
-    }
+    } */
+    itemScrollController.scrollToIndex(
+      index,
+      preferPosition: AutoScrollPosition.begin,
+      duration: Duration(milliseconds: 400),
+    );
   }
 
   void reset() {
@@ -117,7 +121,7 @@ class _TimerCollectionControlState
       currentStopWatch = stopWatches.first;
       currentTimer = widget.collection.timers.first;
       widget.collection.globalStopWatch.onResetTimer();
-      maybeScrollToIndex(0);
+      scrollToIndex(0);
       resetAllTimers();
       // stopAlarm();
     });
@@ -167,7 +171,7 @@ class _TimerCollectionControlState
       currentStopWatch = stopWatches[currentTimerIndex]
         ..onResetTimer()
         ..onStartTimer();
-      maybeScrollToIndex(currentTimerIndex);
+      scrollToIndex(currentTimerIndex);
 
       currentTimer = widget.collection.timers[currentTimerIndex];
     });
@@ -249,6 +253,8 @@ class _TimerCollectionControlState
   @override
   void dispose() async {
     super.dispose();
+    itemScrollController.dispose();
+
     // stopAlarm();
     // globalStopWatch.dispose();
     /* for (var timer in stopWatches) {
@@ -275,7 +281,7 @@ class _TimerCollectionControlState
                 child: TimersList(
                   stopWatches,
                   timers: widget.collection.timers,
-                  itemScrollController: itemScrollController,
+                  timerListController: itemScrollController,
                   onTimerTapped: widget.onTimerTapped != null
                       ? (stopWatch) {
                           widget.onTimerTapped!(
