@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:linked_timers/models/abstracts/utils.dart';
-import 'package:linked_timers/services/alarm_service.dart';
 import 'package:linked_timers/widgets/collection_total_progress.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -50,9 +48,9 @@ class TimerCollectionControl extends ConsumerStatefulWidget {
 
 class _TimerCollectionControlState
     extends ConsumerState<TimerCollectionControl> {
-  final ItemScrollController itemScrollController =
+  late final ItemScrollController itemScrollController =
       ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
+  late final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
 
   bool _isInfinite = false;
@@ -76,11 +74,11 @@ class _TimerCollectionControlState
 
   set isInfinite(bool value) {
     if (value) {
-      stopAlarm();
+      // stopAlarm();
     } else {
-      if (currentStopWatch.isRunning) {
+      /* if (currentStopWatch.isRunning) {
         setAlarm();
-      }
+      } */
     }
     _isInfinite = value;
   }
@@ -93,10 +91,11 @@ class _TimerCollectionControlState
 
   void maybeScrollToIndex(int index) {
     // Get the currently visible indexes
-    final visibleIndexes =
-        itemPositionsListener.itemPositions.value
-            .map((item) => item.index)
-            .toSet();
+    final visibleIndexes = itemPositionsListener
+        .itemPositions
+        .value
+        .map((item) => item.index)
+        .toSet();
 
     final bool invisible = !visibleIndexes.contains(index);
 
@@ -120,7 +119,7 @@ class _TimerCollectionControlState
       widget.collection.globalStopWatch.onResetTimer();
       maybeScrollToIndex(0);
       resetAllTimers();
-      stopAlarm();
+      // stopAlarm();
     });
   }
 
@@ -165,10 +164,9 @@ class _TimerCollectionControlState
 
         // globalStopWatch.onStartTimer();
       }
-      currentStopWatch =
-          stopWatches[currentTimerIndex]
-            ..onResetTimer()
-            ..onStartTimer();
+      currentStopWatch = stopWatches[currentTimerIndex]
+        ..onResetTimer()
+        ..onStartTimer();
       maybeScrollToIndex(currentTimerIndex);
 
       currentTimer = widget.collection.timers[currentTimerIndex];
@@ -189,10 +187,9 @@ class _TimerCollectionControlState
     reset();
     setState(() {
       if (widget.collection.timers.isEmpty) return;
-      stopWatches =
-          widget.collection.timers.map((e) {
-            return e.stopWatch;
-          }).toList();
+      stopWatches = widget.collection.timers.map((e) {
+        return e.stopWatch;
+      }).toList();
       currentTimer = widget.collection.timers.first;
     });
 
@@ -252,7 +249,7 @@ class _TimerCollectionControlState
   @override
   void dispose() async {
     super.dispose();
-    stopAlarm();
+    // stopAlarm();
     // globalStopWatch.dispose();
     /* for (var timer in stopWatches) {
       await timer.dispose();
@@ -279,14 +276,14 @@ class _TimerCollectionControlState
                   stopWatches,
                   timers: widget.collection.timers,
                   itemScrollController: itemScrollController,
-                  onTimerTapped: (stopWatch) {
-                    if (widget.onTimerTapped != null) {
-                      widget.onTimerTapped!(
-                        stopWatch,
-                        currentTimer.label,
-                      );
-                    }
-                  },
+                  onTimerTapped: widget.onTimerTapped != null
+                      ? (stopWatch) {
+                          widget.onTimerTapped!(
+                            stopWatch,
+                            currentTimer.label,
+                          );
+                        }
+                      : null,
                   currentTimerIndex: currentTimerIndex,
                   itemPositionsListener: itemPositionsListener,
                 ),
@@ -353,7 +350,7 @@ class _TimerCollectionControlState
       if (currentStopWatch.isRunning) {
         widget.collection.globalStopWatch.onStopTimer();
         currentStopWatch.onStopTimer();
-        stopAlarm();
+        // stopAlarm();
         return;
       }
 
@@ -361,9 +358,9 @@ class _TimerCollectionControlState
         reset();
         currentStopWatch.onStartTimer();
         widget.collection.globalStopWatch.onStartTimer();
-        if (!isInfinite) {
+        /* if (!isInfinite) {
           setAlarm();
-        }
+        } */
         return;
       }
       if (laps >= widget.collection.laps) {
@@ -373,9 +370,9 @@ class _TimerCollectionControlState
       }
       widget.collection.globalStopWatch.onStartTimer();
       currentStopWatch.onStartTimer();
-      if (!isInfinite) {
+      /* if (!isInfinite) {
         setAlarm();
-      }
+      } */
     }
 
     IconData getIcon() {
@@ -409,29 +406,29 @@ class _TimerCollectionControlState
         );
   }
 
-  Future<void> stopAlarm() async {
-    if (!widget.collection.alert) return;
-    AlarmService.stopCollectionAlarm(widget.collection.id);
-    Utils.log([
-      "Alert of id:",
-      "${widget.collection.id}-alarm".hashCode,
-      "Stopped",
-    ]);
-  }
+  // Future<void> stopAlarm() async {
+  //   if (!widget.collection.alert) return;
+  //   AlarmService.stopCollectionAlarm(widget.collection.id);
+  //   Utils.log([
+  //     "Alert of id:",
+  //     "${widget.collection.id}-alarm".hashCode,
+  //     "Stopped",
+  //   ]);
+  // }
 
-  Future<void> setAlarm() async {
-    if (!widget.collection.alert) return;
-    AlarmService.startCollectionAlarm(
-      widget.collection,
-      dateTime: DateTime.now().add(
-        Duration(milliseconds: remainingTime),
-      ),
-    );
+  // Future<void> setAlarm() async {
+  //   if (!widget.collection.alert) return;
+  //   AlarmService.startCollectionAlarm(
+  //     widget.collection,
+  //     dateTime: DateTime.now().add(
+  //       Duration(milliseconds: remainingTime),
+  //     ),
+  //   );
 
-    Utils.log([
-      "Alert Set for: ${(DateTime.now().add(Duration(milliseconds: remainingTime)).toIso8601String())}",
-    ]);
-  }
+  //   Utils.log([
+  //     "Alert Set for: ${(DateTime.now().add(Duration(milliseconds: remainingTime)).toIso8601String())}",
+  //   ]);
+  // }
 
   Widget topPart() {
     return Row(

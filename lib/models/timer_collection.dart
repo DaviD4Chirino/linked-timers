@@ -1,6 +1,7 @@
 // I might as well track the isInfinite bool here
 import 'package:flutter/foundation.dart';
 import 'package:linked_timers/models/timer.dart';
+import 'package:linked_timers/services/alarm_service.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -34,6 +35,22 @@ class TimerCollection {
     presetMillisecond: timers
         .map((e) => e.timeAsMilliseconds)
         .reduce((a, b) => a + b),
+    onChangeRawSecond: (int millis) {
+      print("Remaining Time: $millis");
+    },
+    // finished
+    onEnded: () {
+      print("Timer Ended");
+      if (isInfinite) return;
+      AlarmService.startCollectionAlarm(
+        this,
+        dateTime: DateTime.now(),
+      );
+    },
+    // paused
+    onStopped: () {
+      print("Timer Stopped");
+    },
   );
 
   @override
@@ -47,12 +64,11 @@ class TimerCollection {
   @override
   int get hashCode => id.hashCode;
 
-  int get totalTime =>
-      timers.isEmpty
-          ? 0
-          : timers
-              .map((e) => e.timeAsMilliseconds)
-              .reduce((a, b) => a + b);
+  int get totalTime => timers.isEmpty
+      ? 0
+      : timers
+            .map((e) => e.timeAsMilliseconds)
+            .reduce((a, b) => a + b);
 
   TimerCollection copyWith({
     List<Timer>? timers,
@@ -62,10 +78,9 @@ class TimerCollection {
     String? label,
   }) {
     return TimerCollection(
-      timers:
-          (timers ?? this.timers)
-              .map((t) => t.copyWith())
-              .toList(), // deep copy
+      timers: (timers ?? this.timers)
+          .map((t) => t.copyWith())
+          .toList(), // deep copy
       laps: laps ?? this.laps,
       isInfinite: isInfinite ?? this.isInfinite,
       label: label ?? this.label,
@@ -97,10 +112,9 @@ class TimerCollection {
   };
   factory TimerCollection.fromMap(Map<String, dynamic> map) =>
       TimerCollection(
-        timers:
-            (map["timers"] as List)
-                .map((e) => Timer.fromMap(e))
-                .toList(),
+        timers: (map["timers"] as List)
+            .map((e) => Timer.fromMap(e))
+            .toList(),
         laps: map["laps"],
         isInfinite: map["isInfinite"],
         alert: map["alert"] ?? false,

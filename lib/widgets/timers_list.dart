@@ -34,6 +34,9 @@ class TimersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (timers.isEmpty || stopWatches.isEmpty) {
+      return Center(child: Text("No timers available"));
+    }
     return ScrollablePositionedList.separated(
       physics: BouncingScrollPhysics(),
       itemCount: stopWatches.length,
@@ -47,16 +50,16 @@ class TimersList extends StatelessWidget {
         return SizedBox(width: Spacing.lg);
       },
       itemBuilder: (context, index) {
+        if (index >= timers.length) return SizedBox.shrink();
         return TimerCircularPercentIndicator(
           stopWatches[index],
           key: Key(index.toString()),
           notify: timers[index].notify,
-          onTap:
-              onTimerTapped != null
-                  ? () {
-                    onTimerTapped!(stopWatches[index]);
-                  }
-                  : null,
+          onTap: onTimerTapped != null
+              ? () {
+                  onTimerTapped!(stopWatches[index]);
+                }
+              : null,
         );
       },
     );
