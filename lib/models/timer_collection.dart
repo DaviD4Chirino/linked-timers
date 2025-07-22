@@ -31,6 +31,7 @@ class TimerCollection {
   String label;
   String id = Uuid().v4();
 
+  /// A timer that counts down the time of all the timers * laps
   late StopWatchTimer globalStopWatch = StopWatchTimer(
     mode: StopWatchMode.countDown,
     presetMillisecond:
@@ -38,12 +39,25 @@ class TimerCollection {
             .map((e) => e.timeAsMilliseconds)
             .reduce((a, b) => a + b)) *
         laps,
-    onChangeRawSecond: (int millis) {},
+    onChangeRawSecond: (int seconds) {
+      // If its at the start do not show notification
+      if (seconds == globalStopWatch.initialPresetTime ~/ 1000) {
+        NotificationService.cancelCollectionNotification(this);
+        return;
+      }
+
+      NotificationService.collectionInProgressNotification(
+        this,
+        progress: seconds,
+      );
+    },
     // finished
     onEnded: () {
-      print("Timer Ended");
       if (isInfinite) return;
+      NotificationService.showCollectionEndedNotification(this);
+
       if (!alert) return;
+
       AlarmService.startCollectionAlarm(
         this,
         dateTime: DateTime.now(),

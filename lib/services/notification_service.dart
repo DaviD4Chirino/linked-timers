@@ -15,6 +15,45 @@ abstract class NotificationService {
 
   static bool isInitialized = false;
 
+  static collectionInProgressDetails({
+    /// In seconds
+    int progress = 0,
+
+    /// In seconds
+    int maxProgress = 100,
+  }) {
+    return AndroidNotificationDetails(
+      "collection-in-progress",
+      "Collection In Progress",
+      channelDescription:
+          "Alerts when any collection start it's currently running",
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: false,
+      enableVibration: true,
+      showProgress: true,
+      progress: progress,
+      maxProgress: maxProgress,
+      onlyAlertOnce: true,
+      // icon: "@drawable/ic_collection_play_icon",
+    );
+  }
+
+  static collectionEndedDetails() {
+    return AndroidNotificationDetails(
+      "collection-ended",
+      "Collection Ended",
+      channelDescription:
+          "Alerts when any collection has ended it's run",
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      onlyAlertOnce: true,
+      // icon: "@drawable/ic_collection_play_icon",
+    );
+  }
+
   static AndroidNotificationDetails androidTimerEndedDetails({
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
@@ -48,39 +87,6 @@ abstract class NotificationService {
     playSound: true,
   );
 
-  static AndroidNotificationDetails
-  androidCollectionStartedDetails({
-    List<AndroidNotificationAction>? actions,
-  }) => AndroidNotificationDetails(
-    "collection-started",
-    "Collection Started",
-    channelDescription:
-        "Alerts when any collection start it's run",
-    importance: Importance.high,
-    priority: Priority.high,
-    actions: actions,
-    playSound: true,
-  );
-
-  static AndroidNotificationDetails
-  androidCollectionProgressDetails({
-    List<AndroidNotificationAction>? actions,
-    int progress = 0,
-    int maxProgress = 100,
-  }) => AndroidNotificationDetails(
-    "collection-progress",
-    "Progress of a Collection",
-    channelDescription:
-        "Tells you the current progress of a Collection",
-    importance: Importance.min,
-    priority: Priority.min,
-    playSound: false,
-    enableVibration: false,
-    actions: actions,
-    progress: progress,
-    maxProgress: maxProgress,
-  );
-
   static Future<void> initialize() async {
     if (isInitialized) return;
 
@@ -112,18 +118,6 @@ abstract class NotificationService {
     );
   }
 
-  static Future<void> showTimerEndedNotification(
-    Timer timer,
-    String ownerId,
-  ) {
-    return notificationPlugin.show(
-      "${ownerId}_child".hashCode,
-      "Timeout",
-      "${timer.label} finished",
-      NotificationDetails(android: androidTimerEndedDetails()),
-    );
-  }
-
   static Future<void> showAppRunningNotification() {
     return notificationPlugin.show(
       NotificationIds.linkedTimersBgService.index,
@@ -133,57 +127,49 @@ abstract class NotificationService {
     );
   }
 
-  static Future<void> showCollectionEndedNotification(
-    TimerCollection collection, {
-    List<AndroidNotificationAction>? actions,
-  }) {
-    return notificationPlugin.show(
-      collection.id.hashCode * 2,
-      "Timeout",
-      "${collection.label} finished",
-      NotificationDetails(
-        android: androidCollectionEndedDetails(actions: actions),
-      ),
-    );
+  static Future<void> cancelCollectionNotification(
+    TimerCollection collection,
+  ) {
+    return notificationPlugin.cancel(collection.id.hashCode);
   }
 
-  static Future<void> showCollectionStartedNotification(
+  static Future<void> collectionInProgressNotification(
     TimerCollection collection, {
+
+    /// In seconds
+    int progress = 0,
     List<AndroidNotificationAction>? actions,
   }) {
+    String remainingTime = StopWatchTimer.getDisplayTime(
+      progress * 1000,
+      milliSecond: false,
+    );
+
     return notificationPlugin.show(
       collection.id.hashCode,
-      "Start!",
-      "${collection.label} started",
+      "${collection.label} is running",
+      "$remainingTime left",
       NotificationDetails(
-        android: androidCollectionStartedDetails(
-          actions: actions,
+        android: collectionInProgressDetails(
+          progress: progress,
+          maxProgress:
+              collection.globalStopWatch.initialPresetTime ~/
+              1000,
         ),
       ),
     );
   }
 
-  static Future<void> showCollectionProgressNotification(
+  static Future<void> showCollectionEndedNotification(
     TimerCollection collection, {
-    int milliSeconds = 0,
     List<AndroidNotificationAction>? actions,
-    bool displayCollectionEnded = false,
   }) {
     return notificationPlugin.show(
       collection.id.hashCode,
-      displayCollectionEnded
-          ? "${collection.label} Finished"
-          : "${collection.label} Started!",
-      displayCollectionEnded
-          ? null
-          : "Remaining Time: ${StopWatchTimer.getDisplayTime(milliSeconds, milliSecond: false)}",
+      "${collection.label} finished",
+      "",
       NotificationDetails(
-        android:
-            displayCollectionEnded
-                ? androidCollectionEndedDetails(actions: actions)
-                : androidCollectionProgressDetails(
-                  actions: actions,
-                ),
+        android: androidCollectionEndedDetails(actions: actions),
       ),
     );
   }

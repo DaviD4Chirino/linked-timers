@@ -133,12 +133,12 @@ class _TimerCollectionControlState
       if (stopWatches.isEmpty) return;
       currentTimer;
 
-      if (widget.collection.timers[currentTimerIndex].notify) {
+      /* if (widget.collection.timers[currentTimerIndex].notify) {
         NotificationService.showTimerEndedNotification(
           widget.collection.timers[currentTimerIndex],
           widget.collection.id,
         );
-      }
+      } */
 
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
@@ -154,13 +154,13 @@ class _TimerCollectionControlState
 
           resetAllTimers();
 
-          if (!widget.collection.alert) {
+          /* if (!widget.collection.alert) {
             NotificationService.showCollectionProgressNotification(
               widget.collection,
               milliSeconds: 0,
               displayCollectionEnded: true,
             );
-          }
+          } */
 
           return;
         }
@@ -209,9 +209,9 @@ class _TimerCollectionControlState
             .reduce((a, b) => a + b)) *
         maxLaps; */
 
-    widget.collection.globalStopWatch.secondTime.listen(
+    /* widget.collection.globalStopWatch.secondTime.listen(
       onGlobalSecondTimer,
-    );
+    ); */
     widget.collection.globalStopWatch.rawTime.listen((millis) {
       remainingTime = millis;
     });
@@ -483,7 +483,7 @@ class _TimerCollectionControlState
     );
   }
 
-  void onGlobalSecondTimer(int value) {
+  /* void onGlobalSecondTimer(int value) {
     // If its at the start do not show notification
     if ((value * 1000) == globalStopWatch.initialPresetTime) {
       return;
@@ -492,13 +492,13 @@ class _TimerCollectionControlState
       widget.collection,
       milliSeconds: value * 1000,
     );
-  }
+  } */
 
-  void onGlobalStopWatchEnded(bool val) {
+  /*  void onGlobalStopWatchEnded(bool val) {
     NotificationService.showCollectionProgressNotification(
       widget.collection,
       milliSeconds: 0,
       displayCollectionEnded: finished,
     );
-  }
+  } */
 }
