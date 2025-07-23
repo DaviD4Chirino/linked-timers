@@ -13,12 +13,12 @@ class TimerCollection {
     this.laps = 1,
     this.isInfinite = false,
     this.alert = true,
-  }) /*  : globalStopWatch = StopWatchTimer(
-         mode: StopWatchMode.countDown,
-         presetMillisecond: timers
-             .map((e) => e.timeAsMilliseconds)
-             .reduce((a, b) => a + b),
-       ) */;
+  }) {
+    id = Uuid().v4();
+    for (final timer in timers) {
+      timer.collectionId = id;
+    }
+  }
 
   List<Timer> timers = [];
   int laps = 5;

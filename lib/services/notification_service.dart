@@ -69,6 +69,7 @@ abstract class NotificationService {
   }
 
   static AndroidNotificationDetails androidTimerEndedDetails({
+    String collectionId = "collection-id",
     List<AndroidNotificationAction>? actions,
   }) => AndroidNotificationDetails(
     "timer-ended",
@@ -77,7 +78,9 @@ abstract class NotificationService {
     importance: Importance.high,
     priority: Priority.high,
     actions: actions,
+    groupKey: collectionId,
   );
+
   static AndroidNotificationDetails androidAppRunningDetails() =>
       AndroidNotificationDetails(
         "linked-timers-bg-service",
@@ -87,6 +90,7 @@ abstract class NotificationService {
         importance: Importance.min,
         priority: Priority.min,
       );
+
   static AndroidNotificationDetails
   androidCollectionEndedDetails({
     List<AndroidNotificationAction>? actions,
@@ -197,6 +201,28 @@ abstract class NotificationService {
       NotificationDetails(
         android: androidCollectionEndedDetails(actions: actions),
       ),
+    );
+  }
+
+  static Future<void> showTimerEndedNotification(
+    Timer timer,
+    String collectionId,
+  ) {
+    return notificationPlugin.show(
+      "$collectionId-timer".hashCode,
+      "${timer.label} ended",
+      "",
+      NotificationDetails(
+        android: androidTimerEndedDetails(
+          collectionId: collectionId,
+        ),
+      ),
+    );
+  }
+
+  static cancelTimerNotification(String collectionId) {
+    return notificationPlugin.cancel(
+      "$collectionId-timer".hashCode,
     );
   }
 }
