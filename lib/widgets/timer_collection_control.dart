@@ -3,7 +3,6 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/widgets/collection_total_progress.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:linked_timers/models/abstracts/spacing.dart';
@@ -51,10 +50,6 @@ class _TimerCollectionControlState
     extends ConsumerState<TimerCollectionControl> {
   late final AutoScrollController itemScrollController =
       AutoScrollController();
-  late final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
-
-  bool _isInfinite = false;
 
   bool schedulingAlarm = false;
   int laps = 0;
@@ -71,24 +66,34 @@ class _TimerCollectionControlState
   int get maxLaps => widget.collection.laps;
   List<StopWatchTimer> stopWatches = [];
 
+  late bool _isInfinite = widget.collection.isInfinite;
+
   bool get isInfinite => _isInfinite;
 
-  set isInfinite(bool value) {
-    if (value) {
-      // stopAlarm();
-    } else {
-      /* if (currentStopWatch.isRunning) {
-        setAlarm();
-      } */
-    }
-    _isInfinite = value;
-  }
-
+  /// The number of laps that have been completed and is not infinite
   bool get finished => laps >= maxLaps && isInfinite == false;
 
   int remainingTime = 0;
 
-  void startNotificationUpdates() {}
+  set isInfinite(bool val) {
+    setState(() {
+      _isInfinite = val;
+      widget.collection.isInfinite = val;
+    });
+
+    if (val) {
+      setState(() {
+        widget.collection.isInfinite = val;
+      });
+    }
+    if (!val && laps >= maxLaps) {
+      setState(() {
+        // get the current laps by calculating the remaining time
+        // and subtracting the current time
+        laps = maxLaps - ((remainingTime ~/ 1000) + 1);
+      });
+    }
+  }
 
   void scrollToIndex(int index) {
     // Get the currently visible indexes
@@ -149,9 +154,11 @@ class _TimerCollectionControlState
       if (currentTimerIndex == 0) {
         // globalStopWatch.onResetTimer();
 
-        if (isInfinite == false) {
+        /* if (isInfinite == false) {
           laps++;
-        }
+        } */
+        laps++;
+
         if (finished) {
           currentStopWatch = stopWatches[currentTimerIndex];
 
@@ -294,7 +301,6 @@ class _TimerCollectionControlState
                         }
                       : null,
                   currentTimerIndex: currentTimerIndex,
-                  itemPositionsListener: itemPositionsListener,
                 ),
               ),
               controlButton(),
@@ -463,7 +469,7 @@ class _TimerCollectionControlState
           SizedBox(width: Spacing.lg),
         widget.lapsWidget ??
             Text(
-              isInfinite ? "∞" : "$laps/$maxLaps",
+              isInfinite ? "$laps" : "$laps/$maxLaps",
               style: TextStyle(
                 fontSize: theme.textTheme.titleMedium!.fontSize,
                 fontWeight: FontWeight.bold,

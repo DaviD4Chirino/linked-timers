@@ -36,43 +36,11 @@ class TimerCollection {
   /// A timer that counts down the time of all the timers * laps
   late StopWatchTimer globalStopWatch = StopWatchTimer(
     mode: StopWatchMode.countDown,
-    presetMillisecond:
-        (timers
-            .map((e) => e.timeAsMilliseconds)
-            .reduce((a, b) => a + b)) *
-        laps,
-    onChange: (int millis) => runningTime = millis,
-
-    onChangeRawSecond: (int seconds) {
-      // If its at the start do not show notification
-      if (seconds == globalStopWatch.initialPresetTime ~/ 1000) {
-        return;
-      }
-
-      NotificationService.collectionInProgressNotification(
-        this,
-        progress: seconds,
-      );
-    },
-    // finished
-    onEnded: () {
-      if (isInfinite) return;
-      NotificationService.showCollectionEndedNotification(this);
-
-      if (!alert) return;
-
-      AlarmService.startCollectionAlarm(
-        this,
-        dateTime: DateTime.now(),
-      );
-    },
-    // paused
-    onStopped: () {
-      NotificationService.collectionInProgressNotification(
-        this,
-        progress: runningTime ~/ 1000,
-      );
-    },
+    presetMillisecond: totalTime * laps,
+    onChange: (int m) => runningTime = m,
+    onChangeRawSecond: (int s) => onGlobalRawSecond(s, this),
+    onEnded: () => onGlobalEnded(this),
+    onStopped: () => onGlobalStopped(this),
   );
 
   @override
@@ -142,4 +110,48 @@ class TimerCollection {
         alert: map["alert"] ?? false,
         label: map["label"],
       )..id = map["id"];
+}
+
+void onGlobalRawSecond(
+  int seconds,
+  TimerCollection timerCollection,
+) {
+  // If its at the start do not show notification
+  if (seconds ==
+      timerCollection.globalStopWatch.initialPresetTime ~/
+          1000) {
+    return;
+  }
+
+  NotificationService.collectionInProgressNotification(
+    timerCollection,
+    progress: seconds,
+  );
+}
+
+void onGlobalStopped(TimerCollection collection) {
+  NotificationService.collectionInProgressNotification(
+    collection,
+    progress: collection.runningTime ~/ 1000,
+  );
+}
+
+void onGlobalEnded(TimerCollection collection) {
+  if (collection.isInfinite) {
+    collection.globalStopWatch
+      ..onResetTimer()
+      ..onStartTimer();
+
+    return;
+  }
+  NotificationService.showCollectionEndedNotification(
+    collection,
+  );
+
+  if (!collection.alert) return;
+
+  AlarmService.startCollectionAlarm(
+    collection,
+    dateTime: DateTime.now(),
+  );
 }
