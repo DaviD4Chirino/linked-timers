@@ -13,6 +13,9 @@ Todo:
     ✔ Add a configuration "page" @started(25-06-18 17:35) @done(25-06-21 13:01) @lasted(2d19h26m)
       ✔ Make a theme switcher @started(25-06-18 19:33) @done(25-06-21 13:00) @lasted(2d17h27m59s)
       ✔ Make a "Clear all timers" @started(25-06-18 19:34) @done(25-06-21 13:00) @lasted(2d17h26m58s)
+  Notifications:
+    ☐ When a user taps a notification, it should scroll to the collection that it belongs to
+    ☐ Add an action button to control plays, pauses and cancellations from the notification
   Individual:
     manage_collection_screen.dart:
       ✔ Make an indicator for the progress of the whole collection @started(25-06-07 15:52) @done(25-06-07 19:24) @lasted(3h32m47s)
