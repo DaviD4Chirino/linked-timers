@@ -33,9 +33,6 @@ jobs:
         with:
           sdk: 3.8.1
 
-      - name: Install Dependencies
-        run: flutter pub get
-
       - name: Cache
         uses: actions/cache@v4.2.3
         with:
@@ -46,6 +43,9 @@ jobs:
           key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
             ${{ runner.os }}-flutter-
+
+      - name: Install Dependencies
+        run: flutter pub get
 
       - name: Decode Keystore
         run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/key.jks
