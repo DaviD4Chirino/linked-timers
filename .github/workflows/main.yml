@@ -16,17 +16,11 @@ jobs:
     steps:
       - name: Clone Repository
         uses: actions/checkout@v4
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: "stable"
-      - name: Extract version and name from pubspec.yaml
-        id: extract_version_and_name
-        run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          name=$(grep '^name: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          echo "VERSION=$version" >> $GITHUB_ENV
-          echo "NAME=$name" >> $GITHUB_ENV
 
       - name: Setup Java
         uses: actions/setup-java@v3
@@ -42,6 +36,17 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Cache
+        uses: actions/cache@v4.2.3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+            build
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
       - name: Decode Keystore
         run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/key.jks
         env:
@@ -53,6 +58,15 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=keystore.jks" >> android/key.properties
+
+      - name: Extract version and name from pubspec.yaml
+        id: extract_version_and_name
+        run: |
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          name=$(grep '^name: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "NAME=$name" >> $GITHUB_ENV
+
 
       - name: Build APK
         run: flutter build apk --release
