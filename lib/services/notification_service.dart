@@ -109,7 +109,7 @@ abstract class NotificationService {
     if (isInitialized) return;
 
     final initSettingsAndroid = AndroidInitializationSettings(
-      "@drawable/ic_stat_icon",
+      "@drawable/launcher_icon",
     );
 
     final initSettings = InitializationSettings(

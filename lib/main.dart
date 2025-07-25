@@ -23,10 +23,7 @@ final androidConfig = FlutterBackgroundAndroidConfig(
 );
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalStorage.init();
-  await NotificationService.initialize();
-  await Alarm.init();
-  await PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
+  await initializations();
 
   bool success = await FlutterBackground.initialize(
     androidConfig: androidConfig,
@@ -36,6 +33,13 @@ void main() async {
   }
 
   runApp(ProviderScope(child: MyApp()));
+}
+
+Future<void> initializations() async {
+  await LocalStorage.init();
+  await NotificationService.initialize();
+  await Alarm.init();
+  await PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -60,8 +64,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       themeMode: themeModeProvider,
       routes: {
         Routes.home: (context) => const HomeScreen(),
-        Routes.manageCollection:
-            (context) => const ManageCollectionScreen(),
+        Routes.manageCollection: (context) =>
+            const ManageCollectionScreen(),
       },
       initialRoute: Routes.home,
     );
