@@ -1,3 +1,4 @@
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:linked_timers/models/timer.dart';
 import 'package:linked_timers/models/timer_collection.dart';
@@ -81,7 +82,19 @@ abstract class NotificationService {
     groupKey: collectionId,
   );
 
-  static AndroidNotificationDetails androidAppRunningDetails() =>
+  static var androidAppRunningDetails =
+      FlutterBackgroundAndroidConfig(
+        notificationTitle: "Linked Timers",
+        notificationText:
+            "Linked Timers is running in the background",
+        shouldRequestBatteryOptimizationsOff: true,
+        notificationImportance:
+            AndroidNotificationImportance.normal,
+        notificationIcon: AndroidResource(
+          name: 'ic_stat_notification',
+          defType: 'drawable',
+        ), // Default is ic_launcher from folder mipmap
+      ); /*
       AndroidNotificationDetails(
         "linked-timers-bg-service",
         "Linked Timers running in the background",
@@ -89,7 +102,7 @@ abstract class NotificationService {
             "Shows when the app is running in the background",
         importance: Importance.min,
         priority: Priority.min,
-      );
+      ); */
 
   static AndroidNotificationDetails
   androidCollectionEndedDetails({
@@ -109,7 +122,7 @@ abstract class NotificationService {
     if (isInitialized) return;
 
     final initSettingsAndroid = AndroidInitializationSettings(
-      "@drawable/launcher_icon",
+      "@drawable/ic_stat_notification",
     );
 
     final initSettings = InitializationSettings(
@@ -133,15 +146,6 @@ abstract class NotificationService {
       body,
       details,
       payload: payload,
-    );
-  }
-
-  static Future<void> showAppRunningNotification() {
-    return notificationPlugin.show(
-      NotificationIds.linkedTimersBgService.index,
-      "Linked Timers is Running in the background",
-      "Linked Timers is Running in the background",
-      NotificationDetails(android: androidAppRunningDetails()),
     );
   }
 

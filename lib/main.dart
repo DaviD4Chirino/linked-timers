@@ -11,23 +11,14 @@ import 'package:linked_timers/screens/home_screen.dart';
 import 'package:linked_timers/screens/manage_collection_screen.dart';
 import 'package:linked_timers/services/notification_service.dart';
 
-final androidConfig = FlutterBackgroundAndroidConfig(
-  notificationTitle: "Linked Timers",
-  notificationText: "Linked Timers is running in the background",
-  shouldRequestBatteryOptimizationsOff: true,
-  notificationImportance: AndroidNotificationImportance.normal,
-  notificationIcon: AndroidResource(
-    name: 'background_icon',
-    defType: 'drawable',
-  ), // Default is ic_launcher from folder mipmap
-);
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializations();
 
   bool success = await FlutterBackground.initialize(
-    androidConfig: androidConfig,
+    androidConfig: NotificationService.androidAppRunningDetails,
   );
+
   if (success) {
     FlutterBackground.enableBackgroundExecution();
   }
