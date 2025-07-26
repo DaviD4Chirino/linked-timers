@@ -22,6 +22,8 @@ abstract class NotificationService {
 
     /// In seconds
     int maxProgress = 100,
+
+    bool isRunning = false,
   }) {
     return AndroidNotificationDetails(
       "collection-in-progress",
@@ -36,6 +38,9 @@ abstract class NotificationService {
       progress: progress,
       maxProgress: maxProgress,
       onlyAlertOnce: true,
+      icon: isRunning
+          ? "@drawable/ic_stat_icon_play"
+          : "@drawable/ic_stat_icon_paused",
       // icon: "@drawable/ic_collection_play_icon",
     );
   }
@@ -50,7 +55,7 @@ abstract class NotificationService {
       priority: Priority.low,
       playSound: false,
       enableVibration: false,
-      // icon: "@drawable/ic_collection_play_icon",
+      icon: "@drawable/ic_stat_icon_paused",
     );
   }
 
@@ -65,7 +70,7 @@ abstract class NotificationService {
       playSound: true,
       enableVibration: true,
       onlyAlertOnce: true,
-      // icon: "@drawable/ic_collection_play_icon",
+      // icon: "@drawable/ic_icon_stop",
     );
   }
 
@@ -94,15 +99,7 @@ abstract class NotificationService {
           name: 'ic_stat_notification',
           defType: 'drawable',
         ), // Default is ic_launcher from folder mipmap
-      ); /*
-      AndroidNotificationDetails(
-        "linked-timers-bg-service",
-        "Linked Timers running in the background",
-        channelDescription:
-            "Shows when the app is running in the background",
-        importance: Importance.min,
-        priority: Priority.min,
-      ); */
+      );
 
   static AndroidNotificationDetails
   androidCollectionEndedDetails({
@@ -178,6 +175,7 @@ abstract class NotificationService {
           maxProgress:
               collection.globalStopWatch.initialPresetTime ~/
               1000,
+          isRunning: isRunning,
         ),
       ),
     );

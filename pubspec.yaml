@@ -1,7 +1,7 @@
 name: linked_timers
 description: "Timers Who Are Linked"
 publish_to: "none"
-version: 0.0.1-dev
+version: 0.0.2-dev
 
 environment:
   sdk: ^3.8.1
@@ -36,7 +36,6 @@ dependencies:
   fluttertoast: ^8.2.12
   flutter_slidable: ^4.0.0
   scroll_to_index: ^3.0.1
-  android_notification_icons: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -45,11 +44,6 @@ dev_dependencies:
   custom_lint: ^0.7.5
   riverpod_generator: ^3.0.0-dev.15
   flutter_lints: ^5.0.0
-  android_notification_icons:
-
-android_notification_icons:
-  image_path: C:\Users\David\Documents\GitHub\linked-timers\assets\images\icon\icon-paused.png
-  icon_name: ic_icon_paused # optional
 
 
 flutter:
