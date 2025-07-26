@@ -57,7 +57,7 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=android/app/keystore.jks" >> android/key.properties
+          echo "storeFile=keystore.jks" >> android/key.properties
 
       - name: Extract version and name from pubspec.yaml
         id: extract_version_and_name
