@@ -111,8 +111,10 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           files: |
-            build/app/outputs/flutter-apk/${{ env.NAME }}-v${{ env.VERSION }}.apk
-            build/app/outputs/bundle/release/${{ env.NAME }}-v${{ env.VERSION }}.aab
+            build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
           automatic_release_tag: "v${{ env.VERSION }}"
           prerelease: true
           title: "Release v${{ env.VERSION }}"
