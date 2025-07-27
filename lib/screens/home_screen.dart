@@ -4,14 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/routes.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
-import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
-import 'package:linked_timers/widgets/configuration/delete_database_button.dart';
 import 'package:linked_timers/widgets/configuration/configuration_drawer.dart';
 import 'package:linked_timers/widgets/home_screen/instructions.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
-import 'package:linked_timers/widgets/configuration/theme_mode_switch.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {

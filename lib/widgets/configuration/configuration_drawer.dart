@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/widgets/configuration/delete_database_button.dart';
+import 'package:linked_timers/widgets/configuration/run_in_background_button.dart';
 import 'package:linked_timers/widgets/configuration/theme_mode_switch.dart';
 
 class ConfigurationDrawer extends StatelessWidget {
@@ -17,6 +18,7 @@ class ConfigurationDrawer extends StatelessWidget {
               SizedBox(height: Spacing.xxxl),
               ThemeModeSwitch(),
               Divider(),
+              RunInBackgroundButton(),
             ],
           ),
 
