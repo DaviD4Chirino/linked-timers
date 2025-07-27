@@ -7,9 +7,11 @@ import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
+import 'package:linked_timers/widgets/configuration/delete_database_button.dart';
+import 'package:linked_timers/widgets/configuration/configuration_drawer.dart';
 import 'package:linked_timers/widgets/home_screen/instructions.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
-import 'package:linked_timers/widgets/theme_mode_switch.dart';
+import 'package:linked_timers/widgets/configuration/theme_mode_switch.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -62,74 +64,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: drawer(),
+      drawer: ConfigurationDrawer(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 0),
         child: SafeArea(
           child: VerticalScrollListener(
             controller: verticalScrollController,
-            child:
-                timerDatabase.isEmpty
-                    ? Instructions()
-                    : TimerListDisplay(
-                      timerDatabase: timerDatabase,
-                    ),
+            child: timerDatabase.isEmpty
+                ? Instructions()
+                : TimerListDisplay(timerDatabase: timerDatabase),
           ),
         ),
       ),
 
       floatingActionButton: floatingActionButton(context),
-    );
-  }
-
-  Drawer drawer() {
-    void onAccept() {
-      timerDatabaseNotifier.flushDatabase();
-      Navigator.pop(context);
-    }
-
-    Future deleteDatabase() async {
-      if (await Utils.consentAlert(
-        context,
-        titleText: "You will delete all your Timers",
-        contentText: "This action is irreversible",
-      )) {
-        onAccept();
-      }
-    }
-
-    return Drawer(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            children: [
-              SizedBox(height: Spacing.xxxl),
-              ThemeModeSwitch(),
-              Divider(),
-            ],
-          ),
-
-          SizedBox(
-            width: double.infinity,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Spacing.base,
-              ),
-              child: OutlinedButton.icon(
-                onPressed: deleteDatabase,
-                icon: Icon(Icons.delete_forever_rounded),
-                label: Text("Delete ALL Timers?"),
-                /* style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(
-                    theme.colorScheme.error,
-                  ),
-                ), */
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
