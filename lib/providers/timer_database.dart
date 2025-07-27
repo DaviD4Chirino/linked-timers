@@ -27,6 +27,24 @@ class TimerDatabase extends _$TimerDatabase {
     saveDatabase();
   }
 
+  void reorderCollection(
+    TimerCollection collection,
+    int from,
+    int to,
+  ) {
+    final list = [...state];
+    final collectionIndex = list.indexWhere(
+      (c) => c.id == collection.id,
+    );
+    if (collectionIndex == -1) {
+      return;
+    }
+    list.removeAt(collectionIndex);
+    list.insert(to, collection);
+    state = list;
+    saveDatabase();
+  }
+
   /// Returns whether or it it suceded to edit the timer
   bool editTimer({
     required String collectionId,
@@ -103,13 +121,11 @@ class TimerDatabase extends _$TimerDatabase {
     if (existingDatabase == null) {
       return;
     }
-    state =
-        existingDatabase
-            .map(
-              (e) =>
-                  TimerCollection.fromMap(JsonCodec().decode(e)),
-            )
-            .toList();
+    state = existingDatabase
+        .map(
+          (e) => TimerCollection.fromMap(JsonCodec().decode(e)),
+        )
+        .toList();
   }
 
   void saveDatabase() {
@@ -130,17 +146,16 @@ class TimerDatabase extends _$TimerDatabase {
     return [];
   }
 
-  List<TimerCollection> generateListDebug() => List.generate(
-    15,
-    (i) {
-      return TimerCollection(
-        label: "Timer collection Nro: ${i + 1}",
-        timers: List.generate(
-          Random().nextInt(10) + 1,
-          (j) => Timer(label: "Timer Nro: ${j + 1}", seconds: 2),
-        ),
-        laps: 2,
-      );
-    },
-  );
+  List<TimerCollection> generateListDebug() =>
+      List.generate(15, (i) {
+        return TimerCollection(
+          label: "Timer collection Nro: ${i + 1}",
+          timers: List.generate(
+            Random().nextInt(10) + 1,
+            (j) =>
+                Timer(label: "Timer Nro: ${j + 1}", seconds: 2),
+          ),
+          laps: 2,
+        );
+      });
 }

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linked_timers/models/abstracts/spacing.dart';
 import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
-import 'package:linked_timers/widgets/timer_collection_control.dart';
+import 'package:linked_timers/widgets/timer_collection_tile.dart';
 
 class ReorderCollectionDisplay extends ConsumerStatefulWidget {
   const ReorderCollectionDisplay({super.key});
@@ -29,16 +29,20 @@ class _ReorderCollectionDisplayState
       itemBuilder: (context, animation, item, i) {
         return Reorderable(
           key: Key(item.id),
-          child: TimerCollectionControl(
-            item,
-            buttonWidget: Handle(
-              child: Center(
-                child: IconButton.outlined(
-                  onPressed: () {},
-                  icon: Icon(Icons.drag_handle),
-                  iconSize: Spacing.iconXXl,
+          child: SizedBox(
+            height: 120,
+            child: Row(
+              children: [
+                Expanded(child: TimerCollectionTile(item)),
+                SizedBox(width: Spacing.lg),
+                Handle(
+                  child: IconButton.outlined(
+                    onPressed: () {},
+                    icon: Icon(Icons.drag_handle_rounded),
+                    iconSize: Spacing.iconXXl,
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         );
@@ -54,5 +58,9 @@ class _ReorderCollectionDisplayState
     int from,
     int to,
     List<TimerCollection> newItems,
-  ) {}
+  ) {
+    ref
+        .read(timerDatabaseProvider.notifier)
+        .reorderCollection(item, from, to);
+  }
 }

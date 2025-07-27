@@ -35,9 +35,6 @@ class TimersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /* if (timers.isEmpty || stopWatches.isEmpty) {
-      return Center(child: Text("No timers available"));
-    } */
     return ListView.separated(
       physics: BouncingScrollPhysics(),
       itemCount: timers.length,
@@ -67,6 +64,22 @@ class TimersList extends StatelessWidget {
                   }
                 : null,
           ),
+        );
+      },
+    );
+  }
+
+  static Widget simpleList(List<StopWatchTimer> stopWatches) {
+    return ListView.separated(
+      itemCount: stopWatches.length,
+      scrollDirection: Axis.horizontal,
+      separatorBuilder: (context, index) {
+        return SizedBox(width: Spacing.lg);
+      },
+      itemBuilder: (context, index) {
+        return TimerCircularPercentIndicator(
+          stopWatches[index],
+          key: Key(index.toString()),
         );
       },
     );
