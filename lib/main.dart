@@ -27,10 +27,10 @@ void main() async {
 }
 
 Future<void> initializations() async {
-  await LocalStorage.init();
-  await NotificationService.initialize();
-  await Alarm.init();
-  await PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
+  LocalStorage.init();
+  NotificationService.initialize();
+  Alarm.init();
+  PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -43,8 +43,6 @@ class MyApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<MyApp> {
   ThemeMode get themeModeProvider =>
       ref.watch(themeModeNotifierProvider);
-  ThemeModeNotifier get themeModeNotifier =>
-      ref.read(themeModeNotifierProvider.notifier);
 
   @override
   Widget build(BuildContext context) {
