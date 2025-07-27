@@ -8,6 +8,7 @@ import 'package:linked_timers/models/timer_collection.dart';
 import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/configuration/configuration_drawer.dart';
 import 'package:linked_timers/widgets/home_screen/instructions.dart';
+import 'package:linked_timers/widgets/reorder_collection_button.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
 
@@ -79,7 +80,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   AppBar appBar() {
-    return AppBar(title: Text("Linked Timers"));
+    return AppBar(
+      title: Text("Linked Timers"),
+      actions: [
+        ReorderCollectionsButton(
+          onPressed: () {},
+          reordering: true,
+        ),
+      ],
+    );
   }
 
   Widget floatingActionButton(BuildContext context) {
