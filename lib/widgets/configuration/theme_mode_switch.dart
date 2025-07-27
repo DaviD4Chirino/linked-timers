@@ -16,6 +16,9 @@ class ThemeModeSwitch extends ConsumerWidget {
     bool isLightMode = themeModeProvider == ThemeMode.light;
 
     return ListTile(
+      onTap: () {
+        themeModeNotifier.setThemeMode(!isLightMode);
+      },
       leading: Icon(
         isLightMode
             ? Icons.dark_mode_rounded

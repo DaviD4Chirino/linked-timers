@@ -16,9 +16,10 @@ class ConfigurationDrawer extends StatelessWidget {
           Column(
             children: [
               SizedBox(height: Spacing.xxxl),
+              SizedBox(height: Spacing.xxl),
               ThemeModeSwitch(),
-              Divider(),
               RunInBackgroundButton(),
+              Divider(),
             ],
           ),
 
