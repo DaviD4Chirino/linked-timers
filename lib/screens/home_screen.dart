@@ -9,6 +9,7 @@ import 'package:linked_timers/providers/timer_database.dart';
 import 'package:linked_timers/widgets/configuration/configuration_drawer.dart';
 import 'package:linked_timers/widgets/home_screen/instructions.dart';
 import 'package:linked_timers/widgets/reorder_collection_button.dart';
+import 'package:linked_timers/widgets/reorder_collection_display.dart';
 import 'package:linked_timers/widgets/reusables/vertical_scroll_listener.dart';
 import 'package:linked_timers/widgets/timer_collection_control.dart';
 
@@ -31,6 +32,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final scrollController = ScrollController();
 
   bool scrollingDown = false;
+
+  bool reordering = false;
 
   void listenVerticalScroll() {
     setState(() {
@@ -70,6 +73,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             controller: verticalScrollController,
             child: timerDatabase.isEmpty
                 ? Instructions()
+                : reordering
+                ? ReorderCollectionDisplay()
                 : TimerListDisplay(timerDatabase: timerDatabase),
           ),
         ),
@@ -84,11 +89,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       title: Text("Linked Timers"),
       actions: [
         ReorderCollectionsButton(
-          onPressed: () {},
-          reordering: true,
+          onPressed: onReorderPressed,
+          reordering: reordering,
         ),
       ],
     );
+  }
+
+  void onReorderPressed() {
+    if (timerDatabase.isEmpty) return;
+    setState(() {
+      reordering = !reordering;
+    });
   }
 
   Widget floatingActionButton(BuildContext context) {

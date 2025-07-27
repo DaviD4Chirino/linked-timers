@@ -96,22 +96,6 @@ class _TimerCollectionControlState
   }
 
   void scrollToIndex(int index) {
-    // Get the currently visible indexes
-    /* final visibleIndexes = itemPositionsListener
-        .itemPositions
-        .value
-        .map((item) => item.index)
-        .toSet();
-
-    final bool invisible = !visibleIndexes.contains(index); */
-
-    // Only scroll if the index is not visible
-    /*  if (invisible) {
-      itemScrollController.scrollToIndex(
-        index,
-        preferPosition: AutoScrollPosition.begin,
-      );
-    } */
     itemScrollController.scrollToIndex(
       index,
       preferPosition: AutoScrollPosition.begin,
@@ -141,37 +125,16 @@ class _TimerCollectionControlState
       if (stopWatches.isEmpty) return;
       currentTimer;
 
-      /* if (widget.collection.timers[currentTimerIndex].notify) {
-        NotificationService.showTimerEndedNotification(
-          widget.collection.timers[currentTimerIndex],
-          widget.collection.id,
-        );
-      } */
-
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
 
       if (currentTimerIndex == 0) {
-        // globalStopWatch.onResetTimer();
-
-        /* if (isInfinite == false) {
-          laps++;
-        } */
         laps++;
 
         if (finished) {
           currentStopWatch = stopWatches[currentTimerIndex];
 
           resetAllTimers();
-
-          /* if (!widget.collection.alert) {
-            NotificationService.showCollectionProgressNotification(
-              widget.collection,
-              milliSeconds: 0,
-              displayCollectionEnded: true,
-            );
-          } */
-
           return;
         }
         resetAllTimers();
@@ -213,30 +176,10 @@ class _TimerCollectionControlState
         onTimerEnded(timer);
       });
     }
-    /* int totalMillis =
-        (stopWatches
-            .map((sw) => sw.initialPresetTime)
-            .reduce((a, b) => a + b)) *
-        maxLaps; */
 
-    /* widget.collection.globalStopWatch.secondTime.listen(
-      onGlobalSecondTimer,
-    ); */
     widget.collection.globalStopWatch.rawTime.listen((millis) {
       remainingTime = millis;
     });
-
-    /* globalStopWatch = StopWatchTimer(
-      mode: StopWatchMode.countDown,
-      presetMillisecond: totalMillis,
-      onChangeRawSecond: onGlobalSecondTimer,
-      onChange: (int millis) {
-        remainingTime = millis;
-        // print(remainingTime);
-      },
-    ); */
-
-    // remainingTime = totalMillis;
 
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -250,26 +193,10 @@ class _TimerCollectionControlState
     buildStopWatches();
   }
 
-  /*  @override
-  void didUpdateWidget(
-    covariant TimerCollectionControl oldWidget,
-  ) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.collection != widget.collection) {
-      buildStopWatches();
-    }
-  } */
-
   @override
   void dispose() async {
     super.dispose();
     itemScrollController.dispose();
-
-    // stopAlarm();
-    // globalStopWatch.dispose();
-    /* for (var timer in stopWatches) {
-      await timer.dispose();
-    } */
   }
 
   @override
@@ -421,30 +348,6 @@ class _TimerCollectionControlState
         );
   }
 
-  // Future<void> stopAlarm() async {
-  //   if (!widget.collection.alert) return;
-  //   AlarmService.stopCollectionAlarm(widget.collection.id);
-  //   Utils.log([
-  //     "Alert of id:",
-  //     "${widget.collection.id}-alarm".hashCode,
-  //     "Stopped",
-  //   ]);
-  // }
-
-  // Future<void> setAlarm() async {
-  //   if (!widget.collection.alert) return;
-  //   AlarmService.startCollectionAlarm(
-  //     widget.collection,
-  //     dateTime: DateTime.now().add(
-  //       Duration(milliseconds: remainingTime),
-  //     ),
-  //   );
-
-  //   Utils.log([
-  //     "Alert Set for: ${(DateTime.now().add(Duration(milliseconds: remainingTime)).toIso8601String())}",
-  //   ]);
-  // }
-
   Widget topPart() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -491,23 +394,4 @@ class _TimerCollectionControlState
       ],
     );
   }
-
-  /* void onGlobalSecondTimer(int value) {
-    // If its at the start do not show notification
-    if ((value * 1000) == globalStopWatch.initialPresetTime) {
-      return;
-    }
-    NotificationService.showCollectionProgressNotification(
-      widget.collection,
-      milliSeconds: value * 1000,
-    );
-  } */
-
-  /*  void onGlobalStopWatchEnded(bool val) {
-    NotificationService.showCollectionProgressNotification(
-      widget.collection,
-      milliSeconds: 0,
-      displayCollectionEnded: finished,
-    );
-  } */
 }
