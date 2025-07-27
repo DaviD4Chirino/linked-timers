@@ -37,7 +37,7 @@ abstract final class AppTheme {
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
-      scaffoldBackgroundBaseColor: FlexScaffoldBaseColor.surfaceDim,
+      scaffoldBackgroundBaseColor: FlexScaffoldBaseColor.surface,
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       thinBorderWidth: 0.5,
@@ -56,7 +56,8 @@ abstract final class AppTheme {
       bottomNavigationBarSelectedLabelSchemeColor:
           SchemeColor.primary,
       bottomNavigationBarMutedUnselectedLabel: true,
-      bottomNavigationBarSelectedIconSchemeColor: SchemeColor.primary,
+      bottomNavigationBarSelectedIconSchemeColor:
+          SchemeColor.primary,
       bottomNavigationBarMutedUnselectedIcon: true,
       menuElevation: 20.0,
       navigationRailUseIndicator: true,
@@ -99,7 +100,7 @@ abstract final class AppTheme {
       interactionEffects: true,
       tintedDisabledControls: true,
       blendOnColors: true,
-      scaffoldBackgroundBaseColor: FlexScaffoldBaseColor.surfaceDim,
+      scaffoldBackgroundBaseColor: FlexScaffoldBaseColor.surface,
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       splashType: FlexSplashType.inkSparkle,
@@ -118,7 +119,8 @@ abstract final class AppTheme {
       bottomNavigationBarSelectedLabelSchemeColor:
           SchemeColor.primary,
       bottomNavigationBarMutedUnselectedLabel: true,
-      bottomNavigationBarSelectedIconSchemeColor: SchemeColor.primary,
+      bottomNavigationBarSelectedIconSchemeColor:
+          SchemeColor.primary,
       bottomNavigationBarMutedUnselectedIcon: true,
       menuElevation: 20.0,
       navigationRailUseIndicator: true,
