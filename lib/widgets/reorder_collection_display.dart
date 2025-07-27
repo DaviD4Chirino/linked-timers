@@ -29,8 +29,9 @@ class _ReorderCollectionDisplayState
       itemBuilder: (context, animation, item, i) {
         return Reorderable(
           key: Key(item.id),
-          child: SizedBox(
+          child: Container(
             height: 120,
+            color: Theme.of(context).colorScheme.surface,
             child: Row(
               children: [
                 Expanded(child: TimerCollectionTile(item)),
