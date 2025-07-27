@@ -1,10 +1,10 @@
 name: linked_timers
 description: "Timers Who Are Linked"
 publish_to: "none"
-version: 0.0.1
+version: 0.0.2-dev
 
 environment:
-  sdk: 3.8.1
+  sdk: ^3.8.1
 
 dependencies:
   flutter:
@@ -35,6 +35,7 @@ dependencies:
   flutter_reorderable_list: ^1.3.1
   fluttertoast: ^8.2.12
   flutter_slidable: ^4.0.0
+  scroll_to_index: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -44,9 +45,16 @@ dev_dependencies:
   riverpod_generator: ^3.0.0-dev.15
   flutter_lints: ^5.0.0
 
+
 flutter:
   uses-material-design: true
 
   assets:
     - assets/alarms/alarm-default-short.mp3
     - assets/images/overhead.png
+    - assets/images/icon/icon-background.png
+    - assets/images/icon/icon-alarm.png
+    - assets/images/icon/icon-notification.png
+    - assets/images/icon/icon-paused.png
+    - assets/images/icon/icon-play.png
+    - assets/images/icon/icon-transparent.png

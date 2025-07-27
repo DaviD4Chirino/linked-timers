@@ -1,3 +1,4 @@
+import 'package:linked_timers/services/notification_service.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -23,12 +24,16 @@ class Timer {
   String label;
   String id;
 
+  String? collectionId;
+
   late StopWatchTimer stopWatch = StopWatchTimer(
     mode: StopWatchMode.countDown,
     presetMillisecond:
         StopWatchTimer.getMilliSecFromHour(hours) +
         StopWatchTimer.getMilliSecFromMinute(minutes) +
         StopWatchTimer.getMilliSecFromSecond(seconds),
+    onEnded: () => onTimerEnded(this),
+    onChangeRawSecond: (s) => onSeconds(this, s),
   );
 
   int get timeAsMilliseconds =>
@@ -104,6 +109,7 @@ class Timer {
     bool? notify,
     Timer? nextTimer,
     String? id,
+    String? collectionId,
   }) {
     return Timer(
       label: label ?? this.label,
@@ -113,6 +119,22 @@ class Timer {
       notify: notify ?? this.notify,
       nextTimer: nextTimer ?? this.nextTimer,
       id: id ?? this.id,
+    )..collectionId = collectionId ?? this.collectionId;
+  }
+}
+
+void onSeconds(Timer timer, int seconds) {
+  if (timer.seconds == seconds) {
+    NotificationService.cancelTimerNotification(
+      timer.collectionId ?? timer.id,
     );
   }
+}
+
+void onTimerEnded(Timer timer) {
+  if (!timer.notify) return;
+  NotificationService.showTimerEndedNotification(
+    timer,
+    timer.collectionId ?? timer.id,
+  );
 }

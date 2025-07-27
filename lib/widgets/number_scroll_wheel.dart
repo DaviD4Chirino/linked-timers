@@ -1,6 +1,5 @@
 import 'package:clickable_list_wheel_view/clickable_list_wheel_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class NumberScrollWheel extends StatefulWidget {
   const NumberScrollWheel({
@@ -36,10 +35,9 @@ class _NumberScrollWheelState extends State<NumberScrollWheel> {
   late final ThemeData theme = Theme.of(context);
 
   late List<Center> list = List.generate(widget.count, (index) {
-    String text =
-        widget.zeroBased
-            ? index.toString().padLeft(2, "0")
-            : (index + 1).toString().padLeft(2, "0");
+    String text = widget.zeroBased
+        ? index.toString().padLeft(2, "0")
+        : (index + 1).toString().padLeft(2, "0");
     return Center(
       child: Text(
         text,

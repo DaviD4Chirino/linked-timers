@@ -11,31 +11,26 @@ import 'package:linked_timers/screens/home_screen.dart';
 import 'package:linked_timers/screens/manage_collection_screen.dart';
 import 'package:linked_timers/services/notification_service.dart';
 
-final androidConfig = FlutterBackgroundAndroidConfig(
-  notificationTitle: "Linked Timers",
-  notificationText: "Linked Timers is running in the background",
-  shouldRequestBatteryOptimizationsOff: true,
-  notificationImportance: AndroidNotificationImportance.normal,
-  notificationIcon: AndroidResource(
-    name: 'background_icon',
-    defType: 'drawable',
-  ), // Default is ic_launcher from folder mipmap
-);
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalStorage.init();
-  await NotificationService.initialize();
-  await Alarm.init();
-  await PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
+  await initializations();
 
   bool success = await FlutterBackground.initialize(
-    androidConfig: androidConfig,
+    androidConfig: NotificationService.androidAppRunningDetails,
   );
+
   if (success) {
     FlutterBackground.enableBackgroundExecution();
   }
 
   runApp(ProviderScope(child: MyApp()));
+}
+
+Future<void> initializations() async {
+  LocalStorage.init();
+  NotificationService.initialize();
+  Alarm.init();
+  PermissionsHandler.checkAndroidScheduleExactAlarmPermission();
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -48,8 +43,6 @@ class MyApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<MyApp> {
   ThemeMode get themeModeProvider =>
       ref.watch(themeModeNotifierProvider);
-  ThemeModeNotifier get themeModeNotifier =>
-      ref.read(themeModeNotifierProvider.notifier);
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +53,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       themeMode: themeModeProvider,
       routes: {
         Routes.home: (context) => const HomeScreen(),
-        Routes.manageCollection:
-            (context) => const ManageCollectionScreen(),
+        Routes.manageCollection: (context) =>
+            const ManageCollectionScreen(),
       },
       initialRoute: Routes.home,
     );

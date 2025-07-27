@@ -1,6 +1,8 @@
 // I might as well track the isInfinite bool here
 import 'package:flutter/foundation.dart';
 import 'package:linked_timers/models/timer.dart';
+import 'package:linked_timers/services/alarm_service.dart';
+import 'package:linked_timers/services/notification_service.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,12 +13,12 @@ class TimerCollection {
     this.laps = 1,
     this.isInfinite = false,
     this.alert = true,
-  }) /*  : globalStopWatch = StopWatchTimer(
-         mode: StopWatchMode.countDown,
-         presetMillisecond: timers
-             .map((e) => e.timeAsMilliseconds)
-             .reduce((a, b) => a + b),
-       ) */;
+  }) {
+    id = Uuid().v4();
+    for (final timer in timers) {
+      timer.collectionId = id;
+    }
+  }
 
   List<Timer> timers = [];
   int laps = 5;
@@ -29,11 +31,16 @@ class TimerCollection {
   String label;
   String id = Uuid().v4();
 
+  int runningTime = 0;
+
+  /// A timer that counts down the time of all the timers * laps
   late StopWatchTimer globalStopWatch = StopWatchTimer(
     mode: StopWatchMode.countDown,
-    presetMillisecond: timers
-        .map((e) => e.timeAsMilliseconds)
-        .reduce((a, b) => a + b),
+    presetMillisecond: totalTime * laps,
+    onChange: (int m) => runningTime = m,
+    onChangeRawSecond: (int s) => onGlobalRawSecond(s, this),
+    onEnded: () => onGlobalEnded(this),
+    onStopped: () => onGlobalStopped(this),
   );
 
   @override
@@ -47,12 +54,11 @@ class TimerCollection {
   @override
   int get hashCode => id.hashCode;
 
-  int get totalTime =>
-      timers.isEmpty
-          ? 0
-          : timers
-              .map((e) => e.timeAsMilliseconds)
-              .reduce((a, b) => a + b);
+  int get totalTime => timers.isEmpty
+      ? 0
+      : timers
+            .map((e) => e.timeAsMilliseconds)
+            .reduce((a, b) => a + b);
 
   TimerCollection copyWith({
     List<Timer>? timers,
@@ -62,10 +68,9 @@ class TimerCollection {
     String? label,
   }) {
     return TimerCollection(
-      timers:
-          (timers ?? this.timers)
-              .map((t) => t.copyWith())
-              .toList(), // deep copy
+      timers: (timers ?? this.timers)
+          .map((t) => t.copyWith())
+          .toList(), // deep copy
       laps: laps ?? this.laps,
       isInfinite: isInfinite ?? this.isInfinite,
       label: label ?? this.label,
@@ -97,13 +102,56 @@ class TimerCollection {
   };
   factory TimerCollection.fromMap(Map<String, dynamic> map) =>
       TimerCollection(
-        timers:
-            (map["timers"] as List)
-                .map((e) => Timer.fromMap(e))
-                .toList(),
+        timers: (map["timers"] as List)
+            .map((e) => Timer.fromMap(e))
+            .toList(),
         laps: map["laps"],
         isInfinite: map["isInfinite"],
         alert: map["alert"] ?? false,
         label: map["label"],
       )..id = map["id"];
+}
+
+void onGlobalRawSecond(
+  int seconds,
+  TimerCollection timerCollection,
+) {
+  // If its at the start do not show notification
+  if (seconds ==
+      timerCollection.globalStopWatch.initialPresetTime ~/
+          1000) {
+    return;
+  }
+
+  NotificationService.collectionInProgressNotification(
+    timerCollection,
+    progress: seconds,
+  );
+}
+
+void onGlobalStopped(TimerCollection collection) {
+  NotificationService.collectionInProgressNotification(
+    collection,
+    progress: collection.runningTime ~/ 1000,
+  );
+}
+
+void onGlobalEnded(TimerCollection collection) {
+  if (collection.isInfinite) {
+    collection.globalStopWatch
+      ..onResetTimer()
+      ..onStartTimer();
+
+    return;
+  }
+  NotificationService.showCollectionEndedNotification(
+    collection,
+  );
+
+  if (!collection.alert) return;
+
+  AlarmService.startCollectionAlarm(
+    collection,
+    dateTime: DateTime.now(),
+  );
 }
