@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/widgets/collection_total_progress.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -56,9 +57,7 @@ class _TimerCollectionControlState
   int currentTimerIndex = 0;
   double currentTimerVisibleFraction = 1.0;
 
-  StopWatchTimer currentStopWatch = StopWatchTimer();
   StopWatchTimer globalStopWatch = StopWatchTimer();
-  Timer currentTimer = Timer(label: "");
 
   Timer? notificationUpdateTimer;
 
@@ -67,6 +66,11 @@ class _TimerCollectionControlState
   List<StopWatchTimer> stopWatches = [];
 
   late bool _isInfinite = widget.collection.isInfinite;
+
+  Timer get currentTimer =>
+      widget.collection.timers[currentTimerIndex];
+  StopWatchTimer get currentStopWatch =>
+      stopWatches[currentTimerIndex];
 
   bool get isInfinite => _isInfinite;
 
@@ -107,8 +111,9 @@ class _TimerCollectionControlState
     if (stopWatches.isEmpty) return;
     setState(() {
       laps = 0;
-      currentStopWatch = stopWatches.first;
-      currentTimer = widget.collection.timers.first;
+      currentTimerIndex = 0;
+      // currentStopWatch = stopWatches.first;
+      // currentTimer = widget.collection.timers.first;
       widget.collection.globalStopWatch.onResetTimer();
       scrollToIndex(0);
       resetAllTimers();
@@ -120,6 +125,7 @@ class _TimerCollectionControlState
   }
 
   void onTimerEnded(StopWatchTimer timer) {
+    Utils.log(["onTimerEnded"]);
     timer.onStopTimer();
     setState(() {
       if (stopWatches.isEmpty) return;
@@ -128,11 +134,22 @@ class _TimerCollectionControlState
       currentTimerIndex =
           (currentTimerIndex + 1) % stopWatches.length;
 
+      // On lap
       if (currentTimerIndex == 0) {
+        /* for (var t in widget.collection.timers) {
+          t.stopWatch.setPresetTime(
+            mSec: t.timeAsMilliseconds,
+            add: false,
+          );
+        }
+        widget.collection.globalStopWatch.setPresetTime(
+          mSec: widget.collection.totalTime,
+          add: false,
+        ); */
         laps++;
 
         if (finished) {
-          currentStopWatch = stopWatches[currentTimerIndex];
+          // currentStopWatch = stopWatches[currentTimerIndex];
 
           resetAllTimers();
           return;
@@ -141,12 +158,13 @@ class _TimerCollectionControlState
 
         // globalStopWatch.onStartTimer();
       }
-      currentStopWatch = stopWatches[currentTimerIndex]
+      // currentStopWatch = stopWatches[currentTimerIndex]
+      currentStopWatch
         ..onResetTimer()
         ..onStartTimer();
       scrollToIndex(currentTimerIndex);
 
-      currentTimer = widget.collection.timers[currentTimerIndex];
+      // currentTimer = widget.collection.timers[currentTimerIndex];
     });
 
     if (widget.onTimerEnd != null) {
@@ -167,7 +185,7 @@ class _TimerCollectionControlState
       stopWatches = widget.collection.timers.map((e) {
         return e.stopWatch;
       }).toList();
-      currentTimer = widget.collection.timers.first;
+      // currentTimer = widget.collection.timers.first;
     });
 
     for (StopWatchTimer timer in stopWatches) {
@@ -183,7 +201,7 @@ class _TimerCollectionControlState
 
     setState(() {
       if (stopWatches.isEmpty) return;
-      currentStopWatch = stopWatches.first;
+      // currentStopWatch = stopWatches.first;
     });
   }
 
@@ -226,7 +244,11 @@ class _TimerCollectionControlState
                             currentTimer.label,
                           );
                         }
-                      : onTimerTapped,
+                      : null,
+                  onTimerLongPressed: (index) {
+                    playAt(index);
+                  },
+
                   currentTimerIndex: currentTimerIndex,
                 ),
               ),
@@ -283,8 +305,22 @@ class _TimerCollectionControlState
     );
   }
 
-  void onTimerTapped(StopWatchTimer timer) {
-    pause();
+  void playAt(int index) {
+    setState(() {
+      pause();
+      currentTimerIndex = index;
+      /* for (var t in widget.collection.timers) {
+    t.stopWatch.setPresetTime(mSec: 0, add: false);
+  }
+  widget.collection.globalStopWatch.setPresetTime(
+    mSec: 0,
+    add: false,
+  ); */
+      // currentTimer = widget.collection.timers[currentTimerIndex];
+      // currentStopWatch = stopWatches[currentTimerIndex];
+      play();
+      scrollToIndex(index);
+    });
   }
 
   Widget controlButton() {
@@ -350,8 +386,8 @@ class _TimerCollectionControlState
   }
 
   void play() {
-    currentStopWatch.onStartTimer();
     widget.collection.globalStopWatch.onStartTimer();
+    currentStopWatch.onStartTimer();
   }
 
   void pause() {
