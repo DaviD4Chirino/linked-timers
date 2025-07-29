@@ -40,7 +40,7 @@ class _TimerDisplayTileState extends State<TimerDisplayTile> {
     return Container(
       color: theme.colorScheme.surface,
       child: SizedBox(
-        height: 70,
+        height: 90,
         child: LayoutGrid(
           areas: """
       leading title trailing
@@ -88,14 +88,13 @@ class _TimerDisplayTileState extends State<TimerDisplayTile> {
 
   TimerCircularPercentIndicator stopWatchClock() {
     return TimerCircularPercentIndicator(
-      widget.timer.stopWatch,
-      onTap:
-          widget.onTap != null
-              ? () {
-                widget.onTap!(widget.timer);
-                setState(() {});
-              }
-              : null,
+      widget.timer,
+      onTap: widget.onTap != null
+          ? () {
+              widget.onTap!(widget.timer);
+              setState(() {});
+            }
+          : null,
     );
   }
 

@@ -57,7 +57,7 @@ class TimersList extends StatelessWidget {
           index: index,
           controller: timerListController,
           child: TimerCircularPercentIndicator(
-            timers[index].stopWatch,
+            timers[index],
             key: Key(index.toString()),
             notify: timers[index].notify,
             onTap: onTimerTapped != null
@@ -76,16 +76,16 @@ class TimersList extends StatelessWidget {
     );
   }
 
-  static Widget simpleList(List<StopWatchTimer> stopWatches) {
+  static Widget simpleList(List<Timer> timers) {
     return ListView.separated(
-      itemCount: stopWatches.length,
+      itemCount: timers.length,
       scrollDirection: Axis.horizontal,
       separatorBuilder: (context, index) {
         return SizedBox(width: Spacing.lg);
       },
       itemBuilder: (context, index) {
         return TimerCircularPercentIndicator(
-          stopWatches[index],
+          timers[index],
           key: Key(index.toString()),
         );
       },
