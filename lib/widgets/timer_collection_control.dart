@@ -226,7 +226,7 @@ class _TimerCollectionControlState
                             currentTimer.label,
                           );
                         }
-                      : null,
+                      : onTimerTapped,
                   currentTimerIndex: currentTimerIndex,
                 ),
               ),
@@ -283,6 +283,10 @@ class _TimerCollectionControlState
     );
   }
 
+  void onTimerTapped(StopWatchTimer timer) {
+    pause();
+  }
+
   Widget controlButton() {
     void onPressed() {
       if (stopWatches.isEmpty) {
@@ -290,16 +294,14 @@ class _TimerCollectionControlState
       }
 
       if (currentStopWatch.isRunning) {
-        widget.collection.globalStopWatch.onStopTimer();
-        currentStopWatch.onStopTimer();
+        pause();
         // stopAlarm();
         return;
       }
 
       if (finished) {
         reset();
-        currentStopWatch.onStartTimer();
-        widget.collection.globalStopWatch.onStartTimer();
+        play();
         /* if (!isInfinite) {
           setAlarm();
         } */
@@ -310,8 +312,7 @@ class _TimerCollectionControlState
           laps = 0;
         });
       }
-      widget.collection.globalStopWatch.onStartTimer();
-      currentStopWatch.onStartTimer();
+      play();
       /* if (!isInfinite) {
         setAlarm();
       } */
@@ -346,6 +347,16 @@ class _TimerCollectionControlState
             );
           },
         );
+  }
+
+  void play() {
+    currentStopWatch.onStartTimer();
+    widget.collection.globalStopWatch.onStartTimer();
+  }
+
+  void pause() {
+    widget.collection.globalStopWatch.onStopTimer();
+    currentStopWatch.onStopTimer();
   }
 
   Widget topPart() {
