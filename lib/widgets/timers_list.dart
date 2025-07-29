@@ -16,6 +16,7 @@ class TimersList extends StatelessWidget {
     this.scrollOffsetController,
     this.scrollOffsetListener, */
     this.onTimerTapped,
+    this.onTimerLongPressed,
     this.onTimerVisibilityChanged,
   });
 
@@ -30,6 +31,7 @@ class TimersList extends StatelessWidget {
   final AutoScrollController timerListController;
 
   final void Function(StopWatchTimer stopWatch)? onTimerTapped;
+  final void Function(int index)? onTimerLongPressed;
   final void Function(double visibleFraction, int index)?
   onTimerVisibilityChanged;
 
@@ -61,6 +63,11 @@ class TimersList extends StatelessWidget {
             onTap: onTimerTapped != null
                 ? () {
                     onTimerTapped!(stopWatches[index]);
+                  }
+                : null,
+            onLongPress: onTimerLongPressed != null
+                ? () {
+                    onTimerLongPressed!(index);
                   }
                 : null,
           ),

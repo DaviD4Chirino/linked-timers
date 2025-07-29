@@ -29,7 +29,7 @@ Todo:
     timer_collection_control:
       ✘ Move the creation of stopwatches to the database @cancelled(25-06-24 14:51)
       ✘ Move the creation of stopwatches to an owner widget @started(25-06-24 14:51) @cancelled(25-06-24 14:56) @wasted(5m8s)
-      ☐ When the user long taps on a timer, it should start playing from there
-        - Ideal steps:
+      ✔ When the user long taps on a timer, it should start playing from there @started(25-07-28 20:37) @done(25-07-29 14:33) @lasted(17h56m)
+        * Ideal steps:
           1. When the user long taps, it should set the timers before to 0, as in finished
           2. When a lap is completed, it should reset all the timers to their original values
