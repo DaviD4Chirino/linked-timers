@@ -36,7 +36,7 @@ class TimerCollection {
   /// A timer that counts down the time of all the timers * laps
   late StopWatchTimer globalStopWatch = StopWatchTimer(
     mode: StopWatchMode.countDown,
-    presetMillisecond: totalTime * laps,
+    presetMillisecond: totalTime,
     onChange: (int m) => runningTime = m,
     onChangeRawSecond: (int s) => onGlobalRawSecond(s, this),
     onEnded: () => onGlobalEnded(this),
@@ -54,11 +54,15 @@ class TimerCollection {
   @override
   int get hashCode => id.hashCode;
 
+  /// The total time of all the timers * laps
   int get totalTime => timers.isEmpty
       ? 0
       : timers
-            .map((e) => e.timeAsMilliseconds)
-            .reduce((a, b) => a + b);
+                .map((e) => e.timeAsMilliseconds)
+                .reduce((a, b) => a + b) *
+            laps;
+
+  int get totalTimeWithoutLaps => totalTime ~/ laps;
 
   TimerCollection copyWith({
     List<Timer>? timers,

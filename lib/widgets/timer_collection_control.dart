@@ -57,7 +57,8 @@ class _TimerCollectionControlState
   int currentTimerIndex = 0;
   double currentTimerVisibleFraction = 1.0;
 
-  StopWatchTimer globalStopWatch = StopWatchTimer();
+  StopWatchTimer get globalStopWatch =>
+      widget.collection.globalStopWatch;
 
   Timer? notificationUpdateTimer;
 
@@ -114,9 +115,13 @@ class _TimerCollectionControlState
       currentTimerIndex = 0;
       // currentStopWatch = stopWatches.first;
       // currentTimer = widget.collection.timers.first;
-      widget.collection.globalStopWatch.onResetTimer();
+      globalStopWatch.onResetTimer();
       scrollToIndex(0);
       resetAllTimers();
+      globalStopWatch.setPresetTime(
+        mSec: widget.collection.totalTime,
+        add: false,
+      );
       // stopAlarm();
     });
     NotificationService.cancelCollectionNotification(
@@ -136,16 +141,11 @@ class _TimerCollectionControlState
 
       // On lap
       if (currentTimerIndex == 0) {
-        /* for (var t in widget.collection.timers) {
-          t.stopWatch.setPresetTime(
-            mSec: t.timeAsMilliseconds,
-            add: false,
-          );
-        }
-        widget.collection.globalStopWatch.setPresetTime(
+        /* globalStopWatch.setPresetTime(
           mSec: widget.collection.totalTime,
           add: false,
         ); */
+
         laps++;
 
         if (finished) {
@@ -195,7 +195,7 @@ class _TimerCollectionControlState
       });
     }
 
-    widget.collection.globalStopWatch.rawTime.listen((millis) {
+    globalStopWatch.rawTime.listen((millis) {
       remainingTime = millis;
     });
 
@@ -257,9 +257,7 @@ class _TimerCollectionControlState
           ),
         ),
         SizedBox(height: Spacing.lg),
-        CollectionTotalProgress(
-          widget.collection.globalStopWatch,
-        ),
+        CollectionTotalProgress(globalStopWatch),
         LayoutGrid(
           columnSizes: [1.fr, 40.px],
           rowSizes: [40.px],
@@ -309,15 +307,25 @@ class _TimerCollectionControlState
     setState(() {
       pause();
       currentTimerIndex = index;
-      /* for (var t in widget.collection.timers) {
-    t.stopWatch.setPresetTime(mSec: 0, add: false);
-  }
-  widget.collection.globalStopWatch.setPresetTime(
-    mSec: 0,
-    add: false,
-  ); */
-      // currentTimer = widget.collection.timers[currentTimerIndex];
-      // currentStopWatch = stopWatches[currentTimerIndex];
+      currentStopWatch.onResetTimer();
+      globalStopWatch.onResetTimer();
+
+      // Get the time of the previous timers 12 * 3 = 36
+      // 36 - 8 = 28
+      int prevTimes = 0;
+
+      for (int i = 0; i < index; i++) {
+        var t = widget.collection.timers[i];
+        prevTimes += t.timeAsMilliseconds;
+      }
+      Utils.log(["prevTimes seconds", prevTimes / 1000]);
+      // Subtract the value from the global timer
+      var mSec =
+          (widget.collection.totalTime) -
+          (laps == 0 ? prevTimes : (prevTimes * (laps + 1)));
+
+      globalStopWatch.setPresetTime(mSec: mSec, add: false);
+
       play();
       scrollToIndex(index);
     });
@@ -386,12 +394,12 @@ class _TimerCollectionControlState
   }
 
   void play() {
-    widget.collection.globalStopWatch.onStartTimer();
+    globalStopWatch.onStartTimer();
     currentStopWatch.onStartTimer();
   }
 
   void pause() {
-    widget.collection.globalStopWatch.onStopTimer();
+    globalStopWatch.onStopTimer();
     currentStopWatch.onStopTimer();
   }
 
