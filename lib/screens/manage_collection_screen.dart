@@ -24,20 +24,8 @@ class ManageCollectionScreen extends ConsumerStatefulWidget {
 
 class _NewCollectionScreenState
     extends ConsumerState<ManageCollectionScreen> {
-  String? collectionName;
-  int? collectionLaps;
-  String timerLabel = "";
-  int hours = 0;
-  int minutes = 0;
-  int seconds = 0;
-
-  bool notify = false;
-
   /// If the user exits the edit screen without entering the collection
   /// to the database, this will be set to true
-  bool collectionAdded = false;
-
-  int timersAdded = 0;
 
   late TimerCollection collection =
       ModalRoute.of(context)?.settings.arguments == null
@@ -50,8 +38,6 @@ class _NewCollectionScreenState
       (ModalRoute.of(context)?.settings.arguments
               as TimerCollection)
           .id;
-
-  Timer? selectedTimer;
 
   late bool editing =
       ModalRoute.of(context)?.settings.arguments == null
@@ -73,7 +59,6 @@ class _NewCollectionScreenState
       return;
     }
     timerNotifier.addCollection(collection);
-    collectionAdded = true;
     Navigator.pop(context);
   }
 
@@ -145,15 +130,6 @@ class _NewCollectionScreenState
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    /* // If the user exits the edit screen with a new collection, dispose it
-    if (!editing && collectionAdded) {
-      collection.dispose();
-    } */
-    super.dispose();
   }
 
   @override
@@ -268,7 +244,6 @@ class _NewCollectionScreenState
           if (timer != null) {
             setState(() {
               collection.timers.add(timer);
-              timersAdded++;
             });
           }
         },
@@ -368,9 +343,9 @@ class _NewCollectionScreenState
       child: TextFormField(
         onChanged: (value) {
           setState(() {
-            collectionName = value.isEmpty
-                ? "New Collection"
-                : value;
+            collection = collection.copyWith(
+              label: value.isEmpty ? "New Collection" : value,
+            );
           });
         },
         decoration: InputDecoration.collapsed(
