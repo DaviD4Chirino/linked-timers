@@ -310,19 +310,23 @@ class _TimerCollectionControlState
       currentStopWatch.onResetTimer();
       globalStopWatch.onResetTimer();
 
-      // Get the time of the previous timers 12 * 3 = 36
-      // 36 - 8 = 28
       int prevTimes = 0;
 
-      for (int i = 0; i < index; i++) {
-        var t = widget.collection.timers[i];
-        prevTimes += t.timeAsMilliseconds;
+      for (int i = 0; i <= laps; i++) {
+        for (
+          int j = 0;
+          j < widget.collection.timers.length;
+          j++
+        ) {
+          if (j == index && i == laps) break;
+
+          var t = widget.collection.timers[j];
+          prevTimes += t.timeAsMilliseconds;
+        }
       }
-      Utils.log(["prevTimes seconds", prevTimes / 1000]);
+
       // Subtract the value from the global timer
-      var mSec =
-          (widget.collection.totalTime) -
-          (laps == 0 ? prevTimes : (prevTimes * (laps + 1)));
+      var mSec = widget.collection.totalTime - prevTimes;
 
       globalStopWatch.setPresetTime(mSec: mSec, add: false);
 
