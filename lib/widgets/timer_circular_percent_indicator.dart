@@ -10,7 +10,6 @@ class TimerCircularPercentIndicator extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.selected = false,
-    this.notify = false,
     this.displayLabel = true,
     super.key,
   });
@@ -19,7 +18,6 @@ class TimerCircularPercentIndicator extends StatelessWidget {
   final VoidCallback? onTap;
   final void Function()? onLongPress;
   final bool selected;
-  final bool notify;
   final bool displayLabel;
 
   @override
@@ -34,6 +32,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
       style: ButtonStyle(
         padding: WidgetStateProperty.all(EdgeInsets.all(0)),
       ),
+      clipBehavior: Clip.none,
       onPressed: onTap,
       onLongPress: onLongPress,
       child: StreamBuilder(
@@ -57,9 +56,6 @@ class TimerCircularPercentIndicator extends StatelessWidget {
                   timer.stopWatch.initialPresetTime,
                 ),
 
-                /* footer: timer.stopWatch.isRunning
-                    ? null
-                    : Text(timer.label), */
                 lineWidth: 4,
                 animation: true,
                 animateToInitialPercent: true,
@@ -83,24 +79,27 @@ class TimerCircularPercentIndicator extends StatelessWidget {
                   ),
                 ),
               ),
-              if (!displayLabel)
+
+              if (displayLabel)
+                Positioned.fill(
+                  top: 30,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 50,
+                      child: timerLabel(theme),
+                    ),
+                  ),
+                ),
+              /* if (displayLabel)
                 Positioned.fill(
                   top: 40,
                   child: Align(
                     alignment: Alignment.center,
-                    child: Text(
-                      timer.label,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                    child: timerLabel(theme),
                   ),
-                ),
-              if (notify)
+                ), */
+              if (timer.notify)
                 Positioned(
                   right: -10,
                   child: Icon(
@@ -113,6 +112,19 @@ class TimerCircularPercentIndicator extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Text timerLabel(ThemeData theme) {
+    return Text(
+      timer.label,
+      style: TextStyle(
+        fontSize: 8,
+        fontWeight: FontWeight.w900,
+        color: theme.colorScheme.onSurface,
+      ),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
     );
   }
 }
