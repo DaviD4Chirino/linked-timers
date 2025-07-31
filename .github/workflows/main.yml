@@ -118,8 +118,7 @@ jobs:
         uses: requarks/changelog-action@v1
         with:
           token: ${{ secrets.TOKEN }}
-          fromTag: ${{ env.VERSION }}
-          toTag: ${{ env.previousTag }}
+          tag: ${{ env.VERSION }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
