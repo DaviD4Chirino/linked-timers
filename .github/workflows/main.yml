@@ -104,12 +104,20 @@ jobs:
         run: |
           new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
           echo "VERSION=$new_version" >> $GITHUB_ENV
+      - name: Get previous tag
+        id: previousTag
+        run: |
+          name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
+          echo "previousTag: $name"
+          echo "previousTag=$name" >> $GITHUB_ENV
+
       - name: Update CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
         with:
           token: ${{ secrets.TOKEN }}
-          tag: ${{ env.VERSION }}
+          fromTag: "v${{ env.VERSION }}"
+          toTag: "v${{ env.previousTag }}"
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
@@ -120,7 +128,7 @@ jobs:
           name: "Release v${{ env.VERSION }}"
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ secrets.TOKEN }}
-          tag: ${{ env.VERSION }}
+          tag: "v${{ env.VERSION }}"
           artifacts: "build/app/outputs/**/*.apk"
 
 
