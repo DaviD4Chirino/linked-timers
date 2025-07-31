@@ -215,6 +215,9 @@ class _TimerCollectionControlState
   void dispose() async {
     super.dispose();
     itemScrollController.dispose();
+    NotificationService.cancelCollectionNotification(
+      widget.collection,
+    );
   }
 
   @override
@@ -309,8 +312,11 @@ class _TimerCollectionControlState
       pause();
       currentTimerIndex = index;
       currentStopWatch.onResetTimer();
-      globalStopWatch.onResetTimer();
-
+      // globalStopWatch.onResetTimer();
+      globalStopWatch.setPresetTime(
+        mSec: widget.collection.totalTime,
+        add: false,
+      );
       int prevTimes = 0;
 
       for (int i = 0; i <= laps; i++) {
