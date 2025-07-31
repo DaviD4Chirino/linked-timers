@@ -5,8 +5,9 @@ on:
     branches:
       - main
   push:
-    branches:
-      - main
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
 
 jobs:
   build:
@@ -90,21 +91,7 @@ jobs:
             build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
             build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
 
-      - name: Check if Tag Exists
-        id: check_tag
-        run: |
-          if git rev-parse "${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
 
-      - name: Modify Tag
-        if: env.TAG_EXISTS == 'true'
-        id: modify_tag
-        run: |
-          new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
-          echo "VERSION=$new_version" >> $GITHUB_ENV
 
       - name: Get previous tag
         id: previousTag
@@ -118,7 +105,7 @@ jobs:
         uses: requarks/changelog-action@v1
         with:
           token: ${{ secrets.TOKEN }}
-          tag: ${{ env.VERSION }}
+          tag: ${{ github.ref_name }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
