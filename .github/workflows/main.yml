@@ -116,8 +116,8 @@ jobs:
         uses: requarks/changelog-action@v1
         with:
           token: ${{ secrets.TOKEN }}
-          fromTag: "v${{ env.VERSION }}"
-          toTag: "v${{ env.previousTag }}"
+          fromTag: ${{ env.VERSION }}
+          toTag: ${{ env.previousTag }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
@@ -128,7 +128,7 @@ jobs:
           name: "Release v${{ env.VERSION }}"
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ secrets.TOKEN }}
-          tag: "v${{ env.VERSION }}"
+          tag: ${{ env.VERSION }}
           artifacts: "build/app/outputs/**/*.apk"
 
 
