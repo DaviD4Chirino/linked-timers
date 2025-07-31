@@ -119,7 +119,7 @@ jobs:
         with:
           token: ${{ secrets.TOKEN }}
           fromTag: ${{ env.VERSION }}
-          toTag: ${{ env.previousTag }}"
+          toTag: ${{ env.previousTag }}
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
