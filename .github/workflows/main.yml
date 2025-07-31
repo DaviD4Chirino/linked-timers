@@ -1,10 +1,12 @@
 name: "Build & Release"
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
-
+    branches:
+      - main
 
 jobs:
   build:
@@ -88,21 +90,18 @@ jobs:
             build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
             build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
 
+      - name: Run Changelog CI
+        uses: saadmk11/changelog-ci@v1.2.0
 
-
-      - name: Get previous tag
-        id: previousTag
-        run: |
-          name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-          echo "previousTag: $name"
-          echo "previousTag=$name" >> $GITHUB_ENV
-
-      - name: Update CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
         with:
-          token: ${{ secrets.TOKEN }}
-          tag: ${{ github.ref_name }}
+          release_version: ${{ env.VERSION }}
+          github_token: ${{ secrets.TOKEN }}
+
+      - name: Get Changelog Output
+        run: |
+          echo "${{ steps.changelog-ci.outputs.changelog }}"
+          echo "changelog=${{ steps.changelog-ci.outputs.changelog }}" >> $GITHUB_ENV
+
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
@@ -111,7 +110,7 @@ jobs:
           draft: true
           makeLatest: true
           name: "Release v${{ env.VERSION }}"
-          body: ${{ steps.changelog.outputs.changes }}
+          body: ${{ env.changelog }}
           token: ${{ secrets.TOKEN }}
           tag: ${{ env.VERSION }}
           artifacts: "build/app/outputs/**/*.apk"
