@@ -1,7 +1,7 @@
 
 Todo:
   General:
-    ☐ Make a way to differentiate between hours and minutes @started(25-07-29 17:18)
+    ✘ Make a way to differentiate between hours and minutes @started(25-07-29 17:18) @cancelled(25-07-31 12:12) @wasted(1d18h54m56s)
         * Maybe add a total timer time string below the timer
         * eg: 01:03:15 - 1h 3m 15s
     ✔ Make sure notifications and alerts play when selected timers or the collection ends @started(25-06-06 23:19) @done(25-06-07 19:34) @lasted(20h15m52s)
