@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linked_timers/models/abstracts/utils.dart';
 import 'package:linked_timers/models/timer.dart';
+import 'package:linked_timers/widgets/display_time.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
@@ -62,7 +63,15 @@ class TimerCircularPercentIndicator extends StatelessWidget {
                 animateFromLastPercent: true,
 
                 /// A stack is better than a column because the text is centered
-                center: Text(
+                center: DisplayTime(
+                  data.data!,
+                  hours: hasHour,
+                  minutes: hasMinute,
+                  seconds: hasSecond && !hasHour,
+                  milliSeconds: !hasHour && !hasMinute,
+                ),
+
+                /* Text(
                   StopWatchTimer.getDisplayTime(
                     data.data!,
                     hours: hasHour,
@@ -77,7 +86,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
+                ) */
               ),
 
               if (displayLabel)
