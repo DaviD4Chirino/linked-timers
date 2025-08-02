@@ -20,7 +20,7 @@ jobs:
         run: |
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
           name=$(grep '^name: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          flutter_version=$(grep '^flutter: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          flutter_version=$(grep '^dependencies:' pubspec.yaml | grep 'flutter:' | cut -d ' ' -f 2 | tr -d '\r')
           echo "FLUTTER_VERSION=$flutter_version" >> $GITHUB_ENV
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "NAME=$name" >> $GITHUB_ENV
