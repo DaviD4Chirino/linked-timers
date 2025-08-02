@@ -21,7 +21,6 @@ jobs:
         with:
           file-path: "pubspec.yaml"
 
-
       - name: removing caret
         uses: frabert/replace-string-action@v2
         id: flutter_sdk
@@ -29,8 +28,6 @@ jobs:
           pattern: "\\^"
           string: ${{ steps.yaml.outputs.environment__sdk }}
           replace-with: ""
-
-
 
       - name: outputs to env
         run: |
@@ -59,7 +56,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: ^3.8.1
+          sdk: ${{env.VERSION}}
 
       - name: Cache
         uses: actions/cache@v4.2.3
