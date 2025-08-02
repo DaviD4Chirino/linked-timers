@@ -31,9 +31,9 @@ jobs:
 
       - name: outputs to env
         run: |
-          echo "FLUTTER_SDK=${{ steps.yaml.outputs.version }}" >> $GITHUB_ENV
+          echo "FLUTTER_SDK=${{ steps.flutter_sdk.outputs.replaced }}" >> $GITHUB_ENV
           echo "NAME=${{ steps.yaml.outputs.name }}" >> $GITHUB_ENV
-          echo "VERSION=${{ steps.flutter_sdk.outputs.replaced }}" >> $GITHUB_ENV
+          echo "VERSION=${{ steps.yaml.outputs.version }}" >> $GITHUB_ENV
           echo "DESCRIPTION=${{ steps.yaml.outputs.description }}" >> $GITHUB_ENV
 
       - name: echoing
@@ -56,7 +56,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: ${{env.VERSION}}
+          sdk: ${{env.FLUTTER_SDK}}
 
       - name: Cache
         uses: actions/cache@v4.2.3
