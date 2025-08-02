@@ -125,6 +125,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
       ),
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
+      textAlign: TextAlign.center,
     );
   }
 }

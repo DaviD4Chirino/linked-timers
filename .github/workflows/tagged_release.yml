@@ -1,17 +1,15 @@
-name: "Build & Release"
+---
+name: "tagged-release"
 
 on:
-  pull_request:
-    branches:
-      - release
   push:
-    branches:
-      - release
+    tags:
+      - "v*"
 
 jobs:
-  build:
-    name: "Build & Release"
-    runs-on: ubuntu-latest
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
 
     steps:
       - name: Clone Repository
@@ -70,7 +68,7 @@ jobs:
       - name: Build Universal APK
         run: flutter build apk --release
 
-      - name: Build APK
+      - name: Build APKs
         run: flutter build apk --split-per-abi
 
       - name: Rename files
@@ -90,33 +88,12 @@ jobs:
             build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
             build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
 
-      - name: Run Changelog CI
-        uses: saadmk11/changelog-ci@v1.2.0
-
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          release_version: ${{ env.VERSION }}
-          github_token: ${{ secrets.TOKEN }}
-
-      - name: Get Changelog Output
-        run: |
-          echo "${{ steps.changelog-ci.outputs.changelog }}"
-          echo "${{ steps.changelog-ci.outputs.changelog }}" >> $GITHUB_ENV
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1.12.0
-        with:
-          allowUpdates: true
-          draft: true
-          makeLatest: true
-          name: "Release v${{ env.VERSION }}"
-          body: ${{ steps.changelog-ci.outputs.changelog }}
-          token: ${{ secrets.TOKEN }}
-          tag: ${{ env.VERSION }}
-          artifacts: "build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk,build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk,build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk,build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk"
-
-      - name: Commit CHANGELOG.md
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          branch: main
-          commit_message: "docs: update CHANGELOG.md for ${{ env.NAME }} [skip ci]"
-          file_pattern: CHANGELOG.md
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
