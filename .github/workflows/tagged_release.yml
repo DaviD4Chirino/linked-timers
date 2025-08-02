@@ -21,10 +21,7 @@ jobs:
         with:
           file-path: "pubspec.yaml"
 
-      # - name: Setup Flutter
-      #   uses: subosito/flutter-action@v2
-      #   with:
-      #     channel: "stable"
+
       - name: removing caret
         uses: frabert/replace-string-action@v2
         id: flutter_sdk
@@ -33,79 +30,95 @@ jobs:
           string: ${{ steps.yaml.outputs.environment__sdk }}
           replace-with: ""
 
+
+
+      - name: outputs to env
+        run: |
+          echo "FLUTTER_SDK=${{ steps.yaml.outputs.version }}" >> $GITHUB_ENV
+          echo "NAME=${{ steps.yaml.outputs.name }}" >> $GITHUB_ENV
+          echo "VERSION=${{ steps.flutter_sdk.outputs.replaced }}" >> $GITHUB_ENV
+          echo "DESCRIPTION=${{ steps.yaml.outputs.description }}" >> $GITHUB_ENV
+
       - name: echoing
         run: |
           echo "Flutter SDK: ${{ steps.flutter_sdk.outputs.replaced  }}"
+          echo "Name: ${{env.NAME}}"
+          echo "Version: ${{env.VERSION}}"
 
-      # - name: Setup Java
-      #   uses: actions/setup-java@v3
-      #   with:
-      #     distribution: "oracle"
-      #     java-version: "17"
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
 
-      # - name: Setup Dart
-      #   uses: dart-lang/setup-dart@v1
-      #   with:
-      #     sdk: ^3.8.1
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "oracle"
+          java-version: "17"
 
-      # - name: Cache
-      #   uses: actions/cache@v4.2.3
-      #   with:
-      #     path: |
-      #       ~/.pub-cache
-      #       .dart_tool
-      #       build
-      #     key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-flutter-
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ^3.8.1
 
-      # - name: Install Dependencies
-      #   run: flutter pub get
+      - name: Cache
+        uses: actions/cache@v4.2.3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+            build
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
 
-      # - name: Decode Keystore
-      #   run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/keystore.jks
-      #   env:
-      #     KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Install Dependencies
+        run: flutter pub get
 
-      # - name: Create key.properties
-      #   run: |
-      #     echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-      #     echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-      #     echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-      #     echo "storeFile=keystore.jks" >> android/key.properties
+      - name: Decode Keystore
+        run: echo $KEYSTORE_BASE64 | base64 --decode > android/app/keystore.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=keystore.jks" >> android/key.properties
 
 
 
-      # - name: Build Universal APK
-      #   run: flutter build apk --release
+      - name: Build Universal APK
+        run: flutter build apk --release
 
-      # - name: Build APKs
-      #   run: flutter build apk --split-per-abi
+      - name: Build APKs
+        run: flutter build apk --split-per-abi
 
-      # - name: Rename files
-      #   run: |
-      #     mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
-      #     mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
-      #     mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
-      #     mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
+      - name: Rename files
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
+          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
+          mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
 
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: Releases
-      #     path: |
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Releases
+          path: |
+            build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
 
-      # - uses: "marvinpinto/action-automatic-releases@latest"
-      #   with:
-      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-      #     prerelease: false
-      #     automatic_release_tag: "Release v${{ env.VERSION }}"
-      #     files: |
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
-      #       build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "Release v${{ env.VERSION }}"
+          files: |
+            build/app/outputs/flutter-apk/${{ env.NAME }}_universal_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_armeabi_v7a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_arm64_v8a_v${{ env.VERSION }}.apk
+            build/app/outputs/flutter-apk/${{ env.NAME }}_x86_64_v${{ env.VERSION }}.apk
