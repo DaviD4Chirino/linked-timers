@@ -27,6 +27,7 @@ jobs:
       #     channel: "stable"
       - name: removing caret
         uses: frabert/replace-string-action@v2
+        id: flutter_sdk
         with:
           pattern: "\\^"
           string: ${{ steps.yaml.outputs.environment__sdk }}
@@ -34,8 +35,7 @@ jobs:
 
       - name: echoing
         run: |
-          echo "Flutter SDK: ${{ steps.yaml.outputs.environment__sdk }}"
-          echo "Flutter SDK: ${{ steps.yaml.outputs.environment__sdk }}"
+          echo "Flutter SDK: ${{ steps.flutter_sdk.outputs.replaced  }}"
 
       # - name: Setup Java
       #   uses: actions/setup-java@v3
