@@ -3,8 +3,8 @@ name: "tagged-release"
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 jobs:
   tagged-release:
@@ -83,8 +83,6 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=keystore.jks" >> android/key.properties
-
-
 
       - name: Build Universal APK
         run: flutter build apk --release
