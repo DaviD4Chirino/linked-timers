@@ -82,12 +82,12 @@ class TimerCircularPercentIndicator extends StatelessWidget {
 
               if (displayLabel)
                 Positioned.fill(
-                  top: 30,
+                  top: 35,
                   child: Align(
                     alignment: Alignment.center,
                     child: SizedBox(
                       width: 50,
-                      child: timerLabel(theme),
+                      child: Center(child: timerLabel(theme)),
                     ),
                   ),
                 ),
@@ -122,6 +122,7 @@ class TimerCircularPercentIndicator extends StatelessWidget {
         fontSize: 8,
         fontWeight: FontWeight.w900,
         color: theme.colorScheme.onSurface,
+        letterSpacing: timer.label.length > 5 ? 1 : 1.5,
       ),
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
