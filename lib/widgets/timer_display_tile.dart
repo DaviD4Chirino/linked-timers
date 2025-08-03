@@ -89,6 +89,7 @@ class _TimerDisplayTileState extends State<TimerDisplayTile> {
   TimerCircularPercentIndicator stopWatchClock() {
     return TimerCircularPercentIndicator(
       widget.timer,
+      displayLabel: false,
       onTap: widget.onTap != null
           ? () {
               widget.onTap!(widget.timer);
